@@ -63,7 +63,7 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 </section></div></main><footer>Outil de gestion d'un scénario fictif de carrière · Les règles affichées ne constituent pas un accord réel avec la FSGC.</footer>
 <script>
 const $=id=>document.getElementById(id), euro=n=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n||0);
-function parseAmount(value){const cleaned=String(value??'').replace(/[\\s\\u00a0\\u202f]/g,'').replace(',','.').replace(/[^0-9.\\-]/g,'');const n=Number(cleaned);return Number.isFinite(n)?n:0}
+function parseAmount(value){const cleaned=String(value??'').replaceAll(' ','').replaceAll(String.fromCharCode(160),'').replaceAll(String.fromCharCode(8239),'').replace(',','.').replace(/[^0-9.-]/g,'');const n=Number(cleaned);return Number.isFinite(n)?n:0}
 function formatAmount(input){const n=parseAmount(input.value);input.value=new Intl.NumberFormat('fr-FR',{maximumFractionDigits:2,useGrouping:true}).format(n)}
 function setupAmountFields(){document.querySelectorAll('.amount').forEach(input=>{input.addEventListener('focus',()=>{input.value=String(parseAmount(input.value))});input.addEventListener('blur',()=>{formatAmount(input);update()});formatAmount(input)})}
 let clubs=[{name:'',share:100}],customRules=[];
