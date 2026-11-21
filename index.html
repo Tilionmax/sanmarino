@@ -87,6 +87,8 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 body:not(.authenticated) header,body:not(.authenticated) main,body:not(.authenticated) footer{display:none}
 body.authenticated #authGate{display:none}
 .account-name{display:inline-flex;align-items:center;padding:7px 12px;border:1px solid var(--teal);border-radius:999px;color:#8fecc9;font-weight:800;font-size:13px;background:#3c91951c;white-space:nowrap}.account-name::before{content:"👤";margin-right:7px}#logout{margin-left:auto}
+
+[hidden]{display:none!important}.view-switch{display:flex;align-items:center;gap:8px;min-width:min(100%,330px)}.view-switch label{margin:0;white-space:nowrap}.view-switch select{min-width:220px}.view-panel{margin-top:15px}.section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.section-heading h2{margin:4px 0 0}.promotion-club-list{display:grid;gap:8px;margin:16px 0}.promotion-club-header,.promotion-club-row{display:grid;grid-template-columns:38px minmax(180px,1fr) minmax(190px,260px) 42px;gap:9px;align-items:center}.promotion-club-header{color:var(--muted);font-size:12px;font-weight:700;padding:0 8px}.promotion-club-row{padding:8px;border:1px solid var(--line);border-radius:10px;background:#0b1928}.promotion-club-number{color:var(--muted);font-weight:800;text-align:center}.promotion-club-row input{min-width:0}.promotion-club-row button{padding:8px}.promotion-actions{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}.promotion-history-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}.promotion-history-row span{color:var(--muted);font-size:13px}.promotion-result{font-size:14px;color:#b8f0d5}.promotion-result strong{color:#fff}@media(max-width:650px){.view-switch{width:100%;align-items:stretch;flex-direction:column}.view-switch select{width:100%}.promotion-club-header{display:none}.promotion-club-row{grid-template-columns:30px minmax(0,1fr) 92px 36px;gap:6px;padding:6px}.promotion-club-row input{padding:9px 7px}.promotion-history-row{display:block}.promotion-history-row span{display:block;margin-top:3px}}
 </style>
 </head>
 <body>
@@ -117,8 +119,8 @@ body.authenticated #authGate{display:none}
   </div>
 </div><header><div class="kicker">Projet de carrière Football Manager 2027</div><h1>San Marino Calcio</h1><p>Fonds de solidarité du football saint-marinais · Gestion financière et suivi de l'accord fictif avec la FSGC</p></header>
 <main>
-<div class="toolbar"><a class="button" href="reglement.html" style="text-decoration:none">📜 Consulter le règlement FSGC</a><input id="season" type="hidden" value="2026/2027"><span id="accountName" class="account-name" hidden></span><span id="cloudStatus" class="muted">Cloud : connexion requise</span><button id="logout" type="button">Déconnexion</button></div>
-<div class="stats">
+<div class="toolbar"><a class="button" href="reglement.html" style="text-decoration:none">📜 Consulter le règlement FSGC</a><div class="view-switch"><label for="managementView">Navigation</label><select id="managementView"><option value="dashboard">Accueil · Fonds FSGC</option><option value="history">Historique des opérations</option><option value="clubs">Gestion des clubs du Campionato</option></select></div><input id="season" type="hidden" value="2026/2027"><span id="accountName" class="account-name" hidden></span><span id="cloudStatus" class="muted">Cloud : connexion requise</span><button id="logout" type="button">Déconnexion</button></div>
+<div id="dashboardView"><div class="stats">
 <div class="stat"><small>Revenus bruts</small><strong id="total" class="money">0 €</strong></div>
 <div class="stat"><small>Taux de contribution</small><strong id="rate">0 %</strong></div>
 <div class="stat"><small>Versement total au fonds FSGC</small><strong id="tax" class="gold">0 €</strong><div style="margin-top:9px;padding-top:8px;border-top:1px solid var(--line);font-size:12px;line-height:1.7;color:var(--muted)">Contribution revenus : <b id="baseContributionDisplay" style="color:var(--text)">0 €</b><br>Reversement du surplus : <b id="surplusContributionDisplay" style="color:var(--text)">0 €</b></div></div>
@@ -139,8 +141,9 @@ body.authenticated #authGate{display:none}
 <section class="card dashboard-card"><h2>02 · Situation sportive</h2><p class="muted" style="font-size:12px;margin-top:-8px">Les montants s’affichent avec des espaces pour séparer les milliers : 1 000 · 1 000 000 · 20 000 000 · 200 000 000.</p><div class="field"><label for="division">Division du club</label><select id="division"><option value="seriea">Serie A</option><option value="serieb">Serie B</option><option value="seriec">Serie C</option><option value="seried">Serie D</option><option value="lower">Division inférieure à la Serie D</option></select></div><div class="field" style="margin-top:14px"><label for="wonSerieA">Le club a-t-il remporté le titre de Serie A ?</label><select id="wonSerieA"><option value="no">Non</option><option value="yes">Oui</option></select></div><div class="field" style="margin-top:14px"><label for="europe">Participation à une coupe d'Europe cette saison ?</label><select id="europe"><option value="no">Non</option><option value="yes">Oui</option></select></div><div class="field" id="europeWinnerField" style="margin-top:14px" hidden><label for="wonEurope">Le club a-t-il remporté la coupe d’Europe ?</label><select id="wonEurope"><option value="no">Non</option><option value="yes">Oui</option></select></div><div class="field" style="margin-top:14px"><label for="balance">Solde après contribution liée à la division et à la coupe d'Europe (€)</label><input id="balance" class="amount" inputmode="decimal" value="0" autocomplete="off" readonly><p class="muted" style="font-size:12px;margin:6px 0 0">Ce montant est calculé automatiquement à partir du solde de fin de saison et des revenus bruts saisis en 01.</p></div><div class="notice">Le solde affiché ici tient déjà compte de la contribution sur les revenus bruts selon la division et la participation européenne. Le reversement éventuel du surplus au-dessus du seuil est calculé ensuite.</div></section>
 
 <section class="card bank-panel" id="bankAccount"><h2>03 · Opérations du fonds FSGC</h2><p class="muted" style="margin-top:-8px">Enregistre les contributions annuelles versées au fonds et les aides accordées aux clubs saint-marinais.</p><div class="bank-forms"><div class="bank-form"><h3>＋ Enregistrer le versement de la saison</h3><p class="muted" style="font-size:12px">Ajoute au compte la contribution calculée dans les sections précédentes. Un seul versement par saison.</p><div class="field"><label>Contribution calculée pour cette saison</label><input id="depositPreview" readonly value="0 €"></div><button class="primary" id="recordDeposit" style="width:100%">Verser la contribution au fonds</button><div id="depositMessage" class="bank-hint">Le versement est ajouté uniquement après ton clic.</div></div><div class="bank-form"><h3>－ Enregistrer une dépense</h3><div class="field"><label for="expenseSeason">Saison</label><input id="expenseSeason" placeholder="2026/2027"></div><div class="field"><label for="expenseClub">Club bénéficiaire</label><input id="expenseClub" placeholder="Nom du club saint-marinais"></div><div class="field"><label for="expenseType">Type d'amélioration</label><select id="expenseType"><option>Encadrement des jeunes</option><option>Recrutement de jeunes</option><option>Autre aide au club</option></select></div><div class="field" id="expensePointsField"><label for="expenseDescription">Nombre de points à attribuer</label><input id="expenseDescription" type="number" min="1" step="1" value="1" placeholder="1"></div><div class="field"><label for="expenseAmount">Montant dépensé (€)</label><input id="expenseAmount" class="amount" inputmode="decimal" placeholder="400 000" autocomplete="off"></div><p id="expenseCostHint" class="muted" style="font-size:12px;margin:4px 0 0">Pour l’encadrement ou le recrutement des jeunes : 400 000 € par point.</p><button class="primary" id="recordExpense" style="width:100%">Enregistrer la dépense</button><div id="expenseMessage" class="bank-hint">Impossible de dépenser plus que le solde disponible.</div></div></div></section>
-</div>
-<section class="card ledger-panel" id="fundHistory"><h2>Historique des opérations</h2><p class="muted" style="margin-top:-8px">Vue d'ensemble du compte du fonds FSGC : solde disponible, versements reçus et dépenses enregistrées.</p><div class="bank-head"><div class="bank-balance"><small>Solde actuel du fonds</small><strong id="fundBalance">0 €</strong></div><div class="bank-stat"><small>Total des versements reçus</small><strong id="fundCredits" class="money">0 €</strong></div><div class="bank-stat"><small>Total des dépenses</small><strong id="fundDebits" class="gold">0 €</strong></div></div><h3>Journal des mouvements</h3><div id="ledgerHistory"><div class="ledger-empty">Aucune opération enregistrée pour le moment.</div></div></section>
+</div></div>
+<section class="card ledger-panel view-panel" id="historyView"><div id="fundHistory"><h2>Historique des opérations</h2><p class="muted" style="margin-top:-8px">Vue d'ensemble du compte du fonds FSGC : solde disponible, versements reçus et dépenses enregistrées.</p><div class="bank-head"><div class="bank-balance"><small>Solde actuel du fonds</small><strong id="fundBalance">0 €</strong></div><div class="bank-stat"><small>Total des versements reçus</small><strong id="fundCredits" class="money">0 €</strong></div><div class="bank-stat"><small>Total des dépenses</small><strong id="fundDebits" class="gold">0 €</strong></div></div><h3>Journal des mouvements</h3><div id="ledgerHistory"><div class="ledger-empty">Aucune opération enregistrée pour le moment.</div></div></section>
+<section class="card view-panel" id="clubsView" hidden><div class="section-heading"><div><span class="kicker">Gestion sportive · Campionato</span><h2>Gestion des clubs du Campionato</h2></div><button type="button" id="resetPromotionClubs" class="danger">↺ Réinitialiser la liste et l’historique</button></div><p class="muted" style="margin-top:-8px">La liste est partagée avec la page du règlement FSGC. Les clubs sont classés par ordre alphabétique ; un club à 20/20 ne peut plus être tiré au sort.</p><div id="promotionClubList" class="promotion-club-list"><div class="ledger-empty">Chargement des clubs…</div></div><div class="promotion-actions"><button type="button" class="primary" id="drawPromotionClub">🎲 Tirer au sort le club bénéficiaire</button><button type="button" id="clearPromotionHistory">Effacer l’historique des attributions</button></div><div id="promotionDrawStatus" class="bank-hint" aria-live="polite">Chargement de la gestion du Campionato…</div><h3 style="margin-top:22px">Historique des attributions</h3><div id="promotionDrawHistory"><div class="ledger-empty">Aucune attribution enregistrée.</div></div></section>
 </main><footer>Outil de gestion d'un scénario fictif de carrière · Les règles affichées ne constituent pas un accord réel avec la FSGC.</footer>
 <script>
 const $=id=>document.getElementById(id), euro=n=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n||0);
@@ -204,6 +207,80 @@ const cloudStatus = document.getElementById("cloudStatus");
 const accountName = document.getElementById("accountName");
 const showLogin = document.getElementById("showLogin");
 const showRegister = document.getElementById("showRegister");
+
+
+let rulesRef = null;
+let rulesPayloadCache = {};
+let promotionClubs = [];
+let promotionDraws = [];
+let promotionClubsInitialized = false;
+const defaultPromotionClubs = [['AC Libertas',2],['FC Domagnano',2],['FC Fiorentino',2],['Folgore/Falciano',2],['Juvenes/Dogana',3],['La Fiorita',2],['Pennarossa Calcio',2],['San Giovanni',2],['San Marino Academy',7],['SC Faetano',2],['SP Cailungo',2],['SS Cosmos',2],['SS Murata',2],['SS Virtus',2],['Tre Fiori',2],['Tre Penne',2]].map(([name,level],i)=>({id:'default-club-'+(i+1),name,level}));
+function sortedPromotionClubs(){return [...promotionClubs].sort((a,b)=>String(a.name).localeCompare(String(b.name),'fr',{sensitivity:'base'}))}
+function persistPromotionData(){
+  if(!rulesRef||isLoading)return;
+  const payload={...rulesPayloadCache,promotionClubs,promotionDraws,promotionClubsInitialized:true};
+  rulesPayloadCache=payload;
+  setDoc(rulesRef,{payload,updatedAt:serverTimestamp()},{merge:true}).then(()=>{cloudStatus.textContent='Cloud : clubs du Campionato synchronisés'}).catch(error=>{console.error('Promotion clubs save error:',error);$('promotionDrawStatus').textContent='Erreur de sauvegarde Firebase. Vérifie ta connexion.'});
+}
+function renderPromotionManager(){
+  const list=$('promotionClubList'),eligible=promotionClubs.filter(c=>Number(c.level)<20).length,sorted=sortedPromotionClubs();
+  list.innerHTML=sorted.length?'<div class="promotion-club-header"><span></span><span>Club</span><span>Formation des jeunes</span><span></span></div>'+sorted.map((c,i)=>'<div class="promotion-club-row"><span class="promotion-club-number">'+(i+1)+'</span><input type="text" maxlength="80" aria-label="Nom du club" value="'+esc(c.name)+'" data-promotion-name="'+esc(c.id)+'"><input type="number" min="0" max="20" step="1" aria-label="Niveau de Formation des jeunes" value="'+Math.max(0,Math.min(20,Number(c.level)||0))+'" data-promotion-level="'+esc(c.id)+'"><button type="button" class="danger" data-delete-promotion-club="'+esc(c.id)+'" title="Supprimer le club">✕</button></div>').join(''):'<div class="ledger-empty">Aucun club dans la liste.</div>';
+  $('drawPromotionClub').disabled=eligible===0;
+  $('promotionDrawStatus').textContent=eligible?eligible+' club(s) éligible(s). Les clubs à 20/20 sont exclus automatiquement.':(sorted.length?'Tous les clubs sont au niveau maximal 20/20.':'Aucun club disponible pour le tirage.');
+  $('promotionDrawHistory').innerHTML=promotionDraws.length?[...promotionDraws].reverse().map(d=>'<div class="promotion-history-row"><strong>'+esc(d.club)+'</strong><span>'+esc(d.date)+' · Formation des jeunes : '+Number(d.before)+'/20 → <b class="money">'+Number(d.after)+'/20</b></span></div>').join(''):'<div class="ledger-empty">Aucune attribution enregistrée.</div>';
+}
+function applyPromotionData(payload={}){
+  rulesPayloadCache=payload||{};
+  promotionClubs=Array.isArray(payload.promotionClubs)?payload.promotionClubs:[];
+  promotionDraws=Array.isArray(payload.promotionDraws)?payload.promotionDraws:[];
+  promotionClubsInitialized=!!payload.promotionClubsInitialized;
+  if(!promotionClubsInitialized&&!promotionClubs.length){promotionClubs=defaultPromotionClubs.map(c=>({...c}));promotionClubsInitialized=true;persistPromotionData();}
+  else if(promotionClubs.length)promotionClubsInitialized=true;
+  renderPromotionManager();
+}
+$('managementView').addEventListener('change',()=>{
+  const view=$('managementView').value;
+  $('dashboardView').hidden=view!=='dashboard';
+  $('historyView').hidden=view!=='history';
+  $('clubsView').hidden=view!=='clubs';
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+$('promotionClubList').addEventListener('change',event=>{
+  const input=event.target;
+  if(input.matches('[data-promotion-name]')){
+    const club=promotionClubs.find(c=>c.id===input.dataset.promotionName);if(!club)return;
+    const name=input.value.trim();
+    if(!name){alert('Le nom du club ne peut pas être vide.');input.value=club.name;return}
+    if(promotionClubs.some(c=>c.id!==club.id&&String(c.name).toLocaleLowerCase('fr')===name.toLocaleLowerCase('fr'))){alert('Ce club existe déjà.');input.value=club.name;return}
+    club.name=name;renderPromotionManager();persistPromotionData();return;
+  }
+  if(input.matches('[data-promotion-level]')){
+    const club=promotionClubs.find(c=>c.id===input.dataset.promotionLevel);if(!club)return;
+    const level=Number(input.value);if(!Number.isInteger(level)||level<0||level>20){alert('Le niveau doit être un nombre entier entre 0 et 20.');input.value=club.level;return}
+    club.level=level;renderPromotionManager();persistPromotionData();
+  }
+});
+$('promotionClubList').addEventListener('click',event=>{
+  const button=event.target.closest('[data-delete-promotion-club]');if(!button)return;
+  const club=promotionClubs.find(c=>c.id===button.dataset.deletePromotionClub);if(!club)return;
+  if(!confirm('Supprimer '+club.name+' de la liste du Campionato ?'))return;
+  promotionClubs=promotionClubs.filter(c=>c.id!==club.id);renderPromotionManager();persistPromotionData();
+});
+$('resetPromotionClubs').addEventListener('click',()=>{
+  if(!confirm('Réinitialiser complètement la gestion du Campionato ? Les clubs ajoutés ou modifiés seront remplacés par les 16 clubs de départ et leurs niveaux initiaux, et tout l’historique des tirages sera supprimé. Cette action est irréversible.'))return;
+  promotionClubs=defaultPromotionClubs.map(c=>({...c}));promotionDraws=[];promotionClubsInitialized=true;renderPromotionManager();$('promotionDrawStatus').textContent='Gestion du Campionato réinitialisée : 16 clubs de départ restaurés et historique effacé.';persistPromotionData();
+});
+$('clearPromotionHistory').addEventListener('click',()=>{
+  if(!promotionDraws.length){alert('L’historique est déjà vide.');return}
+  if(!confirm('Supprimer tout l’historique des attributions ? Les niveaux actuels des clubs seront conservés.'))return;
+  promotionDraws=[];renderPromotionManager();$('promotionDrawStatus').textContent='Historique effacé. Les niveaux actuels sont conservés.';persistPromotionData();
+});
+$('drawPromotionClub').addEventListener('click',()=>{
+  const eligible=promotionClubs.filter(c=>Number(c.level)<20);if(!eligible.length){$('promotionDrawStatus').textContent='Aucun club éligible : tous les clubs sont à 20/20.';return}
+  const winner=eligible[Math.floor(Math.random()*eligible.length)],before=Number(winner.level),after=before+1;
+  winner.level=after;promotionDraws.push({id:'draw-'+Date.now(),club:winner.name,before,after,date:new Date().toLocaleString('fr-FR')});
+  renderPromotionManager();$('promotionDrawStatus').innerHTML='<div class="promotion-result">🎉 Club tiré au sort : <strong>'+esc(winner.name)+'</strong> · Formation des jeunes : '+before+'/20 → <strong>'+after+'/20</strong>. Amélioration financée par la FSGC, sans débit du fonds.</div>';persistPromotionData();
+});
 
 function authMode(mode) {
   const registering = mode === "register";
@@ -328,6 +405,8 @@ onAuthStateChanged(auth, async (user) => {
   if (unsubscribeCloud) { unsubscribeCloud(); unsubscribeCloud = null; }
   if (unsubscribeRules) { unsubscribeRules(); unsubscribeRules = null; }
   currentRef = null;
+  rulesRef = null;
+  rulesPayloadCache = {};
   document.body.classList.remove("authenticated");
   if (!user) {
     accountName.hidden = true;
@@ -372,10 +451,12 @@ onAuthStateChanged(auth, async (user) => {
     cloudStatus.textContent = "Cloud : connecté · " + (user.displayName || "Mon espace");
 
     const rulesRef = doc(db, 'users', user.uid, 'data', 'rules');
+    rulesRef = doc(db, 'users', user.uid, 'data', 'rules');
     unsubscribeRules = onSnapshot(rulesRef, (rulesSnapshot) => {
       const rulesPayload = rulesSnapshot.exists() ? (rulesSnapshot.data().payload || {}) : {};
       window.applyPersonalRules(rulesPayload);
-    }, (error) => { console.error('Rules sync error:', error); });
+      applyPromotionData(rulesPayload);
+    }, (error) => { console.error('Rules sync error:', error); $('promotionDrawStatus').textContent='Impossible de charger les clubs depuis Firebase.'; });
 
     unsubscribeCloud = onSnapshot(ref, (remote) => {
       if (!remote.exists() || !remote.data().payload || remote.metadata.hasPendingWrites) return;
