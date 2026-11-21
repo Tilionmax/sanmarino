@@ -333,7 +333,16 @@ onAuthStateChanged(auth, async (user) => {
         ? new Date(user.metadata.creationTime).getTime() : Date.now();
       const existingAccountBeforeMultiUser = accountCreated < new Date("2026-11-21T00:00:00").getTime();
       const local = existingAccountBeforeMultiUser ? localStorage.getItem("sanmarino-fsgc") : null;
-      if (local) apply(JSON.parse(local));
+      if (local) {
+        apply(JSON.parse(local));
+      } else {
+        // Un nouveau compte doit toujours démarrer avec un fonds vierge,
+        // sans reprendre les valeurs encore présentes dans la mémoire du navigateur.
+        apply({});
+        document.querySelectorAll(".rev").forEach((field) => { field.value = 0; });
+        renderLedger();
+        update();
+      }
       await setDoc(ref, { payload: state(), updatedAt: serverTimestamp() });
     }
 
