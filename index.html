@@ -388,7 +388,7 @@ onAuthStateChanged(auth, async (user) => {
     });
   } catch (error) {
     console.error("Firebase initialization error:", error);
-    loginError.textContent = "Impossible de charger les données. Vérifie les règles Firestore dans la console Firebase.";
+    loginError.textContent = "Impossible de charger les données. Erreur Firebase : " + (error.code || error.name || "inconnue") + " — " + (error.message || "Aucun détail fourni.");
     cloudStatus.textContent = "Cloud : accès refusé ou indisponible";
     currentRef = null;
   } finally {
