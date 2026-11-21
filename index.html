@@ -167,7 +167,7 @@ body.authenticated #authGate{display:none}
    <label class="national-youth-check"><input id="nyGroupExit" type="checkbox">Sortie de groupe en phase finale <b>+2</b></label>
   </div>
   <div class="national-youth-box"><h3>Résultats des clubs</h3>
-   <div class="field"><label for="nyEuropeanClubs">Clubs saint-marinais en phase principale d'une coupe d'Europe</label><input id="nyEuropeanClubs" type="number" min="0" max="30" step="1" value="0"><p class="muted" style="font-size:11px;margin:5px 0 0">+1 point par club, à condition d'atteindre la phase principale.</p></div>
+   <label class="national-youth-check"><input id="nyEuropeanClub" type="checkbox">Un club saint-marinais atteint la phase principale d’une coupe d’Europe <b>+1</b></label>
    <label class="national-youth-check"><input id="nySanMarinoPromotion" type="checkbox">San Marino Calcio monte en division supérieure <b>+1</b></label>
   </div>
   <div class="national-youth-box"><h3>Investissement national éligible</h3>
@@ -295,7 +295,7 @@ function applyNationalYouthData(payload={}){
  renderNationalYouth();
 }
 function nationalYouthSportPoints(){
- const raw=($('nyNationsLeague').checked?2:0)+($('nyQualification').checked?3:0)+($('nyGroupExit').checked?2:0)+Math.max(0,Math.floor(Number($('nyEuropeanClubs').value)||0))+($('nySanMarinoPromotion').checked?1:0);
+ const raw=($('nyNationsLeague').checked?2:0)+($('nyQualification').checked?3:0)+($('nyGroupExit').checked?2:0)+$('nyEuropeanClub').checked?1:0+($('nySanMarinoPromotion').checked?1:0);
  return {raw,applied:Math.min(5,raw)};
 }
 function nationalYouthFifaPoints(rank){return fifaYouthThresholds.filter(threshold=>rank<=threshold&&!nationalYouthData.milestones.includes(threshold))}
@@ -314,13 +314,12 @@ function updateNationalYouthPreview(){
  $('nyEligibleSpendDisplay').textContent=euro(spend)+' · '+investment+'/2 points';
  $('nationalYouthPreview').textContent='Bonus sportifs : +'+sport.applied+' (calcul brut : '+sport.raw+', plafonné à 5) · Investissement national : +'+investment+' · Nouveaux paliers FIFA : +'+fifa.length+' ('+(fifa.length?fifa.map(n=>'Top '+n).join(', '):'aucun')+') · Gain total prévu : +'+(sport.applied+investment+fifa.length)+' points. Note après clôture : '+Math.min(200,nationalYouthData.rating+sport.applied+investment+fifa.length)+'/200.';
 }
-['nyNationsLeague','nyQualification','nyGroupExit','nyEuropeanClubs','nySanMarinoPromotion','nationalYouthFifaRank'].forEach(id=>$(id).addEventListener('input',updateNationalYouthPreview));
+['nyNationsLeague','nyQualification','nyGroupExit','nyEuropeanClub','nySanMarinoPromotion','nationalYouthFifaRank'].forEach(id=>$(id).addEventListener('input',updateNationalYouthPreview));
 $('closeNationalYouthSeason').addEventListener('click',()=>{
- const season=$('nationalYouthSeason').value.trim(),rankValue=Number($('nationalYouthFifaRank').value),clubs=Number($('nyEuropeanClubs').value);
+ const season=$('nationalYouthSeason').value.trim(),rankValue=Number($('nationalYouthFifaRank').value);
  if(!season){$('nationalYouthMessage').textContent='Indique la saison à clôturer.';return}
  if(nationalYouthData.seasons.some(item=>item.season===season)){$('nationalYouthMessage').textContent='Cette saison a déjà été clôturée. Elle ne peut pas être comptabilisée une deuxième fois.';return}
  if(!Number.isInteger(rankValue)||rankValue<1||rankValue>211){$('nationalYouthMessage').textContent='Le classement FIFA doit être un entier compris entre 1 et 211.';return}
- if(!Number.isInteger(clubs)||clubs<0||clubs>30){$('nationalYouthMessage').textContent='Le nombre de clubs doit être un entier compris entre 0 et 30.';return}
  const sport=nationalYouthSportPoints(),spend=Math.min(1000000,nationalYouthEligibleSpend(season)),investment=Math.min(2,Math.floor(spend/500000)),newMilestones=nationalYouthFifaPoints(rankValue),before=nationalYouthData.rating,totalPoints=sport.applied+investment+newMilestones.length,after=Math.min(200,before+totalPoints);
  const record={season,rank:rankValue,sportRaw:sport.raw,sportPoints:sport.applied,eligibleSpend:spend,investmentPoints:investment,fifaPoints:newMilestones.length,newMilestones,before,after,totalPoints,date:new Date().toLocaleDateString('fr-FR')};
  nationalYouthData.rating=after;nationalYouthData.currentRank=rankValue;nationalYouthData.milestones=[...new Set([...nationalYouthData.milestones,...newMilestones])].sort((a,b)=>b-a);nationalYouthData.seasons.push(record);
