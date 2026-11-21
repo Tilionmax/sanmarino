@@ -269,11 +269,11 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 const firebaseConfig={apiKey:"AIzaSyDTqkbaLNKvd-Tk6shLosKtVQGyX_H_A-E",authDomain:"san-marino-af270.firebaseapp.com",projectId:"san-marino-af270",storageBucket:"san-marino-af270.firebasestorage.app",messagingSenderId:"1021748198186",appId:"1:1021748198186:web:1864b27053e8f1ba29fc53"};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id),esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const defaults={startDivision:'seried',rateEurope:5,rateSerieATitle:3,rateEuropeWinner:3,surplusThreshold:200000000,ratesByDivision:{lower:0,seried:2,seriec:5,serieb:8,seriea:10}};
-let currentUser=null,hiddenRuleIds=[],customRules=[],settings={...defaults},saveQueue=Promise.resolve(),editingRuleIndex=null,existingPayloadExtras={};
+let currentUser=null,hiddenRuleIds=[],customRules=[],settings={...defaults},saveQueue=Promise.resolve(),editingRuleIndex=null,existingPayloadExtras={},unsubscribeRules=null;
 const baseRules=[...document.querySelectorAll('.reg-card,.rate-tile')];
 
 const rulesChannel=('BroadcastChannel' in window)?new BroadcastChannel('sanmarino-rules-sync'):null;function publish(){const payload={settings:{...settings},hiddenRuleIds:[...hiddenRuleIds],customRules:[...customRules]};window.dispatchEvent(new CustomEvent('rules-config-updated',{detail:{...settings,hiddenRuleIds:[...hiddenRuleIds]}}));if(rulesChannel)rulesChannel.postMessage(payload);try{localStorage.setItem('sanmarino-rules-live',JSON.stringify({...payload,updatedAt:Date.now()}))}catch(e){}}
@@ -290,8 +290,27 @@ $('cancelRuleEdit').addEventListener('click',resetRuleForm);
 $('ruleAmount').addEventListener('input',()=>{const input=$('ruleAmount'),raw=input.value,pos=input.selectionStart??raw.length,digitsBefore=(raw.slice(0,pos).match(/\d/g)||[]).length,digits=raw.replace(/\D/g,'');const formatted=digits?new Intl.NumberFormat('fr-FR').format(Number(digits)):'';input.value=formatted;let newPos=0,count=0;while(newPos<formatted.length&&count<digitsBefore){if(/\d/.test(formatted[newPos]))count++;newPos++}input.setSelectionRange(newPos,newPos)});
 $('addRule').addEventListener('click',()=>{const title=$('ruleTitle').value.trim(),desc=$('ruleDesc').value.trim(),amount=Number($('ruleAmount').value.replace(/\D/g,''));if(!title||!desc||!Number.isFinite(amount)||amount<=0){alert('Renseigne le nom, la description et un coût supérieur à 0 €.');return}if(editingRuleIndex!==null){const old=customRules[editingRuleIndex];if(!old){resetRuleForm();return}customRules[editingRuleIndex]={...old,title,desc,amount};}else{customRules.push({id:'custom-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),title,desc,amount});}resetRuleForm();renderCustomRules();publish();persist()});
 bindSettings();
-onAuthStateChanged(auth,async user=>{currentUser=user||null;if(!user){$('rulesAccount').textContent='Non connecté';$('rulesNotice').textContent='Pour modifier et sauvegarder tes règles personnelles, connecte-toi sur la page principale puis reviens ici. Les règles par défaut restent consultables.';$('addRule').disabled=$('cancelRuleEdit').disabled=$('ruleTitle').disabled=$('ruleDesc').disabled=$('ruleAmount').disabled=true;Object.keys(defaults).forEach(k=>$(k).disabled=true);applyRules({});return}
+onAuthStateChanged(auth,async user=>{
+if(unsubscribeRules){unsubscribeRules();unsubscribeRules=null;}
+currentUser=user||null;
+if(!user){$('rulesAccount').textContent='Non connecté';$('rulesNotice').textContent='Pour modifier et sauvegarder tes règles personnelles, connecte-toi sur la page principale puis reviens ici. Les règles par défaut restent consultables.';$('addRule').disabled=$('cancelRuleEdit').disabled=$('ruleTitle').disabled=$('ruleDesc').disabled=$('ruleAmount').disabled=true;Object.keys(defaults).forEach(k=>$(k).disabled=true);applyRules({});return}
 $('rulesAccount').textContent='Compte : '+(user.displayName||user.email||'connecté');$('rulesNotice').textContent='Chargement de tes règles personnelles…';$('addRule').disabled=$('cancelRuleEdit').disabled=$('ruleTitle').disabled=$('ruleDesc').disabled=true;
-try{const ref=doc(db,'users',user.uid,'data','rules'),snap=await getDoc(ref);applyRules(snap.exists()?(snap.data().payload||{}):{});$('rulesNotice').textContent='Tes règles et paramètres sont sauvegardés automatiquement et restent propres à ton compte.';$('addRule').disabled=$('cancelRuleEdit').disabled=$('ruleTitle').disabled=$('ruleDesc').disabled=$('ruleAmount').disabled=false;Object.keys(defaults).forEach(k=>$(k).disabled=false)}catch(e){console.error(e);$('rulesNotice').textContent='Impossible de charger tes règles. Vérifie les autorisations Firestore et réessaie.'}
+try{
+const ref=doc(db,'users',user.uid,'data','rules');
+let firstSnapshot=true;
+unsubscribeRules=onSnapshot(ref,snap=>{
+const payload=snap.exists()?(snap.data().payload||{});
+applyRules(payload);
+if(firstSnapshot){
+firstSnapshot=false;
+$('rulesNotice').textContent='Tes règles et paramètres sont synchronisés en temps réel et sauvegardés automatiquement.';
+$('addRule').disabled=$('cancelRuleEdit').disabled=$('ruleTitle').disabled=$('ruleDesc').disabled=$('ruleAmount').disabled=false;
+Object.keys(defaults).forEach(k=>$(k).disabled=false);
+}
+},error=>{
+console.error(error);
+$('rulesNotice').textContent='Impossible de synchroniser tes règles. Vérifie ta connexion et les autorisations Firestore.';
+});
+}catch(e){console.error(e);$('rulesNotice').textContent='Impossible de charger tes règles. Vérifie les autorisations Firestore et réessaie.'}
 });
 </script></body></html>
