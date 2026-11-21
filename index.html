@@ -86,7 +86,7 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 .auth-error{min-height:20px;color:var(--red);font-size:13px;margin:10px 0}
 body:not(.authenticated) header,body:not(.authenticated) main,body:not(.authenticated) footer{display:none}
 body.authenticated #authGate{display:none}
-#logout{margin-left:auto}
+.account-name{display:inline-flex;align-items:center;padding:7px 12px;border:1px solid var(--teal);border-radius:999px;color:#8fecc9;font-weight:800;font-size:13px;background:#3c91951c;white-space:nowrap}.account-name::before{content:"👤";margin-right:7px}#logout{margin-left:auto}
 </style>
 </head>
 <body>
@@ -117,7 +117,7 @@ body.authenticated #authGate{display:none}
   </div>
 </div><header><div class="kicker">Projet de carrière Football Manager 2027</div><h1>San Marino Calcio</h1><p>Fonds de solidarité du football saint-marinais · Gestion financière et suivi de l'accord fictif avec la FSGC</p></header>
 <main>
-<div class="toolbar"><a class="button" href="reglement.html" style="text-decoration:none">📜 Consulter le règlement FSGC</a><div class="field" style="max-width:170px"><label for="season">Saison</label><input id="season" value="2026/2027"></div><button class="primary" id="save">Enregistrer</button><button id="export">Exporter les données</button><label class="button" style="margin:0">Importer JSON<input id="import" type="file" accept="application/json" hidden></label><button id="reset" class="danger">Réinitialiser</button><span id="saved" class="muted"></span><span id="cloudStatus" class="muted">Cloud : connexion requise</span><button id="logout" type="button">Déconnexion</button></div>
+<div class="toolbar"><a class="button" href="reglement.html" style="text-decoration:none">📜 Consulter le règlement FSGC</a><div class="field" style="max-width:170px"><label for="season">Saison</label><input id="season" value="2026/2027"></div><button class="primary" id="save">Enregistrer</button><button id="export">Exporter les données</button><label class="button" style="margin:0">Importer JSON<input id="import" type="file" accept="application/json" hidden></label><button id="reset" class="danger">Réinitialiser</button><span id="saved" class="muted"></span><span id="accountName" class="account-name" hidden></span><span id="cloudStatus" class="muted">Cloud : connexion requise</span><button id="logout" type="button">Déconnexion</button></div>
 <div class="stats">
 <div class="stat"><small>Revenus bruts</small><strong id="total" class="money">0 €</strong></div>
 <div class="stat"><small>Taux de contribution</small><strong id="rate">0 %</strong></div>
@@ -188,6 +188,7 @@ const loginButton = document.getElementById("loginButton");
 const registerButton = document.getElementById("registerButton");
 const loginError = document.getElementById("loginError");
 const cloudStatus = document.getElementById("cloudStatus");
+const accountName = document.getElementById("accountName");
 const showLogin = document.getElementById("showLogin");
 const showRegister = document.getElementById("showRegister");
 
@@ -253,6 +254,8 @@ registerForm.addEventListener("submit", async (event) => {
   try {
     const credential = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(credential.user, { displayName: pseudo });
+    accountName.textContent = pseudo;
+    accountName.hidden = false;
   } catch (error) {
     const messages = {
       "auth/email-already-in-use": "Cette adresse e-mail possède déjà un compte. Connecte-toi plutôt.",
@@ -313,9 +316,14 @@ onAuthStateChanged(auth, async (user) => {
   currentRef = null;
   document.body.classList.remove("authenticated");
   if (!user) {
+    accountName.hidden = true;
+    accountName.textContent = "";
     cloudStatus.textContent = "Cloud : déconnecté";
     return;
   }
+
+  accountName.textContent = user.displayName || "Mon espace";
+  accountName.hidden = false;
 
   cloudStatus.textContent = "Cloud : chargement des données…";
   isLoading = true;
