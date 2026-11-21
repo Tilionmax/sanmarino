@@ -293,7 +293,7 @@ bindSettings();
 onAuthStateChanged(auth,async user=>{
 if(unsubscribeRules){unsubscribeRules();unsubscribeRules=null;}
 currentUser=user||null;
-if(!user){$('rulesAccount').textContent='Non connecté';$('rulesNotice').textContent='Pour modifier et sauvegarder tes règles personnelles, connecte-toi sur la page principale puis reviens ici. Les règles par défaut restent consultables.';$('addRule').disabled=$('cancelRuleEdit').disabled=$('ruleTitle').disabled=$('ruleDesc').disabled=$('ruleAmount').disabled=true;Object.keys(defaults).forEach(k=>$(k).disabled=true);applyRules({});return}
+if(!user){$('rulesAccount').textContent='Non connecté';$('rulesNotice').textContent='Tu peux modifier les paramètres financiers ci-dessous : les changements se répercutent immédiatement dans le règlement. Connecte-toi depuis la page principale pour les sauvegarder sur ton compte.';$('addRule').disabled=$('cancelRuleEdit').disabled=$('ruleTitle').disabled=$('ruleDesc').disabled=$('ruleAmount').disabled=true;Object.keys(defaults).forEach(k=>$(k).disabled=false);applyRules({});return}
 $('rulesAccount').textContent='Compte : '+(user.displayName||user.email||'connecté');$('rulesNotice').textContent='Chargement de tes règles personnelles…';$('addRule').disabled=$('cancelRuleEdit').disabled=$('ruleTitle').disabled=$('ruleDesc').disabled=true;
 try{
 const ref=doc(db,'users',user.uid,'data','rules');
