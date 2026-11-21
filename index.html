@@ -358,12 +358,30 @@ $('closeNationalYouthSeason').addEventListener('click',()=>{
  persistNationalYouthData();renderNationalYouth();$('nationalYouthMessage').textContent='Saison '+season+' clôturée : +'+totalPoints+' points. Note nationale : '+before+'/200 → '+after+'/200.';
 });
 
-$('managementView').addEventListener('change',()=>{
+$('managementView').addEventListener('change',async()=>{
   const view=$('managementView').value;
   $('dashboardView').hidden=view!=='dashboard';
   $('clubsView').hidden=view!=='clubs';
   $('nationalYouthView').hidden=view!=='nationalYouth';
   window.scrollTo({top:0,behavior:'smooth'});
+  if(view==='nationalYouth'){
+    $('nationalYouthMessage').textContent='Actualisation des données…';
+    try{
+      if(rulesRef){
+        const latestRules=await getDoc(rulesRef);
+        if(latestRules.exists()){
+          const payload=latestRules.data().payload||{};
+          applyPromotionData(payload);
+        }
+      }
+      renderNationalYouth();
+      updateNationalYouthPreview();
+      $('nationalYouthMessage').textContent='Données actualisées automatiquement depuis le cloud.';
+    }catch(error){
+      console.error('National youth refresh error:',error);
+      $('nationalYouthMessage').textContent='Impossible d’actualiser les données depuis le cloud. Les dernières données chargées restent affichées.';
+    }
+  }
 });
 $('promotionClubList').addEventListener('change',event=>{
   const input=event.target;
