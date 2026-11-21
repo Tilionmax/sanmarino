@@ -6,6 +6,11 @@
 <style>
 :root{--bg:#07111f;--panel:#101e30;--panel2:#15263a;--line:#263b52;--text:#edf4fb;--muted:#9db0c4;--teal:#39c6bd;--gold:#e5b85c;--red:#ff7777}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#153149 0,transparent 35%),var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,Segoe UI,sans-serif}
+.dashboard-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:15px;align-items:start}
+.dashboard-left{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;align-items:start}
+.bank-panel{min-width:0}.bank-forms{grid-template-columns:1fr}
+@media(max-width:1000px){.dashboard-layout{grid-template-columns:1fr}.bank-forms{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.dashboard-left{grid-template-columns:1fr}.bank-forms{grid-template-columns:1fr}}
 header{padding:30px max(20px,calc((100% - 1180px)/2));border-bottom:1px solid var(--line);background:#081523cc}
 .kicker{color:var(--teal);font-weight:800;letter-spacing:.16em;font-size:11px;text-transform:uppercase}
 h1{font-size:clamp(27px,4vw,42px);line-height:1.1;margin:8px 0}header p{color:var(--muted);margin:8px 0 0}
@@ -72,7 +77,7 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 <body>
 <header><div class="kicker">Projet de carrière Football Manager 2027</div><h1>San Marino Calcio</h1><p>Fonds de solidarité du football saint-marinais · Gestion financière et suivi de l'accord fictif avec la FSGC</p></header>
 <main>
-<div class="toolbar"><div class="field" style="max-width:170px"><label for="season">Saison</label><input id="season" value="2026/2027"></div><button class="primary" id="save">Enregistrer</button><button id="export">Exporter les données</button><label class="button" style="margin:0">Importer JSON<input id="import" type="file" accept="application/json" hidden></label><button id="reset" class="danger">Réinitialiser</button><span id="saved" class="muted"></span></div>
+<div class="toolbar"><a class="button" href="reglement.html" style="text-decoration:none">📜 Consulter le règlement FSGC</a><div class="field" style="max-width:170px"><label for="season">Saison</label><input id="season" value="2026/2027"></div><button class="primary" id="save">Enregistrer</button><button id="export">Exporter les données</button><label class="button" style="margin:0">Importer JSON<input id="import" type="file" accept="application/json" hidden></label><button id="reset" class="danger">Réinitialiser</button><span id="saved" class="muted"></span></div>
 <div class="stats">
 <div class="stat"><small>Revenus bruts</small><strong id="total" class="money">0 €</strong></div>
 <div class="stat"><small>Taux de contribution</small><strong id="rate">0 %</strong></div>
@@ -81,7 +86,7 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 </div>
 <div class="grid">
 <section class="card span-6"><h2>01 · Situation sportive</h2><p class="muted" style="font-size:12px;margin-top:-8px">Les montants s’affichent avec des espaces pour séparer les milliers : 1 000 · 1 000 000 · 20 000 000 · 200 000 000.</p><div class="field"><label for="division">Division du club</label><select id="division"><option value="lower">Hors Serie A (Serie B, C et divisions inférieures)</option><option value="seriea">Serie A</option></select></div><div class="field" style="margin-top:14px"><label for="europe">Participation à une coupe d'Europe cette saison ?</label><select id="europe"><option value="no">Non</option><option value="yes">Oui</option></select></div><div class="field" style="margin-top:14px"><label for="balance">Solde total de San Marino Calcio avant versement (€)</label><input id="balance" class="amount" inputmode="decimal" value="0" autocomplete="off"></div><div class="notice">Règle du scénario : 0 % hors Serie A ; 10 % en Serie A ; 15 % en Serie A avec participation à une coupe d'Europe. Le solde disponible ne peut jamais devenir négatif après versement.</div></section>
-<section class="card span-6"><h2>02 · Revenus bruts de la saison</h2>
+<section class="card"><h2>02 · Revenus bruts de la saison</h2>
 <div class="field">
 <label for="revenueTotal">Revenu brut total de la saison (€)</label>
 <input class="rev amount" id="revenueTotal" inputmode="decimal" value="0" autocomplete="off">
@@ -90,102 +95,7 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 </section>
 
 <section class="card span-12" id="bankAccount"><h2>04 · Compte bancaire du fonds FSGC</h2><p class="muted" style="margin-top:-8px">Les versements annuels s'accumulent sur le compte. Chaque aide accordée à un club est enregistrée comme une dépense et diminue le solde disponible.</p><div class="bank-head"><div class="bank-balance"><small>Solde actuel du fonds</small><strong id="fundBalance">0 €</strong></div><div class="bank-stat"><small>Total des versements reçus</small><strong id="fundCredits" class="money">0 €</strong></div><div class="bank-stat"><small>Total des dépenses</small><strong id="fundDebits" class="gold">0 €</strong></div></div><div class="bank-forms"><div class="bank-form"><h3>＋ Enregistrer le versement de la saison</h3><p class="muted" style="font-size:12px">Ajoute au compte la contribution calculée dans les sections précédentes. Un seul versement par saison.</p><div class="field"><label>Contribution calculée pour cette saison</label><input id="depositPreview" readonly value="0 €"></div><button class="primary" id="recordDeposit" style="width:100%">Verser la contribution au fonds</button><div id="depositMessage" class="bank-hint">Le versement est ajouté uniquement après ton clic.</div></div><div class="bank-form"><h3>－ Enregistrer une dépense</h3><div class="field"><label for="expenseSeason">Saison</label><input id="expenseSeason" placeholder="2026/2027"></div><div class="field"><label for="expenseClub">Club bénéficiaire</label><input id="expenseClub" placeholder="Nom du club saint-marinais"></div><div class="field"><label for="expenseType">Type d'amélioration</label><select id="expenseType"><option>Encadrement des jeunes</option><option>Recrutement de jeunes</option><option>Autre aide au club</option></select></div><div class="field"><label for="expenseDescription">Détail / nombre de points (facultatif)</label><input id="expenseDescription" placeholder="Ex. +1 point d'encadrement"></div><div class="field"><label for="expenseAmount">Montant dépensé (€)</label><input id="expenseAmount" class="amount" inputmode="decimal" placeholder="400 000" autocomplete="off"></div><button class="primary" id="recordExpense" style="width:100%">Enregistrer la dépense</button><div id="expenseMessage" class="bank-hint">Impossible de dépenser plus que le solde disponible.</div></div></div><h3>Historique des opérations</h3><div id="ledgerHistory"><div class="ledger-empty">Aucune opération enregistrée pour le moment.</div></div></section>
-<section class="card span-12"><h2>05 · Règlement de l'accord</h2><div class="reg-intro">
-  <span class="reg-eyebrow">Accord FSGC · San Marino Calcio</span>
-  <p>Les engagements du club et de la Fédération, réunis au même endroit. Les montants ci-dessous s'appliquent au scénario fictif de ta carrière.</p>
-</div>
-
-<div class="reg-block">
-  <div class="reg-heading"><div><span class="reg-number">01</span><h3>Cadre sportif</h3></div><span class="reg-tag">L'accord de départ</span></div>
-  <div class="reg-grid two">
-    <article class="reg-card">
-      <span class="reg-icon">⚽</span>
-      <h4>Une place dans le football italien</h4>
-      <p>La FSGC autorise San Marino Calcio à évoluer dans les championnats italiens, au sein de la pyramide du football italien.</p>
-    </article>
-    <article class="reg-card">
-      <span class="reg-icon">🏟️</span>
-      <h4>Le football national est préservé</h4>
-      <p>Les autres clubs de Saint-Marin continuent de participer à leur championnat national. L'intégration de San Marino Calcio en Italie ne remplace pas la compétition locale.</p>
-    </article>
-  </div>
-</div>
-
-<div class="reg-block">
-  <div class="reg-heading"><div><span class="reg-number">02</span><h3>Contribution au fonds de solidarité</h3></div><span class="reg-tag">Calcul sur les revenus bruts</span></div>
-  <div class="rate-grid">
-    <article class="rate-tile">
-      <span class="rate-context">Hors Serie A</span>
-      <strong class="rate-value">0 <small>%</small></strong>
-      <p>Serie B, Serie C et toutes les divisions inférieures.</p>
-    </article>
-    <article class="rate-tile">
-      <span class="rate-context">En Serie A</span>
-      <strong class="rate-value">10 <small>%</small></strong>
-      <p>Contribution dès que San Marino Calcio évolue en Serie A.</p>
-    </article>
-    <article class="rate-tile featured">
-      <span class="rate-context">Serie A + Europe</span>
-      <strong class="rate-value">15 <small>%</small></strong>
-      <p>10 % de base, plus 5 points en cas de participation européenne.</p>
-    </article>
-  </div>
-  <div class="reg-grid two">
-    <article class="reg-card">
-      <span class="reg-icon">📊</span>
-      <h4>Une assiette basée sur le brut</h4>
-      <p>La contribution est calculée sur l'ensemble des revenus bruts : droits TV, sponsoring, billetterie, primes, merchandising et autres recettes. Aucun salaire, transfert ou autre frais n'est déduit.</p>
-    </article>
-    <article class="reg-card">
-      <span class="reg-icon">🤝</span>
-      <h4>La FSGC redistribue les sommes</h4>
-      <p>Le fonds est versé à la FSGC afin de soutenir les clubs du football saint-marinais. Les modalités détaillées de redistribution restent à définir.</p>
-    </article>
-  </div>
-</div>
-
-<div class="reg-block">
-  <div class="reg-heading"><div><span class="reg-number">03</span><h3>Engagement de la FSGC à chaque promotion</h3></div><span class="reg-tag federation">Pris en charge par la Fédération</span></div>
-  <article class="reg-card highlight">
-    <div class="reg-highlight-top"><span class="reg-icon">🎓</span><span class="free-label">Sans frais pour San Marino Calcio</span></div>
-    <h4>Un point de progression offert à un club saint-marinais</h4>
-    <p>À chaque fois que San Marino Calcio gagne une division, la FSGC finance <strong>+1 point</strong> sur l'une des deux caractéristiques suivantes, au choix, pour un club de Saint-Marin :</p>
-    <div class="choice-pills"><span>Recrutement de jeunes</span><span>Encadrement des jeunes</span></div>
-    <p class="reg-footnote">Cette amélioration est financée par la Fédération. San Marino Calcio ne verse aucune compensation.</p>
-  </article>
-</div>
-
-<div class="reg-block">
-  <div class="reg-heading"><div><span class="reg-number">04</span><h3>Trésorerie et investissements</h3></div><span class="reg-tag">Règles financières</span></div>
-  <div class="reg-grid two">
-    <article class="reg-card financial">
-      <span class="reg-icon">🛡️</span>
-      <h4>Le solde ne peut jamais devenir négatif</h4>
-      <p>Le versement total au fonds est limité au solde disponible de San Marino Calcio. Après contribution, la trésorerie du club ne peut donc jamais être inférieure à zéro.</p>
-      <div class="rule-metric">Plancher de trésorerie <strong>0 €</strong></div>
-    </article>
-    <article class="reg-card financial">
-      <span class="reg-icon">💰</span>
-      <h4>Tout excédent au-dessus de 200 M€ est reversé</h4>
-      <p>La totalité de la partie du solde qui dépasse le seuil de 200 millions d'euros est ajoutée à la contribution calculée sur les revenus bruts. Le versement total reste plafonné au solde disponible.</p>
-      <div class="rule-metric">Seuil conservé par le club <strong>200 000 000 €</strong></div>
-    </article>
-    <article class="reg-card investment">
-      <span class="reg-icon">📈</span>
-      <h4>Améliorations volontaires à la charge du club</h4>
-      <p>San Marino Calcio peut financer des points supplémentaires pour un club saint-marinais. Chaque caractéristique est facturée séparément :</p>
-      <div class="price-lines">
-        <div><span>Encadrement des jeunes · +1 point</span><strong>400 000 €</strong></div>
-        <div><span>Recrutement de jeunes · +1 point</span><strong>400 000 €</strong></div>
-        <div class="price-total"><span>Les deux · +1 point chacune</span><strong>800 000 €</strong></div>
-      </div>
-      <p class="reg-footnote">Ces améliorations volontaires sont distinctes du bonus gratuit accordé par la FSGC à chaque promotion.</p>
-    </article>
-  </div>
-</div>
-<div class="custom-rules-heading"><h3>Règles complémentaires</h3><p>Ajoute ici toute nouvelle clause décidée pour l'accord.</p></div>
-<h3 style="margin-top:20px">Ajouter une règle personnalisée</h3><div class="grid"><div class="field span-4"><label>Titre de la règle</label><input id="ruleTitle" placeholder="Ex. Prime de formation"></div><div class="field span-6"><label>Description</label><input id="ruleDesc" placeholder="Décris la règle à ajouter"></div><div class="field span-2"><button id="addRule" class="primary" style="width:100%">Ajouter</button></div></div><div id="customRules"></div>
-</section></div></main><footer>Outil de gestion d'un scénario fictif de carrière · Les règles affichées ne constituent pas un accord réel avec la FSGC.</footer>
+</div></main><footer>Outil de gestion d'un scénario fictif de carrière · Les règles affichées ne constituent pas un accord réel avec la FSGC.</footer>
 <script>
 const $=id=>document.getElementById(id), euro=n=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n||0);
 function parseAmount(value){const cleaned=String(value??'').replaceAll(' ','').replaceAll(String.fromCharCode(160),'').replaceAll(String.fromCharCode(8239),'').replace(',','.').replace(/[^0-9.-]/g,'');const n=Number(cleaned);return Number.isFinite(n)?n:0}
@@ -194,12 +104,11 @@ function setupAmountFields(){document.querySelectorAll('.amount').forEach(input=
 let clubs=[{name:'',share:100}],customRules=[],transactions=[];
 function rate(){return $('division').value==='seriea'?($('europe').value==='yes'?15:10):0}
 function revenues(){return [...document.querySelectorAll('.rev')].reduce((s,e)=>s+Math.max(0,parseAmount(e.value)),0)}
-function renderClubs(){ $('clubs').innerHTML=''; clubs.forEach((c,i)=>{const d=document.createElement('div');d.className='club';d.innerHTML='<input aria-label="Nom du club" placeholder="Nom du club bénéficiaire" value="'+esc(c.name)+'"><input aria-label="Part en pourcentage" type="number" min="0" max="100" step="0.1" value="'+c.share+'"><span class="muted" id="clubAmount'+i+'">—</span><button title="Supprimer" aria-label="Supprimer">×</button>';const ins=d.querySelectorAll('input');ins[0].addEventListener('input',e=>{clubs[i].name=e.target.value;update()});ins[1].addEventListener('input',e=>{clubs[i].share=Math.max(0,Number(e.target.value)||0);update()});d.querySelector('button').addEventListener('click',()=>{clubs.splice(i,1);renderClubs();update()});$('clubs').append(d)});update()}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 let currentContribution=0;
-function update(){const total=revenues(),r=rate(),baseTax=total*r/100,balance=Math.max(0,parseAmount($('balance').value)),surplus=Math.max(0,balance-200000000),requested=baseTax+surplus,tax=Math.min(balance,requested),parts=clubs.reduce((s,c)=>s+c.share,0);currentContribution=tax;if($('depositPreview'))$('depositPreview').value=euro(tax);$('total').textContent=euro(total);$('rate').textContent=r+' %';$('tax').textContent=euro(tax);$('remaining').textContent=euro(balance-tax);let valid=Math.abs(parts-100)<.001;$('splitWarning').hidden=valid||clubs.length===0;$('splitWarning').textContent='La somme des parts est de '+parts.toFixed(1)+' %. Elle doit être égale à 100 % pour répartir intégralement le fonds.';let out='';clubs.forEach((c,i)=>{let amount=tax*c.share/100;$('clubAmount'+i).textContent=euro(amount);if(c.name.trim())out+='<div class="rule"><strong>'+esc(c.name)+'</strong><span class="muted">'+c.share+' % · '+euro(amount)+'</span></div>'});$('payouts').innerHTML=out||'Aucun club bénéficiaire.'}
-function state(){return {season:$('season').value,division:$('division').value,europe:$('europe').value,balance:$('balance').value,revenue:Object.fromEntries([...document.querySelectorAll('.rev')].map(e=>[e.id,e.value])),clubs,customRules,transactions}}
-function apply(s){$('season').value=s.season||'2026/2027';$('division').value=s.division||'lower';$('europe').value=s.europe||'no';$('balance').value=s.balance??0;if(s.revenue){if(s.revenue.revenueTotal!==undefined){$('revenueTotal').value=s.revenue.revenueTotal}else{$('revenueTotal').value=Object.values(s.revenue).reduce((sum,v)=>sum+Math.max(0,parseAmount(v)),0)}}clubs=Array.isArray(s.clubs)?s.clubs:[{name:'',share:100}];customRules=Array.isArray(s.customRules)?s.customRules:[];transactions=Array.isArray(s.transactions)?s.transactions:[];renderClubs();renderRules();renderLedger();update()}
+function update(){const total=revenues(),r=rate(),baseTax=total*r/100,balance=Math.max(0,parseAmount($('balance').value)),surplus=Math.max(0,balance-200000000),requested=baseTax+surplus,tax=Math.min(balance,requested);currentContribution=tax;if($('depositPreview'))$('depositPreview').value=euro(tax);$('total').textContent=euro(total);$('rate').textContent=r+' %';$('tax').textContent=euro(tax);$('remaining').textContent=euro(balance-tax)}
+function state(){return {season:$('season').value,division:$('division').value,europe:$('europe').value,balance:$('balance').value,revenue:Object.fromEntries([...document.querySelectorAll('.rev')].map(e=>[e.id,e.value])),customRules,transactions}}
+function apply(s){$('season').value=s.season||'2026/2027';$('division').value=s.division||'lower';$('europe').value=s.europe||'no';$('balance').value=s.balance??0;if(s.revenue){if(s.revenue.revenueTotal!==undefined){$('revenueTotal').value=s.revenue.revenueTotal}else{$('revenueTotal').value=Object.values(s.revenue).reduce((sum,v)=>sum+Math.max(0,parseAmount(v)),0)}}customRules=Array.isArray(s.customRules)?s.customRules:[];transactions=Array.isArray(s.transactions)?s.transactions:[];renderLedger();update()}
 function fundTotals(){let credits=0,debits=0;transactions.forEach(t=>{if(t.kind==='credit')credits+=Math.max(0,Number(t.amount)||0);else if(t.kind==='debit')debits+=Math.max(0,Number(t.amount)||0)});return {credits,debits,balance:credits-debits}}
 function renderLedger(){const z=fundTotals();$('fundBalance').textContent=euro(z.balance);$('fundCredits').textContent=euro(z.credits);$('fundDebits').textContent=euro(z.debits);const rows=[...transactions].sort((a,b)=>(b.sortKey||'').localeCompare(a.sortKey||''));if(!rows.length){$('ledgerHistory').innerHTML='<div class="ledger-empty">Aucune opération enregistrée pour le moment.</div>';return}$('ledgerHistory').innerHTML='<div class="ledger-wrap"><table class="ledger"><thead><tr><th>Date</th><th>Saison</th><th>Opération</th><th>Club / motif</th><th>Montant</th><th></th></tr></thead><tbody>'+rows.map(t=>'<tr><td>'+esc(t.date||'')+'</td><td>'+esc(t.season||'')+'</td><td>'+(t.kind==='credit'?'Versement FSGC':'Dépense')+'</td><td>'+esc(t.club||t.description||'Contribution annuelle')+(t.type?' · '+esc(t.type):'')+'</td><td class="'+(t.kind==='credit'?'credit':'debit')+'">'+(t.kind==='credit'?'+':'−')+euro(t.amount)+'</td><td><button data-remove-transaction="'+esc(t.id)+'" class="danger">×</button></td></tr>').join('')+'</tbody></table></div>';$('ledgerHistory').querySelectorAll('[data-remove-transaction]').forEach(b=>b.onclick=()=>{if(confirm('Supprimer cette opération de l’historique ?')){transactions=transactions.filter(t=>t.id!==b.dataset.removeTransaction);renderLedger();save()}})}
 function recordDeposit(){const season=$('season').value.trim()||'Saison non précisée';if(transactions.some(t=>t.kind==='credit'&&t.season===season)){$('depositMessage').textContent='Un versement existe déjà pour la saison '+season+'. Supprime-le dans l’historique pour le remplacer.';return}if(currentContribution<=0){$('depositMessage').textContent='Aucun versement à enregistrer : la contribution calculée est de 0 €.';return}transactions.push({id:'tx-'+Date.now(),kind:'credit',season,amount:currentContribution,date:new Date().toLocaleDateString('fr-FR'),sortKey:String(Date.now()),description:'Contribution annuelle calculée'});renderLedger();save();$('depositMessage').textContent='Versement de '+euro(currentContribution)+' ajouté au compte pour '+season+'.'}
@@ -208,10 +117,9 @@ function recordExpense(){const season=$('expenseSeason').value.trim()||$('season
 function save(){localStorage.setItem('sanmarino-fsgc',JSON.stringify(state()));$('saved').textContent='Sauvegardé dans ce navigateur';setTimeout(()=>$('saved').textContent='',2500)}
 function renderRules(){$('customRules').innerHTML=customRules.map((r,i)=>'<div class="rule"><strong>'+esc(r.title)+'</strong><span class="muted">'+esc(r.desc)+'</span> <button data-del="'+i+'" class="danger" style="float:right">Supprimer</button></div>').join('');$('customRules').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{customRules.splice(Number(b.dataset.del),1);renderRules();save()})}
 document.querySelectorAll('input,select').forEach(e=>e.addEventListener('input',update));$('division').onchange=update;$('europe').onchange=update;
-$('addClub').onclick=()=>{clubs.push({name:'',share:0});renderClubs()};$('equal').onclick=()=>{if(clubs.length){clubs.forEach(c=>c.share=Math.round(100/clubs.length*10)/10);clubs[clubs.length-1].share=+(100-clubs.slice(0,-1).reduce((s,c)=>s+c.share,0)).toFixed(1);renderClubs()}};
 $('addRule').onclick=()=>{let title=$('ruleTitle').value.trim(),desc=$('ruleDesc').value.trim();if(!title||!desc){alert('Renseigne le titre et la description.');return}customRules.push({title,desc});$('ruleTitle').value='';$('ruleDesc').value='';renderRules();save()};
 $('recordDeposit').onclick=recordDeposit;$('recordExpense').onclick=recordExpense;$('season').addEventListener('input',()=>{$('expenseSeason').value=$('season').value;update()});$('save').onclick=save;$('export').onclick=()=>{let blob=new Blob([JSON.stringify(state(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='san-marino-'+($('season').value||'saison')+'.json';a.click();URL.revokeObjectURL(a.href)};
 $('import').onchange=async e=>{try{apply(JSON.parse(await e.target.files[0].text()));save()}catch(err){alert('Fichier JSON invalide.')}e.target.value=''};
 $('reset').onclick=()=>{if(confirm('Effacer les données enregistrées dans ce navigateur ?')){localStorage.removeItem('sanmarino-fsgc');location.reload()}};
-setupAmountFields();$('expenseSeason').value=$('season').value;try{let s=localStorage.getItem('sanmarino-fsgc');if(s)apply(JSON.parse(s));else{renderClubs();renderRules();renderLedger();update()}}catch(e){renderClubs();renderRules();renderLedger();update()}
+setupAmountFields();$('expenseSeason').value=$('season').value;try{let s=localStorage.getItem('sanmarino-fsgc');if(s)apply(JSON.parse(s));else{renderLedger();update()}}catch(e){renderLedger();update()}
 </script></body></html>
