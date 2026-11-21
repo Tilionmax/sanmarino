@@ -98,8 +98,8 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 .tile-flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}
 .tile-flow span{padding:7px 9px;border:1px solid var(--line);border-radius:9px;background:#091625;font-size:11px;font-weight:750}
 .tile-flow b{color:var(--teal)}
-@media(max-width:900px){.tile-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:600px){.tile-grid{grid-template-columns:1fr}.tile-value{font-size:28px}}
+.tile-grid.sport-grid{grid-template-columns:repeat(2,minmax(0,1fr))}@media(max-width:900px){.tile-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.tile-grid{grid-template-columns:1fr}.tile-grid.sport-grid{grid-template-columns:1fr}.tile-value{font-size:28px}}
 
 </style>
 </head>
@@ -113,7 +113,7 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 <div class="reg-block">
   <div class="reg-heading"><div><span class="reg-number">01</span><h3>Cadre sportif</h3></div><span class="reg-tag">L'accord de départ</span></div>
 
-  <div class="tile-grid">
+  <div class="tile-grid sport-grid">
     <article class="info-tile teal"><div class="tile-top"><span class="tile-icon">⚽</span><span class="tile-label">San Marino Calcio</span></div><div class="tile-title">Intégration au football italien</div><p class="tile-copy">San Marino Calcio est autorisé par la FSGC à évoluer dans les championnats italiens, au sein de leur pyramide.</p><div class="tile-note">Le club suit le système de divisions italien.</div></article>
     <article class="info-tile"><div class="tile-top"><span class="tile-icon">🏟️</span><span class="tile-label">Campionato</span></div><div class="tile-title">Le championnat national continue</div><p class="tile-copy">Les autres clubs saint-marinais conservent leur place dans leur championnat national.</p><div class="tile-note">L'arrivée de San Marino Calcio en Italie ne remplace pas la compétition locale.</div></article>
   </div>
