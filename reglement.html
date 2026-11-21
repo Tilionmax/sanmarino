@@ -312,7 +312,7 @@ try{
 const ref=doc(db,'users',user.uid,'data','rules');
 let firstSnapshot=true;
 unsubscribeRules=onSnapshot(ref,snap=>{
-const payload=snap.exists()?(snap.data().payload||{});
+const payload=snap.exists()?(snap.data().payload||{}):{};
 applyRules(payload);
 if(firstSnapshot){
 firstSnapshot=false;
