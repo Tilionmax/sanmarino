@@ -61,7 +61,7 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 .price-lines strong{white-space:nowrap;color:var(--gold);font-variant-numeric:tabular-nums}
 .price-lines .price-total{border:0;color:var(--text);font-weight:800}
 .price-lines .price-total strong{font-size:14px;color:var(--teal)}
-.reg-card.investment{grid-column:1/-1}.investment-subtitle{margin:18px 0 4px!important;padding-top:14px;border-top:1px solid var(--line);color:var(--teal)!important}.investment-lategame{margin-top:18px;padding:15px;border:1px solid #356d61;border-radius:12px;background:linear-gradient(145deg,#12322f,#102338)}.investment-lategame h4{margin:0!important;font-size:15px}.investment-lategame .price-lines{border-color:#315248}.investment-lategame .price-lines>div{border-color:#315248}.investment-rules{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#0b1928}.investment-rules h4{margin:0 0 8px!important}.investment-rules ul{margin:0;padding-left:19px;color:var(--muted);font-size:13px;line-height:1.65}.investment-rules li+li{margin-top:5px}
+.reg-card.investment{grid-column:1/-1}.investment-subtitle{margin:18px 0 4px!important;padding-top:14px;border-top:1px solid var(--line);color:var(--teal)!important}.investment-price-table{margin-top:12px;border:1px solid var(--line);border-radius:12px;overflow:hidden}.investment-price-header,.investment-price-row{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(110px,1fr) minmax(110px,1fr);align-items:center;gap:10px;padding:12px 14px}.investment-price-header{background:#172d40;color:var(--muted);font-size:12px;font-weight:800;text-align:center}.investment-price-header span:first-child{text-align:left}.investment-price-row{border-top:1px solid var(--line);background:#0b1928}.investment-price-row:nth-child(odd){background:#102033}.investment-price-row .investment-name{font-size:13px;font-weight:650}.investment-price-row strong{text-align:center;color:var(--gold);font-size:14px;font-variant-numeric:tabular-nums}@media(max-width:520px){.investment-price-header,.investment-price-row{grid-template-columns:minmax(115px,1.3fr) minmax(85px,1fr) minmax(85px,1fr);gap:6px;padding:10px 8px}.investment-price-header{font-size:10px}.investment-price-row .investment-name{font-size:11px}.investment-price-row strong{font-size:12px}}.investment-lategame{margin-top:18px;padding:15px;border:1px solid #356d61;border-radius:12px;background:linear-gradient(145deg,#12322f,#102338)}.investment-lategame h4{margin:0!important;font-size:15px}.investment-lategame .price-lines{border-color:#315248}.investment-lategame .price-lines>div{border-color:#315248}.investment-rules{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#0b1928}.investment-rules h4{margin:0 0 8px!important}.investment-rules ul{margin:0;padding-left:19px;color:var(--muted);font-size:13px;line-height:1.65}.investment-rules li+li{margin-top:5px}
 .custom-rules-heading{margin-top:25px;padding-top:20px;border-top:1px solid var(--line)}
 .custom-rules-heading p{margin:5px 0 12px;color:var(--muted);font-size:12px}
 #customRules .rule{padding:13px;margin-top:9px;border:1px solid var(--line);border-radius:11px;background:#0b1928}
@@ -150,15 +150,32 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
       <h4>Financement des améliorations par le fonds de solidarité</h4>
       <p>Le fonds peut financer les améliorations ci-dessous pour les clubs saint-marinais. Chaque point acheté est facturé selon le palier atteint après l'amélioration. Le montant est prélevé directement sur le solde du fonds.</p>
       <h4 class="investment-subtitle">Développement de la formation</h4>
-      <div class="price-lines">
-        <div><span>Formation des jeunes · paliers 1 à 10 · par point</span><strong>200 000 €</strong></div>
-        <div><span>Formation des jeunes · paliers 11 à 20 · par point</span><strong>300 000 €</strong></div>
-        <div><span>Encadrement des jeunes · paliers 1 à 10 · par point</span><strong>150 000 €</strong></div>
-        <div><span>Encadrement des jeunes · paliers 11 à 20 · par point</span><strong>250 000 €</strong></div>
-        <div><span>Recrutement des jeunes · paliers 1 à 10 · par point</span><strong>150 000 €</strong></div>
-        <div><span>Recrutement des jeunes · paliers 11 à 20 · par point</span><strong>250 000 €</strong></div>
-        <div><span>Installations d'entraînement · paliers 1 à 10 · par point</span><strong>200 000 €</strong></div>
-        <div><span>Installations d'entraînement · paliers 11 à 20 · par point</span><strong>300 000 €</strong></div>
+      <div class="investment-price-table">
+        <div class="investment-price-header">
+          <span>Amélioration</span>
+          <span>Palier 1 à 10</span>
+          <span>Au-delà de 10</span>
+        </div>
+        <div class="investment-price-row">
+          <span class="investment-name">Formation des jeunes</span>
+          <strong>200 000 €</strong>
+          <strong>300 000 €</strong>
+        </div>
+        <div class="investment-price-row">
+          <span class="investment-name">Encadrement des jeunes</span>
+          <strong>150 000 €</strong>
+          <strong>250 000 €</strong>
+        </div>
+        <div class="investment-price-row">
+          <span class="investment-name">Recrutement des jeunes</span>
+          <strong>150 000 €</strong>
+          <strong>250 000 €</strong>
+        </div>
+        <div class="investment-price-row">
+          <span class="investment-name">Installations d'entraînement</span>
+          <strong>200 000 €</strong>
+          <strong>300 000 €</strong>
+        </div>
       </div>
       <div class="investment-lategame">
         <div class="reg-highlight-top"><h4>🏟️ Late Game · Développement de la billetterie</h4><span class="free-label">Palier 10 requis</span></div>
