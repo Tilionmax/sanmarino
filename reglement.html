@@ -62,7 +62,7 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 .price-lines .price-total{border:0;color:var(--text);font-weight:800}
 .price-lines .price-total strong{font-size:14px;color:var(--teal)}
 .reg-card.investment{grid-column:1/-1}.investment-subtitle{margin:18px 0 4px!important;padding-top:14px;border-top:1px solid var(--line);color:var(--teal)!important}.investment-price-table{margin-top:12px;border:1px solid var(--line);border-radius:12px;overflow:hidden}.investment-price-header,.investment-price-row{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(110px,1fr) minmax(110px,1fr);align-items:center;gap:10px;padding:12px 14px}.investment-price-header{background:#172d40;color:var(--muted);font-size:12px;font-weight:800;text-align:center}.investment-price-header span:first-child{text-align:left}.investment-price-row{border-top:1px solid var(--line);background:#0b1928}.investment-price-row:nth-child(odd){background:#102033}.investment-price-row .investment-name{font-size:13px;font-weight:650}.investment-price-row strong{text-align:center;color:var(--gold);font-size:14px;font-variant-numeric:tabular-nums}@media(max-width:520px){.investment-price-header,.investment-price-row{grid-template-columns:minmax(115px,1.3fr) minmax(85px,1fr) minmax(85px,1fr);gap:6px;padding:10px 8px}.investment-price-header{font-size:10px}.investment-price-row .investment-name{font-size:11px}.investment-price-row strong{font-size:12px}}.investment-lategame{margin-top:18px;padding:15px;border:1px solid #356d61;border-radius:12px;background:linear-gradient(145deg,#12322f,#102338)}.investment-lategame h4{margin:0!important;font-size:15px}.investment-lategame .price-lines{border-color:#315248}.investment-lategame .price-lines>div{border-color:#315248}.investment-rules{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#0b1928}.investment-rules h4{margin:0 0 8px!important}.investment-rules ul{margin:0;padding-left:19px;color:var(--muted);font-size:13px;line-height:1.65}.investment-rules li+li{margin-top:5px}
-.custom-rules-heading{margin-top:25px;padding-top:20px;border-top:1px solid var(--line)}
+.allocation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.allocation-card{min-width:0;padding:17px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(145deg,#112237,#0c1a2a)}.allocation-priority{border-color:#356d61;background:linear-gradient(145deg,#12322f,#102338)}.allocation-rescue{border-color:#69542a;background:linear-gradient(145deg,#332b18,#172333)}.allocation-top{display:flex;justify-content:space-between;align-items:center;gap:8px}.allocation-index{font-size:10px;font-weight:900;letter-spacing:.1em;color:var(--teal)}.allocation-card h4{margin:12px 0 7px;font-size:16px}.allocation-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}.level-targets{display:grid;grid-template-columns:1fr auto;gap:7px 10px;margin-top:13px;padding:11px;border-radius:10px;background:#091625;font-size:12px}.level-targets span{color:var(--muted)}.level-targets strong{color:var(--gold);font-variant-numeric:tabular-nums}.big-rule{margin:13px 0 8px;color:var(--teal);font-size:38px;font-weight:900;line-height:1}.big-rule small{font-size:13px;font-weight:700;color:var(--muted)}.rescue-limits{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.rescue-limits div{padding:10px;border-radius:9px;background:#091625}.rescue-limits strong,.rescue-limits span{display:block}.rescue-limits strong{font-size:20px;color:var(--gold)}.rescue-limits span{font-size:11px;color:var(--muted);line-height:1.35}.allocation-foot{margin-top:13px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;font-weight:650;color:#b8f0d5;line-height:1.45}@media(max-width:760px){.allocation-grid{grid-template-columns:1fr}}.custom-rules-heading{margin-top:25px;padding-top:20px;border-top:1px solid var(--line)}
 .custom-rules-heading p{margin:5px 0 12px;color:var(--muted);font-size:12px}
 #customRules .rule{padding:13px;margin-top:9px;border:1px solid var(--line);border-radius:11px;background:#0b1928}
 #customRules .rule strong{margin-bottom:4px}
@@ -199,35 +199,32 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
       <p class="reg-footnote">Ces financements sont distincts du bonus gratuit accordé par la FSGC à chaque promotion. Ce bonus reste pris en charge directement par la Fédération et ne consomme pas l'enveloppe du fonds.</p>
     </article>
   </div>
-</div>
-</div>
-
 <div class="reg-block">
-  <div class="reg-heading"><div><span class="reg-number">05</span><h3>Règles de répartition du fonds</h3></div><span class="reg-tag federation">Priorités de redistribution</span></div>
-  <div class="reg-grid two">
-    <article class="reg-card">
-      <span class="reg-icon">🎓</span>
-      <h4>Priorité au développement des jeunes</h4>
-      <p>Tant qu'un club n'a pas atteint au minimum le <strong>palier 10/20 en Formation des jeunes, Encadrement des jeunes et Recrutement des jeunes</strong>, les financements du fonds sont prioritairement consacrés à ces trois domaines. Les achats Late Game ne sont ouverts qu'une fois les trois seuils atteints.</p>
+  <div class="reg-heading"><div><span class="reg-number">05</span><h3>Répartition du fonds de solidarité</h3></div><span class="reg-tag federation">Règles de redistribution</span></div>
+  <div class="allocation-grid">
+    <article class="allocation-card allocation-priority">
+      <div class="allocation-top"><span class="reg-icon">🎓</span><span class="allocation-index">01 · PRIORITÉ</span></div>
+      <h4>Les jeunes d'abord</h4>
+      <p>Le fonds finance en priorité les trois infrastructures jusqu'au seuil minimal requis :</p>
+      <div class="level-targets"><span>Formation des jeunes</span><strong>10/20</strong><span>Encadrement des jeunes</span><strong>10/20</strong><span>Recrutement des jeunes</span><strong>10/20</strong></div>
+      <div class="allocation-foot">Le Late Game est débloqué uniquement lorsque les trois seuils sont atteints.</div>
     </article>
-    <article class="reg-card">
-      <span class="reg-icon">⚖️</span>
-      <h4>Une répartition entre les clubs</h4>
-      <p>Le fonds doit bénéficier à plusieurs clubs éligibles et ne pas concentrer toute l'enveloppe sur un seul club. Chaque club peut recevoir au maximum <strong>deux améliorations financées par saison</strong>, toutes catégories confondues : développement des jeunes et Late Game.</p>
+    <article class="allocation-card">
+      <div class="allocation-top"><span class="reg-icon">⚖️</span><span class="allocation-index">02 · ÉQUITÉ</span></div>
+      <h4>Le fonds profite à tous</h4>
+      <div class="big-rule">2 <small>améliorations maximum</small></div>
+      <p>Par club et par saison, toutes améliorations confondues : formation des jeunes et Late Game.</p>
+      <div class="allocation-foot">L'enveloppe est répartie entre les clubs, pas concentrée sur un seul.</div>
     </article>
-    <article class="reg-card">
-      <span class="reg-icon">🛟</span>
-      <h4>Renflouement des clubs en difficulté</h4>
-      <p>Si un club du Campionato termine la saison avec une trésorerie négative, le fonds peut lui accorder une aide exceptionnelle pour ramener son solde à <strong>0 €</strong>. Cette aide est distincte des améliorations et ne compte pas dans la limite de deux améliorations par saison.</p>
-      <div class="rule-metric">Plafond par renflouement <strong>25 % du fonds</strong></div>
-    </article>
-    <article class="reg-card">
-      <span class="reg-icon">📅</span>
-      <h4>Fréquence de l'aide exceptionnelle</h4>
-      <p>Un même club ne peut bénéficier d'un renflouement qu'<strong>une fois tous les trois ans</strong>. Le montant versé ne peut jamais dépasser 25 % du solde disponible du fonds au moment du renflouement.</p>
+    <article class="allocation-card allocation-rescue">
+      <div class="allocation-top"><span class="reg-icon">🛟</span><span class="allocation-index">03 · AIDE EXCEPTIONNELLE</span></div>
+      <h4>Renflouement d'un club</h4>
+      <p>Un club du Campionato qui termine la saison dans le rouge peut recevoir une aide pour revenir à :</p>
+      <div class="big-rule">0 <small>€ de solde</small></div>
+      <div class="rescue-limits"><div><strong>1 fois</strong><span>tous les 3 ans par club</span></div><div><strong>25 %</strong><span>du fonds disponible maximum</span></div></div>
+      <div class="allocation-foot">Cette aide ne compte pas dans le quota des deux améliorations.</div>
     </article>
   </div>
-  <p class="reg-footnote">Le renflouement est plafonné au plus petit montant entre le déficit du club et 25 % du solde disponible du fonds. Si le déficit dépasse ce plafond, l'aide ne suffira pas à ramener entièrement le club à 0 €.</p>
 </div>
 </section><section class="card span-12 settings-panel"><div class="settings-title"><span class="settings-kicker">PERSONNALISATION</span><h2>Paramètres et gestion des règles</h2><p>Cette partie sert à modifier les règles affichées dans le bloc précédent. Tes réglages sont personnels et sauvegardés automatiquement.</p></div><div class="custom-rules-heading"><h3>Paramètres des règles financières</h3><p>Définis un taux distinct pour chaque division, un supplément de participation européenne et deux bonus conditionnels en cas de titre remporté. Les changements sont appliqués automatiquement aux calculs de la page principale.</p></div>
 <div class="settings-group">
