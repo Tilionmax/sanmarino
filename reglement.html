@@ -274,7 +274,7 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 <footer>Outil de gestion d'un scénario fictif de carrière · Les règles affichées ne constituent pas un accord réel avec la FSGC.</footer>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 const firebaseConfig={apiKey:"AIzaSyDTqkbaLNKvd-Tk6shLosKtVQGyX_H_A-E",authDomain:"san-marino-af270.firebaseapp.com",projectId:"san-marino-af270",storageBucket:"san-marino-af270.firebasestorage.app",messagingSenderId:"1021748198186",appId:"1:1021748198186:web:1864b27053e8f1ba29fc53"};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id),esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -295,6 +295,14 @@ $('cancelRuleEdit').addEventListener('click',resetRuleForm);
 $('ruleAmount').addEventListener('input',()=>{const input=$('ruleAmount'),raw=input.value,pos=input.selectionStart??raw.length,digitsBefore=(raw.slice(0,pos).match(/\d/g)||[]).length,digits=raw.replace(/\D/g,'');const formatted=digits?new Intl.NumberFormat('fr-FR').format(Number(digits)):'';input.value=formatted;let newPos=0,count=0;while(newPos<formatted.length&&count<digitsBefore){if(/\d/.test(formatted[newPos]))count++;newPos++}input.setSelectionRange(newPos,newPos)});
 $('addRule').addEventListener('click',()=>{const title=$('ruleTitle').value.trim(),desc=$('ruleDesc').value.trim(),amount=Number($('ruleAmount').value.replace(/\D/g,''));if(!title||!desc||!Number.isFinite(amount)||amount<=0){alert('Renseigne le nom, la description et un coût supérieur à 0 €.');return}if(editingRuleIndex!==null){const old=customRules[editingRuleIndex];if(!old){resetRuleForm();return}customRules[editingRuleIndex]={...old,title,desc,amount};}else{customRules.push({id:'custom-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),title,desc,amount});}resetRuleForm();renderCustomRules();publish();persist()});
 bindSettings();
+$('rulesAccount').textContent='Connexion à Firebase…';
+try {
+  await setPersistence(auth,browserLocalPersistence);
+} catch(error) {
+  console.error('Firebase persistence error:',error);
+  $('rulesAccount').textContent='Erreur de connexion Firebase';
+  $('rulesNotice').textContent='La session Firebase ne peut pas être initialisée sur cette page. Recharge la page et vérifie les paramètres du navigateur.';
+}
 onAuthStateChanged(auth,async user=>{
 if(unsubscribeRules){unsubscribeRules();unsubscribeRules=null;}
 currentUser=user||null;
