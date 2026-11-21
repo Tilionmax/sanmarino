@@ -257,12 +257,15 @@ let rulesPayloadCache = {};
 let promotionClubs = [];
 let promotionDraws = [];
 let promotionClubsInitialized = false;
+let promotionDataNeedsSave = false;
 const defaultPromotionClubs = [['AC Libertas',2],['FC Domagnano',2],['FC Fiorentino',2],['Folgore/Falciano',2],['Juvenes/Dogana',3],['La Fiorita',2],['Pennarossa Calcio',2],['San Giovanni',2],['San Marino Academy',7],['SC Faetano',2],['SP Cailungo',2],['SS Cosmos',2],['SS Murata',2],['SS Virtus',2],['Tre Fiori',2],['Tre Penne',2]].map(([name,level],i)=>({id:'default-club-'+(i+1),name,level,formationLevel:level,coachingLevel:0,recruitmentLevel:0,trainingLevel:0}));
 function sortedPromotionClubs(){return [...promotionClubs].sort((a,b)=>String(a.name).localeCompare(String(b.name),'fr',{sensitivity:'base'}))}
 window.pickRandomExpenseClub=function(){const names=promotionClubs.map(c=>String(c.name||'').trim()).filter(Boolean);if(!names.length)return null;return names[Math.floor(Math.random()*names.length)];};
 window.renderExpenseBeneficiaryOptions=function(){const select=document.getElementById('expenseClub');if(!select)return;const previous=select.value;const names=[...new Set(promotionClubs.map(c=>String(c.name||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}));select.innerHTML='<option value="">Sélectionner un club…</option>'+names.map(name=>'<option value="'+esc(name)+'">'+esc(name)+'</option>').join('');if(names.includes(previous))select.value=previous;};
 function persistPromotionData(){
-  if(!rulesRef||isLoading)return;
+  if(!rulesRef)return;
+  if(isLoading){promotionDataNeedsSave=true;return;}
+  promotionDataNeedsSave=false;
   const payload={...rulesPayloadCache,promotionClubs,promotionDraws,promotionClubsInitialized:true};
   rulesPayloadCache=payload;
   setDoc(rulesRef,{payload,updatedAt:serverTimestamp()},{merge:true}).then(()=>{cloudStatus.textContent='Cloud : clubs du Campionato synchronisés'}).catch(error=>{console.error('Promotion clubs save error:',error);$('promotionDrawStatus').textContent='Erreur de sauvegarde Firebase. Vérifie ta connexion.'});
@@ -276,7 +279,7 @@ function renderPromotionManager(){
 }
 function applyPromotionData(payload={}){
   rulesPayloadCache=payload||{};
-  promotionClubs=Array.isArray(payload.promotionClubs)?payload.promotionClubs:[];promotionClubs.forEach(club=>{club.formationLevel=Number(club.formationLevel??club.level)||0;club.level=club.formationLevel;club.coachingLevel=Number(club.coachingLevel)||0;club.recruitmentLevel=Number(club.recruitmentLevel)||0;club.trainingLevel=Number(club.trainingLevel)||0;});
+  promotionClubs=Array.isArray(payload.promotionClubs)?payload.promotionClubs.filter(club=>club&&typeof club==='object'&&String(club.name||'').trim()):[];promotionClubs.forEach(club=>{club.name=String(club.name).trim();club.formationLevel=Number(club.formationLevel??club.level)||0;club.level=club.formationLevel;club.coachingLevel=Number(club.coachingLevel)||0;club.recruitmentLevel=Number(club.recruitmentLevel)||0;club.trainingLevel=Number(club.trainingLevel)||0;});
   promotionDraws=Array.isArray(payload.promotionDraws)?payload.promotionDraws:[];
   promotionClubsInitialized=!!payload.promotionClubsInitialized;
   if(!promotionClubs.length){promotionClubs=defaultPromotionClubs.map(c=>({...c}));promotionClubsInitialized=true;persistPromotionData();}
@@ -621,6 +624,7 @@ onAuthStateChanged(auth, async (user) => {
     currentRef = null;
   } finally {
     isLoading = false;
+    if(promotionDataNeedsSave)persistPromotionData();
   }
 });
 </script></body></html>
