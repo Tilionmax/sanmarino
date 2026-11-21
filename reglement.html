@@ -77,7 +77,31 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 .promotion-history-row:last-child{border-bottom:0}
 @media(max-width:760px){.promotion-add{grid-template-columns:1fr}.promotion-club-header{grid-template-columns:32px minmax(100px,1fr) 120px 34px}.promotion-club-row{grid-template-columns:32px minmax(100px,1fr) 120px 34px}.promotion-history-row{flex-direction:column;gap:3px}}
 @media(max-width:760px){.reg-grid.two,.rate-grid{grid-template-columns:1fr}.reg-card.investment{grid-column:auto}.reg-heading{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.span-8,.span-6,.span-4,.span-3{grid-column:span 12}.club{grid-template-columns:1fr 80px 100px 34px}.row{flex-direction:column;align-items:stretch}}
-.bank-head{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}.bank-balance,.bank-stat{padding:17px;border:1px solid var(--line);border-radius:14px;background:#0b1928}.bank-balance{background:linear-gradient(135deg,#123b38,#102638);border-color:#2d5d5a}.bank-balance small,.bank-stat small{display:block;color:var(--muted)}.bank-balance strong{display:block;font-size:clamp(22px,3vw,31px);margin-top:5px;color:#8ce2cb}.bank-stat strong{display:block;margin-top:5px;font-size:22px}.bank-forms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0}.bank-form{padding:16px;border:1px solid var(--line);border-radius:13px;background:#0b1928}.bank-form h3{margin-bottom:12px}.bank-form .field{margin:10px 0}.ledger{width:100%;border-collapse:collapse;font-size:13px}.ledger th,.ledger td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line)}.ledger th{color:var(--muted)}.ledger .credit{color:#8ce2cb;font-weight:800}.ledger .debit{color:#ff9999;font-weight:800}.ledger-empty,.bank-hint{padding:13px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}.bank-hint{margin-top:10px;text-align:left;background:#172b3a;border:0;font-size:12px}.ledger-wrap{overflow-x:auto}@media(max-width:760px){.bank-head,.bank-forms{grid-template-columns:1fr}.ledger{min-width:620px}}.base-rules-manager{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}.base-rule-toggle{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#0b1928;color:var(--text);font-size:13px}.base-rule-toggle input{width:auto;accent-color:var(--teal)}.rule-off{display:none!important}.card input[type=checkbox]{width:auto;accent-color:var(--teal)}#rulesNotice{margin:0 0 16px}@media(max-width:760px){.base-rules-manager{grid-template-columns:1fr}}.settings-panel{border-color:#3c9195;background:linear-gradient(145deg,#102b39,#0b1728);box-shadow:0 12px 32px rgba(0,0,0,.22)}.settings-title{padding:4px 2px 18px;margin-bottom:18px;border-bottom:1px solid #31515b}.settings-title h2{font-size:22px;margin:5px 0 7px}.settings-title p{margin:0;color:var(--muted);max-width:760px;line-height:1.55}.settings-kicker{font-size:11px;font-weight:900;letter-spacing:1.5px;color:var(--teal)}.settings-group{padding:18px;border:1px solid #31515b;border-radius:13px;background:rgba(5,15,27,.55);margin-top:12px}.settings-panel .custom-rules-heading{margin-top:22px}.rule-form-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-content:end}.rule-form-actions button{width:100%;min-width:0;min-height:48px;margin:0!important;padding:10px 9px;font-size:13px;line-height:1.25;white-space:normal;overflow-wrap:anywhere;text-align:center}.rule-form-actions #cancelRuleEdit{border-color:#52657a;background:#182b3e;color:var(--text)}@media(max-width:420px){.rule-form-actions{grid-template-columns:1fr}}</style>
+.bank-head{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}.bank-balance,.bank-stat{padding:17px;border:1px solid var(--line);border-radius:14px;background:#0b1928}.bank-balance{background:linear-gradient(135deg,#123b38,#102638);border-color:#2d5d5a}.bank-balance small,.bank-stat small{display:block;color:var(--muted)}.bank-balance strong{display:block;font-size:clamp(22px,3vw,31px);margin-top:5px;color:#8ce2cb}.bank-stat strong{display:block;margin-top:5px;font-size:22px}.bank-forms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0}.bank-form{padding:16px;border:1px solid var(--line);border-radius:13px;background:#0b1928}.bank-form h3{margin-bottom:12px}.bank-form .field{margin:10px 0}.ledger{width:100%;border-collapse:collapse;font-size:13px}.ledger th,.ledger td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line)}.ledger th{color:var(--muted)}.ledger .credit{color:#8ce2cb;font-weight:800}.ledger .debit{color:#ff9999;font-weight:800}.ledger-empty,.bank-hint{padding:13px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}.bank-hint{margin-top:10px;text-align:left;background:#172b3a;border:0;font-size:12px}.ledger-wrap{overflow-x:auto}@media(max-width:760px){.bank-head,.bank-forms{grid-template-columns:1fr}.ledger{min-width:620px}}.base-rules-manager{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}.base-rule-toggle{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#0b1928;color:var(--text);font-size:13px}.base-rule-toggle input{width:auto;accent-color:var(--teal)}.rule-off{display:none!important}.card input[type=checkbox]{width:auto;accent-color:var(--teal)}#rulesNotice{margin:0 0 16px}@media(max-width:760px){.base-rules-manager{grid-template-columns:1fr}}.settings-panel{border-color:#3c9195;background:linear-gradient(145deg,#102b39,#0b1728);box-shadow:0 12px 32px rgba(0,0,0,.22)}.settings-title{padding:4px 2px 18px;margin-bottom:18px;border-bottom:1px solid #31515b}.settings-title h2{font-size:22px;margin:5px 0 7px}.settings-title p{margin:0;color:var(--muted);max-width:760px;line-height:1.55}.settings-kicker{font-size:11px;font-weight:900;letter-spacing:1.5px;color:var(--teal)}.settings-group{padding:18px;border:1px solid #31515b;border-radius:13px;background:rgba(5,15,27,.55);margin-top:12px}.settings-panel .custom-rules-heading{margin-top:22px}.rule-form-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-content:end}.rule-form-actions button{width:100%;min-width:0;min-height:48px;margin:0!important;padding:10px 9px;font-size:13px;line-height:1.25;white-space:normal;overflow-wrap:anywhere;text-align:center}.rule-form-actions #cancelRuleEdit{border-color:#52657a;background:#182b3e;color:var(--text)}@media(max-width:420px){.rule-form-actions{grid-template-columns:1fr}}
+/* Présentation synthétique en tuiles */
+.tile-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.info-tile{min-width:0;padding:16px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(145deg,#112237,#0b1928)}
+.info-tile.teal{border-color:#356d61;background:linear-gradient(145deg,#12322f,#102338)}
+.info-tile.gold{border-color:#69542a;background:linear-gradient(145deg,#302918,#172333)}
+.tile-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.tile-icon{font-size:21px}
+.tile-label{font-size:10px;letter-spacing:.1em;font-weight:900;color:var(--teal);text-transform:uppercase}
+.tile-value{font-size:clamp(24px,3vw,34px);line-height:1.05;font-weight:900;color:var(--teal);margin:8px 0}
+.tile-value small{font-size:13px;color:var(--muted)}
+.tile-title{font-size:15px;font-weight:800;margin:5px 0 7px}
+.tile-copy{font-size:12px;line-height:1.5;color:var(--muted);margin:0}
+.tile-list{display:grid;gap:7px;margin-top:12px}
+.tile-list>div{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding-top:7px;border-top:1px solid var(--line);font-size:12px}
+.tile-list span{color:var(--muted)}
+.tile-list strong{color:var(--gold);text-align:right}
+.tile-note{margin-top:11px;padding:9px 10px;border-radius:9px;background:#091625;color:#b8f0d5;font-size:11px;line-height:1.45}
+.tile-flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+.tile-flow span{padding:7px 9px;border:1px solid var(--line);border-radius:9px;background:#091625;font-size:11px;font-weight:750}
+.tile-flow b{color:var(--teal)}
+@media(max-width:900px){.tile-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.tile-grid{grid-template-columns:1fr}.tile-value{font-size:28px}}
+
+</style>
 </head>
 <body>
 <header><div class="kicker">Projet de carrière Football Manager 2027</div><h1>Regle de base de la game d'AlexJV</h1><p>Règles du scénario San Marino Calcio · Chaque joueur peut adapter son propre règlement.</p></header>
@@ -88,20 +112,11 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 
 <div class="reg-block">
   <div class="reg-heading"><div><span class="reg-number">01</span><h3>Cadre sportif</h3></div><span class="reg-tag">L'accord de départ</span></div>
-  <div class="reg-grid two">
-    <article class="reg-card">
-      <span class="reg-icon">⚽</span>
-      <h4>Une place dans le football italien</h4>
-      <p>La FSGC autorise San Marino Calcio à évoluer dans les championnats italiens, au sein de la pyramide du football italien.</p>
-    </article>
-    <article class="reg-card">
-      <span class="reg-icon">🏟️</span>
-      <h4>Le football national est préservé</h4>
-      <p>Les autres clubs de Saint-Marin continuent de participer à leur championnat national. L'intégration de San Marino Calcio en Italie ne remplace pas la compétition locale.</p>
-    </article>
-  </div>
-</div>
 
+  <div class="tile-grid">
+    <article class="info-tile teal"><div class="tile-top"><span class="tile-icon">⚽</span><span class="tile-label">San Marino Calcio</span></div><div class="tile-title">Intégration au football italien</div><p class="tile-copy">San Marino Calcio est autorisé par la FSGC à évoluer dans les championnats italiens, au sein de leur pyramide.</p><div class="tile-note">Le club suit le système de divisions italien.</div></article>
+    <article class="info-tile"><div class="tile-top"><span class="tile-icon">🏟️</span><span class="tile-label">Campionato</span></div><div class="tile-title">Le championnat national continue</div><p class="tile-copy">Les autres clubs saint-marinais conservent leur place dans leur championnat national.</p><div class="tile-note">L'arrivée de San Marino Calcio en Italie ne remplace pas la compétition locale.</div></article>
+  </div>
 <div class="reg-block">
   <div class="reg-heading"><div><span class="reg-number">02</span><h3>Contribution au fonds de solidarité</h3></div><span class="reg-tag">Calcul sur les revenus bruts</span></div>
   <div class="rate-grid" id="gameContributionRates"></div>
@@ -121,85 +136,46 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 
 <div class="reg-block">
   <div class="reg-heading"><div><span class="reg-number">03</span><h3>Engagement de la FSGC à chaque promotion</h3></div><span class="reg-tag federation">Pris en charge par la Fédération</span></div>
-  <article class="reg-card highlight">
-    <div class="reg-highlight-top"><span class="reg-icon">🎓</span><span class="free-label">Financement intégral par la FSGC</span></div>
-    <h4>+1 niveau de Formation des jeunes (installations)</h4>
-    <p>À chaque promotion de San Marino Calcio, la FSGC attribue gratuitement <strong>+1 niveau de Formation des jeunes (installations)</strong> à un club du Campionato, choisi par tirage au sort. Le niveau maximum est fixé à <strong>20/20</strong>.</p>
-    <p class="reg-footnote">Cette amélioration est financée directement par la Fédération : aucun montant n'est prélevé sur le fonds de solidarité et aucune dépense n'est enregistrée dans sa comptabilité.</p>
-  </article>
-  
-</div>
 
+  <div class="tile-grid">
+    <article class="info-tile teal"><div class="tile-top"><span class="tile-icon">🎓</span><span class="tile-label">Bonus fédéral</span></div><div class="tile-value">+1 <small>niveau</small></div><div class="tile-title">Formation des jeunes (installations)</div><p class="tile-copy">À chaque promotion de San Marino Calcio, un club du Campionato reçoit gratuitement un niveau supplémentaire.</p></article>
+    <article class="info-tile"><div class="tile-top"><span class="tile-icon">🎲</span><span class="tile-label">Attribution</span></div><div class="tile-title">Un club tiré au sort</div><p class="tile-copy">Les clubs du Campionato sont classés par ordre alphabétique et un tirage au sort désigne le bénéficiaire.</p><div class="tile-note">Le niveau ne peut pas dépasser 20/20.</div></article>
+    <article class="info-tile gold"><div class="tile-top"><span class="tile-icon">💶</span><span class="tile-label">Coût pour le fonds</span></div><div class="tile-value">0 €</div><div class="tile-title">Financement direct FSGC</div><p class="tile-copy">La Fédération finance elle-même ce bonus. Aucun prélèvement sur le fonds de solidarité et aucune dépense à enregistrer.</p></article>
+  </div>
 <div class="reg-block">
   <div class="reg-heading"><div><span class="reg-number">04</span><h3>Trésorerie et investissements</h3></div><span class="reg-tag">Règles financières</span></div>
-  <div class="reg-grid two">
-    <article class="reg-card financial">
-      <span class="reg-icon">🛡️</span>
-      <h4>Le solde ne peut jamais devenir négatif</h4>
-      <p>Le montant total des deux prélèvements (contribution sur les revenus et reversement du surplus) ne peut pas dépasser la trésorerie actuelle du club. La trésorerie finale ne peut donc jamais devenir négative.</p>
-      <div class="rule-metric">Plancher de trésorerie <strong>0 €</strong></div>
-    </article>
-    <article class="reg-card financial">
-      <span class="reg-icon">💰</span>
-      <h4>Tout excédent au-dessus de 200 M€ est reversé</h4>
-      <p>Le calcul part du solde de fin de saison saisi avec les revenus bruts. La contribution calculée sur les revenus bruts selon la division et la participation à une coupe d'Europe est d'abord déduite automatiquement ; le solde restant est affiché dans la situation sportive. Ce solde est ensuite comparé au seuil : toute somme qui le dépasse est ajoutée au versement au fonds.</p>
-      <div class="rule-metric">Seuil conservé par le club <strong>200 000 000 €</strong></div>
-    </article>
-    <article class="reg-card investment">
-      <span class="reg-icon">📈</span>
-      <h4>Financement des améliorations par le fonds de solidarité</h4>
-      <p>Le fonds peut financer les améliorations ci-dessous pour les clubs saint-marinais. Chaque point acheté est facturé selon le palier atteint après l'amélioration. Le montant est prélevé directement sur le solde du fonds.</p>
-      <h4 class="investment-subtitle">Développement de la formation</h4>
-      <div class="investment-price-table">
-        <div class="investment-price-header">
-          <span>Amélioration</span>
-          <span>Palier 1 à 10</span>
-          <span>Au-delà de 10</span>
-        </div>
-        <div class="investment-price-row">
-          <span class="investment-name">Formation des jeunes</span>
-          <strong>200 000 €</strong>
-          <strong>300 000 €</strong>
-        </div>
-        <div class="investment-price-row">
-          <span class="investment-name">Encadrement des jeunes</span>
-          <strong>150 000 €</strong>
-          <strong>250 000 €</strong>
-        </div>
-        <div class="investment-price-row">
-          <span class="investment-name">Recrutement des jeunes</span>
-          <strong>150 000 €</strong>
-          <strong>250 000 €</strong>
-        </div>
-        <div class="investment-price-row">
-          <span class="investment-name">Installations d'entraînement</span>
-          <strong>200 000 €</strong>
-          <strong>300 000 €</strong>
-        </div>
-      </div>
-      <div class="investment-lategame">
-        <div class="reg-highlight-top"><h4>🏟️ Late Game · Développement de la billetterie</h4><span class="free-label">Palier 10 requis</span></div>
-        <p>Ces achats sont réservés aux clubs ayant atteint au minimum le <strong>palier 10 en Formation des jeunes</strong>, le <strong>palier 10 en Encadrement des jeunes</strong> et le <strong>palier 10 en Recrutement des jeunes</strong>.</p>
-        <div class="price-lines">
-          <div><span>Stade · +500 places</span><strong>250 000 €</strong></div>
-          <div><span>Affluence moyenne · +200 spectateurs</span><strong>250 000 €</strong></div>
-          <div><span>Prix des billets · +1 €</span><strong>200 000 €</strong></div>
-        </div>
-        <p class="reg-footnote">Les achats de billetterie sont soumis aux mêmes limites annuelles et aux mêmes règles de priorité que les autres améliorations financées par le fonds.</p>
-      </div>
-      <div class="investment-rules">
-        <h4>Limites et priorités d'attribution</h4>
-        <ul>
-          <li><strong>Deux améliorations maximum par club et par saison</strong>, toutes catégories confondues : développement de la formation et billetterie.</li>
-          <li>Pour la billetterie, seuls les clubs classés dans la <strong>première moitié du championnat</strong> sont éligibles. Un club situé dans la seconde moitié du classement ne peut pas en bénéficier.</li>
-          <li>Les clubs sont servis par ordre de classement : <strong>champion, 2e, 3e, puis les suivants</strong>, dans la limite des clubs éligibles.</li>
-          <li>Le financement reste limité au solde disponible du fonds de solidarité.</li>
-        </ul>
-      </div>
-      <p class="reg-footnote">Ces financements sont distincts du bonus gratuit accordé par la FSGC à chaque promotion. Ce bonus reste pris en charge directement par la Fédération et ne consomme pas l'enveloppe du fonds.</p>
-    </article>
+
+  <div class="tile-grid">
+    <article class="info-tile"><div class="tile-top"><span class="tile-icon">🛡️</span><span class="tile-label">Protection du club</span></div><div class="tile-value">0 € <small>minimum</small></div><div class="tile-title">Solde jamais négatif</div><p class="tile-copy">Les prélèvements cumulés sont plafonnés à la trésorerie actuelle du club.</p></article>
+    <article class="info-tile"><div class="tile-top"><span class="tile-icon">💰</span><span class="tile-label">Seuil de trésorerie</span></div><div class="tile-value">200 M€</div><div class="tile-title">Reversement du surplus</div><p class="tile-copy">Après déduction de la contribution sur les revenus bruts, tout solde restant au-dessus de 200 M€ est reversé au fonds.</p></article>
+    <article class="info-tile teal"><div class="tile-top"><span class="tile-icon">📊</span><span class="tile-label">Ordre de calcul</span></div><div class="tile-title">Deux étapes</div><div class="tile-flow"><span>Revenus bruts</span><b>→</b><span>Contribution</span><b>→</b><span>Surplus au-dessus de 200 M€</span></div><p class="tile-copy" style="margin-top:10px">Les dépenses du club ne sont pas déduites de l'assiette brute.</p></article>
   </div>
-</div>
+  <article class="info-tile investment" style="margin-top:12px">
+    <div class="tile-top"><span class="tile-icon">📈</span><span class="tile-label">Investissements financés par le fonds</span></div>
+    <div class="tile-title">Coût par point acheté</div>
+    <p class="tile-copy">Le coût dépend du palier atteint après l'amélioration. Le montant est débité du fonds de solidarité.</p>
+    <div class="investment-price-table">
+      <div class="investment-price-header"><span>Amélioration</span><span>Palier 1 à 10</span><span>Au-delà de 10</span></div>
+      <div class="investment-price-row"><span class="investment-name">Formation des jeunes</span><strong>200 000 €</strong><strong>300 000 €</strong></div>
+      <div class="investment-price-row"><span class="investment-name">Encadrement des jeunes</span><strong>150 000 €</strong><strong>250 000 €</strong></div>
+      <div class="investment-price-row"><span class="investment-name">Recrutement des jeunes</span><strong>150 000 €</strong><strong>250 000 €</strong></div>
+      <div class="investment-price-row"><span class="investment-name">Installations d'entraînement</span><strong>200 000 €</strong><strong>300 000 €</strong></div>
+    </div>
+    <div class="investment-lategame">
+      <div class="reg-highlight-top"><h4>🏟️ Late Game · Billetterie</h4><span class="free-label">3 prérequis à 10/20</span></div>
+      <div class="tile-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px">
+        <div class="info-tile"><div class="tile-value">+500</div><div class="tile-title">Places au stade</div><div class="tile-copy">250 000 €</div></div>
+        <div class="info-tile"><div class="tile-value">+200</div><div class="tile-title">Spectateurs moyens</div><div class="tile-copy">250 000 €</div></div>
+        <div class="info-tile"><div class="tile-value">+1 €</div><div class="tile-title">Prix du billet</div><div class="tile-copy">200 000 €</div></div>
+      </div>
+      <div class="tile-note">Accès réservé aux clubs ayant au moins 10/20 en Formation, Encadrement et Recrutement des jeunes.</div>
+    </div>
+  </article>
+  <div class="tile-grid" style="margin-top:12px">
+    <article class="info-tile gold"><div class="tile-top"><span class="tile-icon">⚖️</span><span class="tile-label">Limite annuelle</span></div><div class="tile-value">2 <small>points max.</small></div><div class="tile-title">Par club et par saison</div><p class="tile-copy">Toutes catégories confondues : améliorations de formation et Late Game. Chaque point acheté compte.</p></article>
+    <article class="info-tile"><div class="tile-top"><span class="tile-icon">🏆</span><span class="tile-label">Priorité Late Game</span></div><div class="tile-title">Classement obligatoire</div><p class="tile-copy">Seuls les clubs dans la première moitié du championnat sont éligibles. La priorité va au champion, puis au 2e, au 3e, etc.</p></article>
+    <article class="info-tile"><div class="tile-top"><span class="tile-icon">💶</span><span class="tile-label">Disponibilité</span></div><div class="tile-title">Selon le solde du fonds</div><p class="tile-copy">Les aides et améliorations restent limitées à l'argent réellement disponible dans le fonds.</p></article>
+  </div>
 <div class="reg-block">
   <div class="reg-heading"><div><span class="reg-number">05</span><h3>Répartition du fonds de solidarité</h3></div><span class="reg-tag federation">Règles de redistribution</span></div>
   <div class="allocation-grid">
@@ -261,33 +237,18 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 
 <div class="reg-block">
   <div class="reg-heading"><div><span class="reg-number">07</span><h3>Recrutement et nationalité des joueurs</h3></div><span class="reg-tag">Politique sportive</span></div>
-  <div class="reg-grid two">
-    <article class="reg-card">
-      <span class="reg-icon">🔎</span>
-      <h4>Transferts, prêts et joueurs libres</h4>
-      <p>Pour toute arrivée par transfert, prêt ou en tant que joueur libre, le joueur doit posséder la nationalité saint-marinaise en <strong>première ou en deuxième nationalité</strong>.</p>
-    </article>
-    <article class="reg-card">
-      <span class="reg-icon">🎓</span>
-      <h4>Joueurs issus du centre de formation</h4>
-      <p>Les joueurs formés au club peuvent être de <strong>n'importe quelle nationalité</strong>. Aucune restriction de nationalité ne s'applique à leur intégration dans les équipes de jeunes ou en équipe première.</p>
-    </article>
-    <article class="reg-card">
-      <span class="reg-icon">🇸🇲</span>
-      <h4>Naturalisation accordée par le jeu</h4>
-      <p>Toute naturalisation que Football Manager accorde naturellement est autorisée.</p>
-    </article>
-    <article class="reg-card highlight">
-      <div class="reg-highlight-top"><span class="reg-icon">📅</span><span class="free-label">Règle complémentaire</span></div>
-      <h4>Naturalisation après formation à Saint-Marin</h4>
-      <p>Un joueur formé au club peut obtenir la nationalité saint-marinaise dès qu'il remplit <strong>l'une</strong> des deux conditions suivantes :</p>
-      <div class="choice-pills"><span>5 années au club</span><span>100 matchs officiels</span></div>
-      <p><strong>Condition de durée :</strong> cinq années passées dans un club saint-marinais ou à San Marino Calcio. Le décompte commence à la date d'arrivée indiquée sur le profil du joueur, y compris lorsqu'il rejoint le club en équipe de jeunes. Par exemple, un joueur arrivé à 15 ans peut être naturalisé à 20 ans.</p>
-      <p style="margin-top:9px"><strong>Condition sportive :</strong> 100 matchs officiels disputés en équipe première avec un club saint-marinais ou San Marino Calcio.</p>
-      <p style="margin-top:9px"><strong>Prêts et départs :</strong> un prêt ne remet pas le compteur des cinq années à zéro. Les matchs disputés en prêt comptent dans les 100 rencontres uniquement si le club d'accueil est saint-marinais. En revanche, une vente met fin au décompte : en cas de retour ultérieur, le compteur repart à zéro à la nouvelle arrivée.</p>
-    </article>
+
+  <div class="tile-grid">
+    <article class="info-tile"><div class="tile-top"><span class="tile-icon">🔎</span><span class="tile-label">Recrutement externe</span></div><div class="tile-title">Transfert · Prêt · Joueur libre</div><div class="tile-value">🇸🇲 <small>obligatoire</small></div><p class="tile-copy">Le joueur doit avoir la nationalité saint-marinaise en première ou deuxième nationalité.</p></article>
+    <article class="info-tile teal"><div class="tile-top"><span class="tile-icon">🎓</span><span class="tile-label">Formation au club</span></div><div class="tile-title">Nationalité libre</div><div class="tile-value">Toutes <small>nationalités</small></div><p class="tile-copy">Un joueur issu du centre de formation peut être de n'importe quelle nationalité.</p></article>
+    <article class="info-tile"><div class="tile-top"><span class="tile-icon">🇸🇲</span><span class="tile-label">Naturalisation FM</span></div><div class="tile-title">Décision automatique du jeu</div><p class="tile-copy">Toute naturalisation accordée naturellement par Football Manager est autorisée.</p></article>
   </div>
-</div>
+  <div class="reg-heading" style="margin:18px 0 12px"><div><span class="reg-number">+</span><h3>Naturalisation supplémentaire</h3></div><span class="reg-tag federation">Une condition au choix</span></div>
+  <div class="tile-grid">
+    <article class="info-tile teal"><div class="tile-top"><span class="tile-icon">📅</span><span class="tile-label">Condition de durée</span></div><div class="tile-value">5 <small>ans</small></div><div class="tile-title">Dans un club saint-marinais</div><p class="tile-copy">Le compteur démarre à la date d'arrivée au club, même en équipe de jeunes. Exemple : arrivée à 15 ans, naturalisation possible à 20 ans.</p></article>
+    <article class="info-tile"><div class="tile-top"><span class="tile-icon">⚽</span><span class="tile-label">Condition sportive</span></div><div class="tile-value">100 <small>matchs</small></div><div class="tile-title">En équipe première</div><p class="tile-copy">100 matchs officiels avec un club saint-marinais ou San Marino Calcio.</p></article>
+    <article class="info-tile gold"><div class="tile-top"><span class="tile-icon">🔁</span><span class="tile-label">Prêts et départs</span></div><div class="tile-list"><div><span>Prêt</span><strong>Le compteur des 5 ans continue</strong></div><div><span>Matchs en prêt</span><strong>Comptent si club d'accueil saint-marinais</strong></div><div><span>Vente</span><strong>Compteur remis à zéro au retour</strong></div></div></article>
+  </div>
 </section><section class="card span-12 settings-panel"><div class="settings-title"><span class="settings-kicker">PERSONNALISATION</span><h2>Paramètres et gestion des règles</h2><p>Cette partie sert à modifier les règles affichées dans le bloc précédent. Tes réglages sont personnels et sauvegardés automatiquement.</p></div><div class="custom-rules-heading"><h3>Paramètres des règles financières</h3><p>Définis un taux distinct pour chaque division, un supplément de participation européenne et deux bonus conditionnels en cas de titre remporté. Les changements sont appliqués automatiquement aux calculs de la page principale.</p></div>
 <div class="settings-group">
   <h3>Contribution sur les revenus bruts</h3>
