@@ -279,8 +279,8 @@ function applyPromotionData(payload={}){
   promotionClubs=Array.isArray(payload.promotionClubs)?payload.promotionClubs:[];promotionClubs.forEach(club=>{club.formationLevel=Number(club.formationLevel??club.level)||0;club.level=club.formationLevel;club.coachingLevel=Number(club.coachingLevel)||0;club.recruitmentLevel=Number(club.recruitmentLevel)||0;club.trainingLevel=Number(club.trainingLevel)||0;});
   promotionDraws=Array.isArray(payload.promotionDraws)?payload.promotionDraws:[];
   promotionClubsInitialized=!!payload.promotionClubsInitialized;
-  if(!promotionClubsInitialized&&!promotionClubs.length){promotionClubs=defaultPromotionClubs.map(c=>({...c}));promotionClubsInitialized=true;persistPromotionData();}
-  else if(promotionClubs.length)promotionClubsInitialized=true;
+  if(!promotionClubs.length){promotionClubs=defaultPromotionClubs.map(c=>({...c}));promotionClubsInitialized=true;persistPromotionData();}
+  else promotionClubsInitialized=true;
   renderPromotionManager();
   window.renderExpenseBeneficiaryOptions?.();
   applyNationalYouthData(payload);
