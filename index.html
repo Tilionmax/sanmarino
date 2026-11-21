@@ -22,7 +22,51 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 .club{display:grid;grid-template-columns:1fr 110px 130px 38px;gap:8px;align-items:center;margin:9px 0}.club input{min-width:0}.club button{padding:8px}
 .notice{padding:12px;border-radius:10px;background:#332b18;color:#f2d89c;border:1px solid #69542a;font-size:13px;margin-top:12px}
 .actions{display:flex;gap:8px;flex-wrap:wrap}.danger{color:var(--red)}footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
-@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.span-8,.span-6,.span-4,.span-3{grid-column:span 12}.club{grid-template-columns:1fr 80px 100px 34px}.row{flex-direction:column;align-items:stretch}}
+
+.reg-intro{padding:15px 17px;margin:0 0 24px;border:1px solid #29465a;border-radius:13px;background:linear-gradient(110deg,#102a3b,#102033)}
+.reg-eyebrow{display:block;color:var(--teal);font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.reg-intro p{margin:5px 0 0;color:var(--muted);font-size:13px}
+.reg-block{margin:24px 0 28px}
+.reg-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:13px}
+.reg-heading>div{display:flex;align-items:center;gap:10px}
+.reg-number{display:grid;place-items:center;width:31px;height:31px;border-radius:9px;background:#17394a;color:var(--teal);font-size:12px;font-weight:900}
+.reg-heading h3,.custom-rules-heading h3{margin:0;font-size:17px}
+.reg-tag{padding:5px 9px;border:1px solid var(--line);border-radius:99px;color:var(--muted);font-size:11px;font-weight:700}
+.reg-tag.federation{border-color:#355c50;background:#122d2a;color:#92e4c0}
+.reg-grid{display:grid;gap:12px}
+.reg-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.reg-card{min-width:0;padding:17px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(145deg,#112237,#0c1a2a)}
+.reg-card h4{margin:8px 0 6px;font-size:15px;color:var(--text)}
+.reg-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
+.reg-icon{font-size:20px}
+.rate-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.rate-tile{padding:16px;border:1px solid var(--line);border-radius:14px;background:#0b1928}
+.rate-tile.featured{border-color:#347b78;background:linear-gradient(145deg,#123635,#0c202a)}
+.rate-context{display:block;color:var(--muted);font-size:12px;font-weight:700}
+.rate-value{display:block;margin:4px 0;font-size:36px;line-height:1.1;color:var(--teal);font-variant-numeric:tabular-nums}
+.rate-value small{font-size:18px}
+.rate-tile p{margin:5px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
+.reg-card.highlight{border-color:#356d61;background:linear-gradient(135deg,#12322f,#102338)}
+.reg-highlight-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.free-label{padding:5px 9px;border-radius:99px;background:#173f35;color:#9ce6c1;font-size:11px;font-weight:800}
+.reg-card.highlight h4{font-size:18px;margin:12px 0 8px}
+.reg-card.highlight p strong{color:#fff}
+.choice-pills{display:flex;gap:8px;flex-wrap:wrap;margin:13px 0}
+.choice-pills span{padding:7px 10px;border:1px solid #35675c;border-radius:9px;background:#102d2b;color:#b8f0d5;font-size:12px;font-weight:700}
+.reg-footnote{margin-top:12px!important;padding-top:10px;border-top:1px solid #315248;font-size:12px!important}
+.rule-metric{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:13px;padding-top:11px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+.rule-metric strong{color:var(--gold);font-size:16px;font-variant-numeric:tabular-nums}
+.price-lines{margin-top:12px;border-top:1px solid var(--line)}
+.price-lines>div{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px}
+.price-lines strong{white-space:nowrap;color:var(--gold);font-variant-numeric:tabular-nums}
+.price-lines .price-total{border:0;color:var(--text);font-weight:800}
+.price-lines .price-total strong{font-size:14px;color:var(--teal)}
+.reg-card.investment{grid-column:1/-1}
+.custom-rules-heading{margin-top:25px;padding-top:20px;border-top:1px solid var(--line)}
+.custom-rules-heading p{margin:5px 0 12px;color:var(--muted);font-size:12px}
+#customRules .rule{padding:13px;margin-top:9px;border:1px solid var(--line);border-radius:11px;background:#0b1928}
+#customRules .rule strong{margin-bottom:4px}
+@media(max-width:760px){.reg-grid.two,.rate-grid{grid-template-columns:1fr}.reg-card.investment{grid-column:auto}.reg-heading{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.span-8,.span-6,.span-4,.span-3{grid-column:span 12}.club{grid-template-columns:1fr 80px 100px 34px}.row{flex-direction:column;align-items:stretch}}
 </style>
 </head>
 <body>
@@ -47,19 +91,100 @@ h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 10px}.muted{color
 </div><p class="muted" style="font-size:12px;margin-bottom:0">La taxe est calculée sur la totalité des revenus bruts saisis, sans déduction des salaires, transferts ou autres dépenses.</p></section>
 <section class="card span-8"><h2>03 · Répartition entre les clubs</h2><p class="muted">Ajoute les clubs bénéficiaires et définis leur part du fonds collecté.</p><div id="clubs"></div><div class="actions"><button id="addClub" class="primary">+ Ajouter un club</button><button id="equal">Répartition égale</button></div><div id="splitWarning" class="notice" hidden></div></section>
 <section class="card span-4"><h2>Résumé des versements</h2><div id="payouts" class="muted">Aucun club bénéficiaire.</div></section>
-<section class="card span-12"><h2>04 · Règlement de l'accord</h2><div id="rules">
-<div class="rule"><span class="pill">Accord</span><strong>Autorisation de jouer dans le système italien</strong><span class="muted">Dans ce scénario fictif, la FSGC autorise San Marino Calcio à évoluer dans les championnats italiens.</span></div>
-<div class="rule"><span class="pill">Principe</span><strong>Maintien du championnat national saint-marinais</strong><span class="muted">Les autres clubs de Saint-Marin continuent de participer à leur championnat national.</span></div>
-<div class="rule"><span class="pill">Contribution</span><strong>Hors Serie A : aucune taxe</strong><span class="muted">En Serie B, Serie C et divisions inférieures, le taux de contribution est de 0 %.</span></div>
-<div class="rule"><span class="pill">Contribution</span><strong>Serie A : 10 % des revenus bruts</strong><span class="muted">Dès que San Marino Calcio évolue en Serie A, 10 % de ses revenus bruts sont reversés au fonds.</span></div>
-<div class="rule"><span class="pill">Europe</span><strong>Serie A avec coupe d'Europe : 15 % au total</strong><span class="muted">Une participation à une compétition européenne ajoute 5 points au taux de 10 %.</span></div>
-<div class="rule"><span class="pill">Calcul</span><strong>Aucune dépense déductible</strong><span class="muted">La base de calcul est le revenu brut : salaires, transferts et autres dépenses ne sont pas déduits.</span></div>
-<div class="rule"><span class="pill">Destination</span><strong>Fonds reversé à la FSGC</strong><span class="muted">Les sommes collectées sont destinées à soutenir les clubs du football saint-marinais. Les modalités précises de redistribution restent à définir.</span></div>
-<div class="rule"><span class="pill">Promotion</span><strong>Amélioration d'un club saint-marinais à chaque montée</strong><span class="muted">À chaque fois que San Marino Calcio gagne une division, la FSGC finance une augmentation de 1 point, au choix, soit du recrutement de jeunes, soit de l’encadrement / formation des jeunes d’un club de Saint-Marin. Cette amélioration est prise en charge par la Fédération : San Marino Calcio ne verse aucune compensation financière.</span></div>
-<div class="rule"><span class="pill">Investissement volontaire</span><strong>400 000 € par point d'amélioration de la formation des jeunes</strong><span class="muted">Si San Marino Calcio souhaite financer lui-même une amélioration dans un club saint-marinais, chaque point supplémentaire en encadrement des jeunes (coaching jeunes) coûte 400 000 €, et chaque point supplémentaire en recrutement de jeunes coûte également 400 000 €. Les deux améliorations sont facturées séparément : améliorer les deux caractéristiques d'un point coûte donc 800 000 € au total. Cette dépense est à la charge de San Marino Calcio. Cette règle concerne les améliorations volontaires et ne modifie pas le bonus gratuit financé par la FSGC à chaque promotion.</span></div>
-<div class="rule"><span class="pill">Protection financière</span><strong>Le versement ne peut jamais rendre le solde négatif</strong><span class="muted">Le montant total versé au fonds est plafonné au solde disponible de San Marino Calcio. Après versement, le solde du club ne peut donc jamais être inférieur à 0 €.</span></div>
-<div class="rule"><span class="pill">Seuil de trésorerie</span><strong>Tout le solde supérieur à 200 millions d'euros est reversé au fonds</strong><span class="muted">À chaque calcul, la totalité de la partie du solde disponible qui dépasse 200 000 000 € est ajoutée à la contribution au fonds, en plus de la contribution calculée sur les revenus bruts. Le versement total reste toutefois limité au solde disponible.</span></div>
+<section class="card span-12"><h2>04 · Règlement de l'accord</h2><div class="reg-intro">
+  <span class="reg-eyebrow">Accord FSGC · San Marino Calcio</span>
+  <p>Les engagements du club et de la Fédération, réunis au même endroit. Les montants ci-dessous s'appliquent au scénario fictif de ta carrière.</p>
 </div>
+
+<div class="reg-block">
+  <div class="reg-heading"><div><span class="reg-number">01</span><h3>Cadre sportif</h3></div><span class="reg-tag">L'accord de départ</span></div>
+  <div class="reg-grid two">
+    <article class="reg-card">
+      <span class="reg-icon">⚽</span>
+      <h4>Une place dans le football italien</h4>
+      <p>La FSGC autorise San Marino Calcio à évoluer dans les championnats italiens, au sein de la pyramide du football italien.</p>
+    </article>
+    <article class="reg-card">
+      <span class="reg-icon">🏟️</span>
+      <h4>Le football national est préservé</h4>
+      <p>Les autres clubs de Saint-Marin continuent de participer à leur championnat national. L'intégration de San Marino Calcio en Italie ne remplace pas la compétition locale.</p>
+    </article>
+  </div>
+</div>
+
+<div class="reg-block">
+  <div class="reg-heading"><div><span class="reg-number">02</span><h3>Contribution au fonds de solidarité</h3></div><span class="reg-tag">Calcul sur les revenus bruts</span></div>
+  <div class="rate-grid">
+    <article class="rate-tile">
+      <span class="rate-context">Hors Serie A</span>
+      <strong class="rate-value">0 <small>%</small></strong>
+      <p>Serie B, Serie C et toutes les divisions inférieures.</p>
+    </article>
+    <article class="rate-tile">
+      <span class="rate-context">En Serie A</span>
+      <strong class="rate-value">10 <small>%</small></strong>
+      <p>Contribution dès que San Marino Calcio évolue en Serie A.</p>
+    </article>
+    <article class="rate-tile featured">
+      <span class="rate-context">Serie A + Europe</span>
+      <strong class="rate-value">15 <small>%</small></strong>
+      <p>10 % de base, plus 5 points en cas de participation européenne.</p>
+    </article>
+  </div>
+  <div class="reg-grid two">
+    <article class="reg-card">
+      <span class="reg-icon">📊</span>
+      <h4>Une assiette basée sur le brut</h4>
+      <p>La contribution est calculée sur l'ensemble des revenus bruts : droits TV, sponsoring, billetterie, primes, merchandising et autres recettes. Aucun salaire, transfert ou autre frais n'est déduit.</p>
+    </article>
+    <article class="reg-card">
+      <span class="reg-icon">🤝</span>
+      <h4>La FSGC redistribue les sommes</h4>
+      <p>Le fonds est versé à la FSGC afin de soutenir les clubs du football saint-marinais. Les modalités détaillées de redistribution restent à définir.</p>
+    </article>
+  </div>
+</div>
+
+<div class="reg-block">
+  <div class="reg-heading"><div><span class="reg-number">03</span><h3>Engagement de la FSGC à chaque promotion</h3></div><span class="reg-tag federation">Pris en charge par la Fédération</span></div>
+  <article class="reg-card highlight">
+    <div class="reg-highlight-top"><span class="reg-icon">🎓</span><span class="free-label">Sans frais pour San Marino Calcio</span></div>
+    <h4>Un point de progression offert à un club saint-marinais</h4>
+    <p>À chaque fois que San Marino Calcio gagne une division, la FSGC finance <strong>+1 point</strong> sur l'une des deux caractéristiques suivantes, au choix, pour un club de Saint-Marin :</p>
+    <div class="choice-pills"><span>Recrutement de jeunes</span><span>Encadrement des jeunes</span></div>
+    <p class="reg-footnote">Cette amélioration est financée par la Fédération. San Marino Calcio ne verse aucune compensation.</p>
+  </article>
+</div>
+
+<div class="reg-block">
+  <div class="reg-heading"><div><span class="reg-number">04</span><h3>Trésorerie et investissements</h3></div><span class="reg-tag">Règles financières</span></div>
+  <div class="reg-grid two">
+    <article class="reg-card financial">
+      <span class="reg-icon">🛡️</span>
+      <h4>Le solde ne peut jamais devenir négatif</h4>
+      <p>Le versement total au fonds est limité au solde disponible de San Marino Calcio. Après contribution, la trésorerie du club ne peut donc jamais être inférieure à zéro.</p>
+      <div class="rule-metric">Plancher de trésorerie <strong>0 €</strong></div>
+    </article>
+    <article class="reg-card financial">
+      <span class="reg-icon">💰</span>
+      <h4>Tout excédent au-dessus de 200 M€ est reversé</h4>
+      <p>La totalité de la partie du solde qui dépasse le seuil de 200 millions d'euros est ajoutée à la contribution calculée sur les revenus bruts. Le versement total reste plafonné au solde disponible.</p>
+      <div class="rule-metric">Seuil conservé par le club <strong>200 000 000 €</strong></div>
+    </article>
+    <article class="reg-card investment">
+      <span class="reg-icon">📈</span>
+      <h4>Améliorations volontaires à la charge du club</h4>
+      <p>San Marino Calcio peut financer des points supplémentaires pour un club saint-marinais. Chaque caractéristique est facturée séparément :</p>
+      <div class="price-lines">
+        <div><span>Encadrement des jeunes · +1 point</span><strong>400 000 €</strong></div>
+        <div><span>Recrutement de jeunes · +1 point</span><strong>400 000 €</strong></div>
+        <div class="price-total"><span>Les deux · +1 point chacune</span><strong>800 000 €</strong></div>
+      </div>
+      <p class="reg-footnote">Ces améliorations volontaires sont distinctes du bonus gratuit accordé par la FSGC à chaque promotion.</p>
+    </article>
+  </div>
+</div>
+<div class="custom-rules-heading"><h3>Règles complémentaires</h3><p>Ajoute ici toute nouvelle clause décidée pour l'accord.</p></div>
 <h3 style="margin-top:20px">Ajouter une règle personnalisée</h3><div class="grid"><div class="field span-4"><label>Titre de la règle</label><input id="ruleTitle" placeholder="Ex. Prime de formation"></div><div class="field span-6"><label>Description</label><input id="ruleDesc" placeholder="Décris la règle à ajouter"></div><div class="field span-2"><button id="addRule" class="primary" style="width:100%">Ajouter</button></div></div><div id="customRules"></div>
 </section></div></main><footer>Outil de gestion d'un scénario fictif de carrière · Les règles affichées ne constituent pas un accord réel avec la FSGC.</footer>
 <script>
