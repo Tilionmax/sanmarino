@@ -236,7 +236,7 @@ $('recordDeposit').onclick=recordDeposit;$('recordExpense').onclick=recordExpens
 setupAmountFields();$('expenseSeason').value=$('season').value;try{let s=localStorage.getItem('sanmarino-fsgc');if(s)apply(JSON.parse(s));else{renderLedger();update()}}catch(e){renderLedger();update()}
 </script><script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, updateProfile, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -582,6 +582,7 @@ window.__firebaseQueueSave = (payload) => {
   }, 700);
 };
 
+await setPersistence(auth, browserLocalPersistence);
 onAuthStateChanged(auth, async (user) => {
   if (unsubscribeCloud) { unsubscribeCloud(); unsubscribeCloud = null; }
   if (unsubscribeRules) { unsubscribeRules(); unsubscribeRules = null; }
