@@ -295,7 +295,7 @@ function applyNationalYouthData(payload={}){
  renderNationalYouth();
 }
 function nationalYouthSportPoints(){
- const raw=($('nyNationsLeague').checked?2:0)+($('nyQualification').checked?3:0)+($('nyGroupExit').checked?2:0)+$('nyEuropeanClub').checked?1:0+($('nySanMarinoPromotion').checked?1:0);
+ const raw=($('nyNationsLeague').checked?2:0)+($('nyQualification').checked?3:0)+($('nyGroupExit').checked?2:0) +($('nyEuropeanClub').checked?1:0)+($('nySanMarinoPromotion').checked?1:0);
  return {raw,applied:Math.min(5,raw)};
 }
 function nationalYouthFifaPoints(rank){return fifaYouthThresholds.filter(threshold=>rank<=threshold&&!nationalYouthData.milestones.includes(threshold))}
