@@ -449,7 +449,6 @@ onAuthStateChanged(auth, async (user) => {
     document.body.classList.add("authenticated");
     cloudStatus.textContent = "Cloud : connecté · " + (user.displayName || "Mon espace");
 
-    const rulesRef = doc(db, 'users', user.uid, 'data', 'rules');
     rulesRef = doc(db, 'users', user.uid, 'data', 'rules');
     unsubscribeRules = onSnapshot(rulesRef, (rulesSnapshot) => {
       const rulesPayload = rulesSnapshot.exists() ? (rulesSnapshot.data().payload || {}) : {};
