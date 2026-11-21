@@ -89,6 +89,8 @@ body.authenticated #authGate{display:none}
 .account-name{display:inline-flex;align-items:center;padding:7px 12px;border:1px solid var(--teal);border-radius:999px;color:#8fecc9;font-weight:800;font-size:13px;background:#3c91951c;white-space:nowrap}.account-name::before{content:"👤";margin-right:7px}#logout{margin-left:auto}
 
 [hidden]{display:none!important}.view-switch{display:flex;align-items:center;gap:8px;min-width:min(100%,330px)}.view-switch label{margin:0;white-space:nowrap}.view-switch select{min-width:220px}.view-panel{margin-top:15px}.section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.section-heading h2{margin:4px 0 0}.promotion-club-list{display:grid;gap:8px;margin:16px 0}.promotion-club-header,.promotion-club-row{display:grid;grid-template-columns:38px minmax(180px,1fr) minmax(190px,260px) 42px;gap:9px;align-items:center}.promotion-club-header{color:var(--muted);font-size:12px;font-weight:700;padding:0 8px}.promotion-club-row{padding:4px 7px;border:1px solid var(--line);border-radius:8px;background:#0b1928;gap:6px;min-height:38px}.promotion-club-row input{padding:6px 9px;font-size:13px;line-height:1.25}.promotion-club-row button{padding:5px 7px;min-height:30px}.promotion-club-list{gap:5px;margin:10px 0}.promotion-club-header{padding:0 7px;font-size:11px}.promotion-club-number{color:var(--muted);font-weight:800;text-align:center}.promotion-club-row input{min-width:0}.promotion-club-row button{padding:8px}.promotion-club-row input[data-promotion-name]{border:0!important;outline:0;background:transparent!important;box-shadow:none!important;padding-left:0;padding-right:0}.promotion-club-row input[data-promotion-name]:focus{border:0!important;outline:0!important;box-shadow:none!important;color:var(--teal)}.promotion-actions{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}.promotion-history-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}.promotion-history-row span{color:var(--muted);font-size:13px}.promotion-result{font-size:14px;color:#b8f0d5}.promotion-result strong{color:#fff}@media(max-width:650px){.view-switch{width:100%;align-items:stretch;flex-direction:column}.view-switch select{width:100%}.promotion-club-header{display:none}.promotion-club-row{grid-template-columns:26px minmax(0,1fr) 82px 32px;gap:4px;padding:4px;min-height:34px}.promotion-club-row input{padding:6px 5px;font-size:12px;min-height:30px}.promotion-club-row button{padding:4px;min-height:28px}.promotion-history-row{display:block}.promotion-history-row span{display:block;margin-top:3px}}
+
+.national-youth-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0}.national-youth-box{padding:16px;border:1px solid var(--line);border-radius:13px;background:#0b1928;min-width:0}.national-youth-box h3{margin:0 0 10px}.national-youth-check{display:flex;align-items:flex-start;gap:9px;margin:10px 0;color:var(--text);font-size:13px}.national-youth-check input{width:auto;margin-top:4px;accent-color:var(--teal)}.national-youth-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0}.national-youth-metric{padding:14px;border:1px solid var(--line);border-radius:12px;background:#0a1827}.national-youth-metric small{display:block;color:var(--muted)}.national-youth-metric strong{display:block;margin-top:5px;font-size:22px;color:var(--teal)}.national-youth-history{display:grid;gap:8px;margin-top:12px}.national-youth-history article{padding:12px;border:1px solid var(--line);border-radius:10px;background:#0b1928}.national-youth-history article p{margin:5px 0 0;color:var(--muted);font-size:12px}.national-youth-warning{padding:11px;border-radius:10px;background:#332b18;color:#f2d89c;font-size:12px;margin-top:10px}.national-youth-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.national-youth-controls .field{min-width:0}@media(max-width:760px){.national-youth-grid,.national-youth-controls{grid-template-columns:1fr}.national-youth-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -119,7 +121,7 @@ body.authenticated #authGate{display:none}
   </div>
 </div><header><div class="kicker">Projet de carrière Football Manager 2027</div><h1>San Marino Calcio</h1><p>Fonds de solidarité du football saint-marinais · Gestion financière et suivi de l'accord fictif avec la FSGC</p></header>
 <main>
-<div class="toolbar"><a class="button" href="reglement.html" style="text-decoration:none">📜 Consulter le règlement FSGC</a><div class="view-switch"><label for="managementView">Navigation</label><select id="managementView"><option value="dashboard">Accueil · Fonds FSGC</option><option value="clubs">Bonus de Formation des jeunes à chaque promotion</option></select></div><input id="season" type="hidden" value="2026/2027"><span id="accountName" class="account-name" hidden></span><span id="cloudStatus" class="muted">Cloud : connexion requise</span><button id="logout" type="button">Déconnexion</button></div>
+<div class="toolbar"><a class="button" href="reglement.html" style="text-decoration:none">📜 Consulter le règlement FSGC</a><div class="view-switch"><label for="managementView">Navigation</label><select id="managementView"><option value="dashboard">Accueil · Fonds FSGC</option><option value="clubs">Bonus de Formation des jeunes à chaque promotion</option><option value="nationalYouth">Note nationale de formation des jeunes</option></select></div><input id="season" type="hidden" value="2026/2027"><span id="accountName" class="account-name" hidden></span><span id="cloudStatus" class="muted">Cloud : connexion requise</span><button id="logout" type="button">Déconnexion</button></div>
 <div id="dashboardView"><div class="stats">
 <div class="stat"><small>Revenus bruts</small><strong id="total" class="money">0 €</strong></div>
 <div class="stat"><small>Taux de contribution</small><strong id="rate">0 %</strong></div>
@@ -143,7 +145,47 @@ body.authenticated #authGate{display:none}
 <section class="card bank-panel" id="bankAccount"><h2>03 · Opérations du fonds FSGC</h2><p class="muted" style="margin-top:-8px">Enregistre les contributions annuelles versées au fonds et les aides accordées aux clubs saint-marinais.</p><div class="bank-forms"><div class="bank-form"><h3>＋ Enregistrer le versement de la saison</h3><p class="muted" style="font-size:12px">Ajoute au compte la contribution calculée dans les sections précédentes. Un seul versement par saison.</p><div class="field"><label>Contribution calculée pour cette saison</label><input id="depositPreview" readonly value="0 €"></div><button class="primary" id="recordDeposit" style="width:100%">Verser la contribution au fonds</button><div id="depositMessage" class="bank-hint">Le versement est ajouté uniquement après ton clic.</div></div><div class="bank-form"><h3>－ Enregistrer une dépense</h3><div class="field"><label for="expenseSeason">Saison</label><input id="expenseSeason" placeholder="2026/2027"></div><div class="field"><label for="expenseClub">Club bénéficiaire</label><input id="expenseClub" placeholder="Nom du club saint-marinais"></div><div class="field"><label for="expenseType">Type d'amélioration</label><select id="expenseType"><option>Encadrement des jeunes</option><option>Recrutement de jeunes</option><option>Autre aide au club</option></select></div><div class="field" id="expensePointsField"><label for="expenseDescription">Nombre de points à attribuer</label><input id="expenseDescription" type="number" min="1" step="1" value="1" placeholder="1"></div><div class="field"><label for="expenseAmount">Montant dépensé (€)</label><input id="expenseAmount" class="amount" inputmode="decimal" placeholder="400 000" autocomplete="off"></div><p id="expenseCostHint" class="muted" style="font-size:12px;margin:4px 0 0">Pour l’encadrement ou le recrutement des jeunes : 400 000 € par point.</p><button class="primary" id="recordExpense" style="width:100%">Enregistrer la dépense</button><div id="expenseMessage" class="bank-hint">Impossible de dépenser plus que le solde disponible.</div></div></div></section>
 </div>
 <section class="card ledger-panel" id="fundHistory"><div id="fundHistory"><h2>Historique des opérations</h2><p class="muted" style="margin-top:-8px">Vue d'ensemble du compte du fonds FSGC : solde disponible, versements reçus et dépenses enregistrées.</p><div class="bank-head"><div class="bank-balance"><small>Solde actuel du fonds</small><strong id="fundBalance">0 €</strong></div><div class="bank-stat"><small>Total des versements reçus</small><strong id="fundCredits" class="money">0 €</strong></div><div class="bank-stat"><small>Total des dépenses</small><strong id="fundDebits" class="gold">0 €</strong></div></div><h3>Journal des mouvements</h3><div id="ledgerHistory"><div class="ledger-empty">Aucune opération enregistrée pour le moment.</div></div></section></div>
-<section class="card view-panel" id="clubsView" hidden><div class="section-heading"><div><span class="kicker">Gestion Infrastructure · Campionato</span><h2>Gestion des clubs du Campionato</h2></div><button type="button" id="resetPromotionClubs" class="danger">↺ Réinitialiser la liste et l’historique</button></div><p class="muted" style="margin-top:-8px">Les clubs sont classés par ordre alphabétique ; un club à 20/20 ne peut plus être tiré au sort.</p><div id="promotionClubList" class="promotion-club-list"><div class="ledger-empty">Chargement des clubs…</div></div><div class="promotion-actions"><button type="button" class="primary" id="drawPromotionClub">🎲 Tirer au sort le club bénéficiaire</button><button type="button" id="clearPromotionHistory">Effacer l’historique des attributions</button></div><div id="promotionDrawStatus" class="bank-hint" aria-live="polite">Chargement de la gestion du Campionato…</div><h3 style="margin-top:22px">Historique des attributions</h3><div id="promotionDrawHistory"><div class="ledger-empty">Aucune attribution enregistrée.</div></div></section>
+<section class="card view-panel" id="clubsView" hidden><div class="section-heading"><div><span class="kicker">Gestion Infrastructure · Campionato</span><h2>Gestion des clubs du Campionato</h2></div><button type="button" id="resetPromotionClubs" class="danger">↺ Réinitialiser la liste et l’historique</button></div><p class="muted" style="margin-top:-8px">Les clubs sont classés par ordre alphabétique ; un club à 20/20 ne peut plus être tiré au sort.</p><div id="promotionClubList" class="promotion-club-list"><div class="ledger-empty">Chargement des clubs…</div></div><div class="promotion-actions"><button type="button" class="primary" id="drawPromotionClub">🎲 Tirer au sort le club bénéficiaire</button><button type="button" id="clearPromotionHistory">Effacer l’historique des attributions</button></div><div id="promotionDrawStatus" class="bank-hint" aria-live="polite">Chargement de la gestion du Campionato…</div><h3 style="margin-top:22px">Historique des attributions</h3><div id="promotionDrawHistory"><div class="ledger-empty">Aucune attribution enregistrée.</div></div>
+</section>
+<section class="card view-panel" id="nationalYouthView" hidden>
+ <div class="section-heading"><div><span class="kicker">FSGC · Développement national</span><h2>Note nationale de formation des jeunes</h2></div><span class="pill">Départ : 29/200</span></div>
+ <p class="muted" style="margin-top:-7px">La qualité des newgens saint-marinais dépend de cette note. Elle évolue à la clôture de chaque saison selon les résultats sportifs, les investissements nationaux éligibles et les nouveaux paliers FIFA atteints.</p>
+ <div class="national-youth-summary">
+  <div class="national-youth-metric"><small>Note actuelle</small><strong id="nationalYouthRating">29/200</strong></div>
+  <div class="national-youth-metric"><small>Dernier classement FIFA enregistré</small><strong id="nationalYouthRank">211e</strong></div>
+  <div class="national-youth-metric"><small>Bonus sportifs cette saison</small><strong id="nationalYouthSportPreview">0/5</strong></div>
+  <div class="national-youth-metric"><small>Paliers FIFA déjà obtenus</small><strong id="nationalYouthMilestones">0/10</strong></div>
+ </div>
+ <div class="national-youth-controls">
+  <div class="field"><label for="nationalYouthSeason">Saison à clôturer</label><input id="nationalYouthSeason" value="2026/2027"></div>
+  <div class="field"><label for="nationalYouthFifaRank">Classement FIFA de fin de saison</label><input id="nationalYouthFifaRank" type="number" min="1" max="211" step="1" value="211"></div>
+ </div>
+ <div class="national-youth-grid">
+  <div class="national-youth-box"><h3>Résultats de l'équipe nationale</h3>
+   <label class="national-youth-check"><input id="nyNationsLeague" type="checkbox">Montée en Ligue des nations <b>+2</b></label>
+   <label class="national-youth-check"><input id="nyQualification" type="checkbox">Qualification à l'Euro ou à la Coupe du monde <b>+3</b></label>
+   <label class="national-youth-check"><input id="nyGroupExit" type="checkbox">Sortie de groupe en phase finale <b>+2</b></label>
+  </div>
+  <div class="national-youth-box"><h3>Résultats des clubs</h3>
+   <div class="field"><label for="nyEuropeanClubs">Clubs saint-marinais en phase principale d'une coupe d'Europe</label><input id="nyEuropeanClubs" type="number" min="0" max="30" step="1" value="0"><p class="muted" style="font-size:11px;margin:5px 0 0">+1 point par club, à condition d'atteindre la phase principale.</p></div>
+   <label class="national-youth-check"><input id="nySanMarinoPromotion" type="checkbox">San Marino Calcio monte en division supérieure <b>+1</b></label>
+  </div>
+  <div class="national-youth-box"><h3>Investissement national éligible</h3>
+   <div class="field"><label for="nyEligibleSpend">Achats explicitement destinés à améliorer la note nationale (€)</label><input id="nyEligibleSpend" class="amount" inputmode="decimal" value="0"></div>
+   <p class="muted" style="font-size:12px;margin:7px 0 0">+1 point par tranche complète de 500 000 €, dans la limite de 1 000 000 € et +2 points par saison. Les dépenses ordinaires du fonds pour les clubs ne comptent pas.</p>
+  </div>
+  <div class="national-youth-box"><h3>Classement FIFA</h3>
+   <p class="muted" style="font-size:12px;margin:0">Départ au 211e rang. Chaque nouveau palier du Top 200, 180, 160, 140, 120, 100, 80, 60, 40 et 20 rapporte +1 point une seule fois. Un palier perdu puis retrouvé ne rapporte aucun nouveau point.</p>
+   <div class="national-youth-warning">Les bonus sportifs sont plafonnés à +5 par saison. Les investissements (+2 maximum) et les nouveaux paliers FIFA sont hors plafond.</div>
+  </div>
+ </div>
+ <div class="national-youth-box">
+  <h3>Calcul de la saison</h3><p id="nationalYouthPreview" class="muted" style="font-size:13px;margin:0">Renseigne les résultats pour prévisualiser le gain.</p>
+  <div class="actions" style="margin-top:13px"><button type="button" class="primary" id="closeNationalYouthSeason">Clôturer la saison et appliquer les points</button></div>
+  <div id="nationalYouthMessage" class="bank-hint" aria-live="polite">Les résultats ne seront enregistrés qu'après validation de la clôture.</div>
+ </div>
+ <h3 style="margin-top:22px">Historique de progression</h3><div id="nationalYouthHistory" class="national-youth-history"><div class="ledger-empty">Aucune saison clôturée.</div></div>
+</section>
 </main><footer>Outil de gestion d'un scénario fictif de carrière · Les règles affichées ne constituent pas un accord réel avec la FSGC.</footer>
 <script>
 const $=id=>document.getElementById(id), euro=n=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n||0);
@@ -237,11 +279,58 @@ function applyPromotionData(payload={}){
   if(!promotionClubsInitialized&&!promotionClubs.length){promotionClubs=defaultPromotionClubs.map(c=>({...c}));promotionClubsInitialized=true;persistPromotionData();}
   else if(promotionClubs.length)promotionClubsInitialized=true;
   renderPromotionManager();
+  applyNationalYouthData(payload);
 }
+
+let nationalYouthData={rating:29,currentRank:211,milestones:[],seasons:[]};
+const fifaYouthThresholds=[200,180,160,140,120,100,80,60,40,20];
+function persistNationalYouthData(){
+ if(!rulesRef||isLoading)return;
+ const payload={...rulesPayloadCache,nationalYouthData};
+ rulesPayloadCache=payload;
+ setDoc(rulesRef,{payload,updatedAt:serverTimestamp()},{merge:true}).then(()=>{cloudStatus.textContent='Cloud : note nationale synchronisée'}).catch(error=>{console.error('National youth save error:',error);$('nationalYouthMessage').textContent='Erreur de sauvegarde Firebase. Vérifie ta connexion.'});
+}
+function applyNationalYouthData(payload={}){
+ const saved=payload.nationalYouthData||{};
+ nationalYouthData={rating:Math.max(29,Math.min(200,Number(saved.rating)||29)),currentRank:Math.max(1,Math.min(211,Number(saved.currentRank)||211)),milestones:Array.isArray(saved.milestones)?saved.milestones:[],seasons:Array.isArray(saved.seasons)?saved.seasons:[]};
+ renderNationalYouth();
+}
+function nationalYouthSportPoints(){
+ const raw=($('nyNationsLeague').checked?2:0)+($('nyQualification').checked?3:0)+($('nyGroupExit').checked?2:0)+Math.max(0,Math.floor(Number($('nyEuropeanClubs').value)||0))+($('nySanMarinoPromotion').checked?1:0);
+ return {raw,applied:Math.min(5,raw)};
+}
+function nationalYouthFifaPoints(rank){return fifaYouthThresholds.filter(threshold=>rank<=threshold&&!nationalYouthData.milestones.includes(threshold))}
+function renderNationalYouth(){
+ $('nationalYouthRating').textContent=nationalYouthData.rating+'/200';
+ $('nationalYouthRank').textContent=nationalYouthData.currentRank+'e';
+ $('nationalYouthMilestones').textContent=nationalYouthData.milestones.length+'/10';
+ $('nationalYouthHistory').innerHTML=nationalYouthData.seasons.length?[...nationalYouthData.seasons].reverse().map(item=>'<article><strong>'+esc(item.season)+'</strong><b class="money" style="float:right">+'+item.totalPoints+' points</b><p>Sportif : +'+item.sportPoints+' (sur '+item.sportRaw+', plafond 5) · Investissement : +'+item.investmentPoints+' · Classement FIFA : +'+item.fifaPoints+' · Note : '+item.before+'/200 → <b>'+item.after+'/200</b> · Rang FIFA : '+item.rank+'e</p></article>').join(''):'<div class="ledger-empty">Aucune saison clôturée.</div>';
+ updateNationalYouthPreview();
+}
+function updateNationalYouthPreview(){
+ if(!$('nationalYouthPreview'))return;
+ const sport=nationalYouthSportPoints(),spend=Math.min(1000000,Math.max(0,parseAmount($('nyEligibleSpend').value))),investment=Math.min(2,Math.floor(spend/500000)),rank=Math.max(1,Math.min(211,Math.floor(Number($('nationalYouthFifaRank').value)||211))),fifa=nationalYouthFifaPoints(rank);
+ $('nationalYouthSportPreview').textContent=sport.applied+'/5';
+ $('nationalYouthPreview').textContent='Bonus sportifs : +'+sport.applied+' (calcul brut : '+sport.raw+', plafonné à 5) · Investissement national : +'+investment+' · Nouveaux paliers FIFA : +'+fifa.length+' ('+(fifa.length?fifa.map(n=>'Top '+n).join(', '):'aucun')+') · Gain total prévu : +'+(sport.applied+investment+fifa.length)+' points. Note après clôture : '+Math.min(200,nationalYouthData.rating+sport.applied+investment+fifa.length)+'/200.';
+}
+['nyNationsLeague','nyQualification','nyGroupExit','nyEuropeanClubs','nySanMarinoPromotion','nyEligibleSpend','nationalYouthFifaRank'].forEach(id=>$(id).addEventListener('input',updateNationalYouthPreview));
+$('closeNationalYouthSeason').addEventListener('click',()=>{
+ const season=$('nationalYouthSeason').value.trim(),rankValue=Number($('nationalYouthFifaRank').value),clubs=Number($('nyEuropeanClubs').value);
+ if(!season){$('nationalYouthMessage').textContent='Indique la saison à clôturer.';return}
+ if(nationalYouthData.seasons.some(item=>item.season===season)){$('nationalYouthMessage').textContent='Cette saison a déjà été clôturée. Elle ne peut pas être comptabilisée une deuxième fois.';return}
+ if(!Number.isInteger(rankValue)||rankValue<1||rankValue>211){$('nationalYouthMessage').textContent='Le classement FIFA doit être un entier compris entre 1 et 211.';return}
+ if(!Number.isInteger(clubs)||clubs<0||clubs>30){$('nationalYouthMessage').textContent='Le nombre de clubs doit être un entier compris entre 0 et 30.';return}
+ const sport=nationalYouthSportPoints(),spend=Math.min(1000000,Math.max(0,parseAmount($('nyEligibleSpend').value))),investment=Math.min(2,Math.floor(spend/500000)),newMilestones=nationalYouthFifaPoints(rankValue),before=nationalYouthData.rating,totalPoints=sport.applied+investment+newMilestones.length,after=Math.min(200,before+totalPoints);
+ const record={season,rank:rankValue,sportRaw:sport.raw,sportPoints:sport.applied,eligibleSpend:spend,investmentPoints:investment,fifaPoints:newMilestones.length,newMilestones,before,after,totalPoints,date:new Date().toLocaleDateString('fr-FR')};
+ nationalYouthData.rating=after;nationalYouthData.currentRank=rankValue;nationalYouthData.milestones=[...new Set([...nationalYouthData.milestones,...newMilestones])].sort((a,b)=>b-a);nationalYouthData.seasons.push(record);
+ persistNationalYouthData();renderNationalYouth();$('nationalYouthMessage').textContent='Saison '+season+' clôturée : +'+totalPoints+' points. Note nationale : '+before+'/200 → '+after+'/200.';
+});
+
 $('managementView').addEventListener('change',()=>{
   const view=$('managementView').value;
-  $('dashboardView').hidden=view==='clubs';
+  $('dashboardView').hidden=view!=='dashboard';
   $('clubsView').hidden=view!=='clubs';
+  $('nationalYouthView').hidden=view!=='nationalYouth';
   window.scrollTo({top:0,behavior:'smooth'});
 });
 $('promotionClubList').addEventListener('change',event=>{
