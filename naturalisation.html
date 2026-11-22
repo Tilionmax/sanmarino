@@ -108,9 +108,9 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
    <h3>Répartition des joueurs et matchs par club</h3>
    <div class="table-wrap"><table class="audit-table"><thead><tr><th>Club</th><th>Joueurs utilisés</th><th>Apparitions</th><th>Lignes de stats</th></tr></thead><tbody id="clubAuditRows"></tbody></table></div>
   </div>
-  <div class="audit-block" id="multiClubAudit" hidden>
+  <div class="audit-block" id="multiClubAudit">
    <h3>Joueurs ayant évolué dans plusieurs clubs suivis</h3>
-   <div id="multiClubRows"></div>
+   <div id="multiClubRows"><p class="reader-note">Contrôle en attente des résultats de l’analyse.</p></div>
   </div>
   <div class="table-wrap">
    <table>
@@ -277,8 +277,9 @@ async function renderSaveResults(result){
  const clubAudit=Array.isArray(result.clubAudit)?result.clubAudit:[];
  $("clubAuditRows").innerHTML=clubAudit.map(club=>'<tr><td>'+escapeHtml(club.name||"Club non identifié")+'</td><td class="num">'+Number(club.players||0).toLocaleString("fr-FR")+'</td><td class="num">'+Number(club.appearances||0).toLocaleString("fr-FR")+'</td><td class="num">'+Number(club.statRows||0).toLocaleString("fr-FR")+'</td></tr>').join("")||'<tr><td colspan="4">Aucune donnée de répartition disponible.</td></tr>';
  const multiClub=Array.isArray(result.multiClubPlayers)?result.multiClubPlayers:[];
- $("multiClubAudit").hidden=multiClub.length===0;
- $("multiClubRows").innerHTML=multiClub.map(player=>'<div class="audit-multi"><strong>'+escapeHtml(player.name||"Joueur inconnu")+'</strong> <span class="pill">UID '+escapeHtml(String(player.uid))+'</span><small>'+player.clubs.map(club=>escapeHtml(club.name)+': '+Number(club.appearances||0)+' match(s)').join(" · ")+' — Total : '+Number(player.totalAppearances||0)+' match(s)</small></div>').join("");
+ const multiClub=Array.isArray(result.multiClubPlayers)?result.multiClubPlayers:[];
+ $("multiClubAudit").hidden=false;
+ $("multiClubRows").innerHTML=multiClub.length?multiClub.map(player=>'<div class="audit-multi"><strong>'+escapeHtml(player.name||"Joueur inconnu")+'</strong> <span class="pill">UID '+escapeHtml(String(player.uid))+'</span><small>'+player.clubs.map(club=>escapeHtml(club.name)+': '+Number(club.appearances||0)+' match(s)').join(" · ")+' — Total : '+Number(player.totalAppearances||0)+' match(s)</small></div>').join(""):'<p class="reader-note">Aucun joueur détecté dans plusieurs clubs suivis pour cette saison.</p>';
  $("playerRows").innerHTML=players.map(player=>{
   const nationality=[player.nationId===null?"—":String(player.nationId),...(player.secondNationIds||[]).map(String)].join(" / ");
   const current=Number(player.currentSeasonAppearances||0),total=Number(player.totalOfficialAppearances||0);
