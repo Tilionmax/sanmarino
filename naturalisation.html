@@ -150,7 +150,9 @@ function startSaveReader(file){
 readerWorker=new Worker("./naturalisation-worker.js");
 readerWorker.onmessage=(event)=>{
  const data=event.data||{};
- if(data.type==="ready"){
+ if(data.type==="progress"){
+  setReaderStatus("CHARGEMENT EN COURS — "+data.message, "loading");
+ }else if(data.type==="ready"){
   readerReady=true;
   setReaderStatus("LECTEUR PRÊT — Le moteur est chargé. Sélectionne ta sauvegarde pour lancer l’analyse.", "");
   if(pendingRead){const file=pendingRead;pendingRead=null;startSaveReader(file);}
