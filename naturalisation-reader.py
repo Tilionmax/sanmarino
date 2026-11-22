@@ -11,11 +11,9 @@ def is_tracked(name, tracked):
     key = norm(name)
     if not key:
         return False
-    return key in tracked or any(
-        candidate in key or key in candidate
-        for candidate in tracked
-        if len(candidate) >= 6
-    ) or "san marino calcio" in key
+    # Correspondance stricte : éviter qu'un club étranger dont le nom
+    # contient celui d'un club suivi soit ajouté par erreur.
+    return key in tracked
 
 def appearances(row):
     return int(row.starts or 0) + int(row.substitute_appearances or 0)
