@@ -21,6 +21,14 @@ button:disabled{opacity:.55;cursor:not-allowed}
 h2{font-size:19px;margin:0 0 12px}
 .muted{color:var(--muted)}
 .notice{padding:12px;border-radius:10px;background:#332b18;color:#f2d89c;border:1px solid #69542a;font-size:13px;margin-top:12px}
+.table-wrap{overflow:auto;margin-top:14px}
+table{width:100%;border-collapse:collapse;min-width:760px;font-size:13px}
+th,td{padding:10px 9px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--teal);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.reader-note{font-size:12px;color:var(--muted);margin-top:12px}
+.pill{display:inline-block;padding:2px 7px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:11px}
+.warning-list{color:#f2d89c;font-size:12px;padding-left:20px}
 .status{padding:13px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);background:#0a1827}
 .file-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
 .metric{padding:12px;border:1px solid var(--line);border-radius:10px;background:#0a1827;min-width:0}
@@ -84,7 +92,21 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
    <div class="metric"><small>Taille</small><strong id="fileSize">—</strong></div>
    <div class="metric"><small>Dernière modification</small><strong id="fileDate">—</strong></div>
   </div>
-  <div class="notice">Cette première version permet de sélectionner et de conserver le fichier dans la session du navigateur. Le décodage des données de la sauvegarde (joueurs, clubs et statistiques) reste à intégrer : sélectionner le fichier ne signifie pas encore que ses données ont été extraites.</div>
+  <div class="notice">Le lecteur fmsave analyse la sauvegarde directement dans ton navigateur. Le fichier de carrière n’est pas envoyé à Firebase ni à GitHub. Le navigateur télécharge uniquement le moteur de lecture open source et ses dépendances.</div>
+  <div id="readerProgress" class="status" role="status" aria-live="polite" style="margin-top:12px">Le lecteur de sauvegarde se prépare…</div>
+ </section>
+
+ <section class="card" id="playerResults" hidden>
+  <h2>Résultat de l’analyse de la sauvegarde</h2>
+  <div id="saveSummary" class="file-meta"></div>
+  <div class="table-wrap">
+   <table>
+    <thead><tr><th>Joueur / UID</th><th>Club actuel</th><th>Clubs saint-marinais détectés</th><th>Nationalités (IDs)</th><th>Matchs officiels conservés</th></tr></thead>
+    <tbody id="playerRows"></tbody>
+   </table>
+  </div>
+  <p class="reader-note">Le compteur additionne les titularisations et entrées en jeu des catégories championnat, coupe et continental. Les amicaux sont exclus. L’historique archivé de FM peut être incomplet ou contenir des statistiques importées peu détaillées : ce total est un relevé des données conservées dans cette sauvegarde, pas encore une validation définitive du seuil des 100 matchs.</p>
+  <div id="readerWarnings"></div>
  </section>
 
  <section class="card">
@@ -110,17 +132,42 @@ import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11
 const firebaseConfig={apiKey:"AIzaSyDTqkbaLNKvd-Tk6shLosKtVQGyX_H_A-E",authDomain:"san-marino-af270.firebaseapp.com",projectId:"san-marino-af270",storageBucket:"san-marino-af270.firebasestorage.app",messagingSenderId:"1021748198186",appId:"1:1021748198186:web:1864b27053e8f1ba29fc53"};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);
 const defaultClubs=["AC Libertas","FC Domagnano","FC Fiorentino","Folgore/Falciano","Juvenes/Dogana","La Fiorita","Pennarossa Calcio","San Giovanni","San Marino Academy","SC Faetano","SP Cailungo","SS Cosmos","SS Murata","SS Virtus","Tre Fiori","Tre Penne"];
-let selectedSaveFile=null,currentUser=null;
+let selectedSaveFile=null,currentUser=null,trackedClubNames=[];
+let readerWorker=null,readerReady=false,pendingRead=null;
 
 function formatSize(bytes){if(bytes<1024)return bytes+" octets";if(bytes<1024*1024)return (bytes/1024).toFixed(1)+" Ko";if(bytes<1024*1024*1024)return (bytes/1024/1024).toFixed(1)+" Mo";return (bytes/1024/1024/1024).toFixed(2)+" Go";}
+function setReaderStatus(message){$("readerProgress").textContent=message;}
+function startSaveReader(file){
+ if(!readerReady){pendingRead=file;setReaderStatus("Sauvegarde sélectionnée. Le moteur de lecture termine son chargement…");return;}
+ $("playerResults").hidden=true;
+ setReaderStatus("Lecture de la sauvegarde en cours : ouverture, joueurs, clubs et statistiques. Cela peut prendre plusieurs minutes selon la taille du fichier…");
+ readerWorker.postMessage({type:"read",file,trackedClubs:trackedClubNames});
+}
+readerWorker=new Worker("./naturalisation-worker.js");
+readerWorker.onmessage=(event)=>{
+ const data=event.data||{};
+ if(data.type==="ready"){
+  readerReady=true;
+  setReaderStatus("Lecteur prêt (fmsave "+data.fmsave+", Pyodide "+data.pyodide+"). Tu peux charger ta sauvegarde.");
+  if(pendingRead){const file=pendingRead;pendingRead=null;startSaveReader(file);}
+ }else if(data.type==="result"){
+  renderSaveResults(data.data);
+ }else if(data.type==="error"){
+  setReaderStatus("Échec de lecture : "+data.message);
+ }
+};
+readerWorker.onerror=(event)=>setReaderStatus("Le moteur de lecture n’a pas pu démarrer. Recharge la page et réessaie.");
+readerWorker.postMessage({type:"boot"});
+
 function showSelectedFile(file){
  selectedSaveFile=file;
  $("fileMeta").hidden=false;
  $("fileName").textContent=file.name;
  $("fileSize").textContent=formatSize(file.size);
  $("fileDate").textContent=file.lastModified?new Date(file.lastModified).toLocaleString("fr-FR"):"Non disponible";
- $("saveStatus").textContent="Sauvegarde sélectionnée. Le fichier est disponible dans cette session du navigateur.";
+ $("saveStatus").textContent="Sauvegarde sélectionnée. Analyse en cours ou en attente du lecteur.";
  $("clearSave").disabled=false;
+ startSaveReader(file);
 }
 $("chooseSave").addEventListener("click",()=>$("saveFileInput").click());
 $("saveFileInput").addEventListener("change",event=>{
@@ -134,11 +181,35 @@ $("saveFileInput").addEventListener("change",event=>{
 });
 $("clearSave").addEventListener("click",()=>{
  selectedSaveFile=null;$("saveFileInput").value="";$("fileMeta").hidden=true;
- $("saveStatus").textContent="Aucune sauvegarde sélectionnée.";$("clearSave").disabled=true;
+ $("saveStatus").textContent="Aucune sauvegarde sélectionnée.";$("clearSave").disabled=true;$("playerResults").hidden=true;
 });
+
+function renderSaveResults(result){
+ const players=Array.isArray(result.players)?result.players:[];
+ $("playerResults").hidden=false;
+ $("saveSummary").innerHTML=[
+  ["Version du jeu",result.game+" · "+result.build],
+  ["Date en jeu",result.gameDate||"Non disponible"],
+  ["Joueurs décodés",Number(result.totalPlayersDecoded||0).toLocaleString("fr-FR")],
+  ["Joueurs liés aux clubs suivis",players.length.toLocaleString("fr-FR")],
+  ["Lignes de stats saison",Number(result.currentStatsRows||0).toLocaleString("fr-FR")],
+  ["Lignes d’historique",Number(result.historyStatsRows||0).toLocaleString("fr-FR")]
+ ].map(([label,value])=>'<div class="metric"><small>'+escapeHtml(label)+'</small><strong>'+escapeHtml(String(value))+'</strong></div>').join("");
+ $("playerRows").innerHTML=players.map(player=>{
+  const nationality=[player.nationId===null?"—":String(player.nationId),...(player.secondNationIds||[]).map(String)].join(" / ");
+  const total=Number(player.currentSeasonAppearances||0)+Number(player.archivedAppearances||0);
+  const detail=(player.currentSeasonAppearances||0)+" actuel + "+(player.archivedAppearances||0)+" archivé";
+  return '<tr><td><strong>'+escapeHtml(player.name||"Nom non lu")+'</strong><br><span class="pill">UID '+escapeHtml(String(player.uid))+'</span></td><td>'+escapeHtml(player.currentClub||"—")+'</td><td>'+escapeHtml((player.clubs||[]).join(", ")||"—")+'</td><td>'+escapeHtml(nationality)+'</td><td class="num"><strong>'+total.toLocaleString("fr-FR")+'</strong><br><span class="muted">'+escapeHtml(detail)+'</span></td></tr>';
+ }).join("")||'<tr><td colspan="5">Aucun joueur correspondant aux clubs suivis n’a été identifié dans cette sauvegarde.</td></tr>';
+ const warnings=Array.isArray(result.warnings)?result.warnings:[];
+ $("readerWarnings").innerHTML=warnings.length?'<div class="notice"><strong>Points de contrôle du lecteur</strong><ul class="warning-list">'+warnings.map(w=>'<li>'+escapeHtml(w)+'</li>').join("")+'</ul></div>':"";
+ setReaderStatus("Analyse terminée : "+players.length.toLocaleString("fr-FR")+" joueurs associés aux clubs suivis. Lecteur fmsave "+result.fmsaveVersion+".");
+}
+function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 
 function renderClubs(clubs){
  const names=[...new Set([...clubs.map(c=>String(c.name||"").trim()).filter(Boolean),"San Marino Calcio"])]
+ trackedClubNames=names;
   .sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"}));
  $("clubList").innerHTML=names.map(name=>'<div class="club">'+name.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))+'</div>').join("");
  $("clubStatus").textContent=names.length+" clubs affichés, dont San Marino Calcio.";
