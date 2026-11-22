@@ -168,7 +168,7 @@ async function loadTrackedPlayerHistory(){
    const clubs=Array.isArray(entry.clubs)?entry.clubs:[];
    const wasTracked=clubs.some(name=>trackedSet.has(String(name).normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").toLocaleLowerCase("fr").trim()));
    if(!wasTracked)return;
-   if(!history[uid])history[uid]={uid:Number(uid),name:entry.name||null,currentClub:entry.currentClub||null,clubs:[],nationId:entry.nationId??null,secondNationIds:Array.isArray(entry.secondNationIds)?entry.secondNationIds:[]};
+   if(!history[uid])history[uid]={uid:Number(uid),name:entry.name||null,currentClub:entry.currentClub||null,clubs:[],databaseNationId:entry.databaseNationId??null,secondDatabaseNationIds:Array.isArray(entry.secondDatabaseNationIds)?entry.secondDatabaseNationIds:[]};
    const target=history[uid];
    if(entry.name)target.name=entry.name;
    if(entry.currentClub)target.currentClub=entry.currentClub;
@@ -349,7 +349,7 @@ async function renderSaveResults(result){
   }
   $("playerSearchCount").textContent=query?filtered.length.toLocaleString("fr-FR")+" joueur(s) trouvé(s) sur "+players.length.toLocaleString("fr-FR")+".":"Tous les "+players.length.toLocaleString("fr-FR")+" joueurs affichés.";
   $("playerRows").innerHTML=filtered.map(player=>{
-   const nationality=[player.nationId===null?"—":String(player.nationId),...(player.secondNationIds||[]).map(String)].join(" / ");
+   const nationality=[player.databaseNationId==null?"—":String(player.databaseNationId),...(player.secondDatabaseNationIds||[]).map(String)].join(" / ");
    const current=Number(player.currentSeasonAppearances||0),total=Number(player.totalOfficialAppearances||0);
    return '<tr><td><strong>'+escapeHtml(player.name||"Nom non lu")+'</strong><br><span class="pill">UID '+escapeHtml(String(player.uid))+'</span></td><td>'+escapeHtml(player.currentClub||"—")+'</td><td>'+escapeHtml(nationality)+'</td><td class="num">'+current.toLocaleString("fr-FR")+'</td><td class="num"><strong>'+total.toLocaleString("fr-FR")+' / 100</strong></td></tr>';
   }).join("")||'<tr><td colspan="5">'+(query?"Aucun joueur ne correspond à cette recherche.":"Aucun joueur correspondant aux clubs suivis n’a été identifié dans cette sauvegarde.")+'</td></tr>';
