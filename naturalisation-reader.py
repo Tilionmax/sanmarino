@@ -40,21 +40,36 @@ def analyze_save(path, tracked_json):
             current_counts = {}
             current_clubs = {}
             kind_counts = {}
+            maggioli_player = next((p for p in players if p.uid == 2000473159), None)
             maggioli_debug = {
-                "uid": 2000473159,
-                "currentRows": [],
-                "archivedRows": []
+                "player": {
+                    "uid": maggioli_player.uid,
+                    "uniqueId": maggioli_player.unique_id,
+                    "name": maggioli_player.name,
+                    "clubUid": maggioli_player.club_uid,
+                    "clubName": maggioli_player.club_name
+                } if maggioli_player else None,
+                "currentRowsByUid": [],
+                "currentRowsByName": [],
+                "archivedRowsByUid": [],
+                "archivedRowsByName": [],
+                "matchRowsByUid": [],
+                "matchRowsByName": []
             }
             current_stats = list(save.player_season_stats())
             for row in current_stats:
                 kind = getattr(row.kind, "name", str(row.kind)).casefold().rsplit(".", 1)[-1]
                 kind_counts[kind] = kind_counts.get(kind, 0) + 1
+                row_info = {
+                    "playerUid": row.player_uid, "playerName": row.player_name,
+                    "kind": kind, "clubUid": row.club_uid,
+                    "clubName": row.club_name, "starts": row.starts,
+                    "substituteAppearances": row.substitute_appearances
+                }
                 if row.player_uid == 2000473159:
-                    maggioli_debug["currentRows"].append({
-                        "kind": kind, "clubUid": row.club_uid,
-                        "clubName": row.club_name, "starts": row.starts,
-                        "substituteAppearances": row.substitute_appearances
-                    })
+                    maggioli_debug["currentRowsByUid"].append(row_info)
+                if norm(row.player_name) == norm("Alessandro Maggioli"):
+                    maggioli_debug["currentRowsByName"].append(row_info)
                 if not ("league" in kind or "cup" in kind or "continental" in kind):
                     continue
                 if row.club_uid not in tracked_club_uids:
@@ -74,13 +89,17 @@ def analyze_save(path, tracked_json):
                     kind = getattr(row.kind, "name", str(row.kind)).casefold().rsplit(".", 1)[-1]
                     if not ("league" in kind or "cup" in kind or "continental" in kind):
                         continue
+                    row_info = {
+                        "playerUid": row.player_uid, "playerName": row.player_name,
+                        "kind": kind, "clubUid": row.club_uid,
+                        "clubName": row.club_name, "starts": row.starts,
+                        "substituteAppearances": row.substitute_appearances,
+                        "seasonYear": int(row.season_year)
+                    }
                     if row.player_uid == 2000473159:
-                        maggioli_debug["archivedRows"].append({
-                            "kind": kind, "clubUid": row.club_uid,
-                            "clubName": row.club_name, "starts": row.starts,
-                            "substituteAppearances": row.substitute_appearances,
-                            "seasonYear": int(row.season_year)
-                        })
+                        maggioli_debug["archivedRowsByUid"].append(row_info)
+                    if norm(row.player_name) == norm("Alessandro Maggioli"):
+                        maggioli_debug["archivedRowsByName"].append(row_info)
                     if row.club_uid not in tracked_club_uids:
                         continue
                     key = (row.player_uid, row.club_uid)
@@ -126,6 +145,18 @@ def analyze_save(path, tracked_json):
                 entry["archivedAppearances"] += archived_counts.get((uid, club_uid), 0)
                 entry["archivedSeasons"] = sorted(set(entry["archivedSeasons"]) | archived_seasons.get((uid, club_uid), set()))
 
+            try:
+                for row in save.player_match_stats():
+                    if row.player_uid == 2000473159 or norm(row.player_name) == norm("Alessandro Maggioli"):
+                        maggioli_debug["matchRowsByUid" if row.player_uid == 2000473159 else "matchRowsByName"].append({
+                            "playerUid": row.player_uid, "playerName": row.player_name,
+                            "date": row.date.isoformat() if row.date else None,
+                            "competitionId": row.competition_id,
+                            "opponent": row.opponent_club_name,
+                            "minutes": row.minutes
+                        })
+            except Exception as exc:
+                maggioli_debug["matchStatsError"] = type(exc).__name__
             messages.append("Diagnostic Maggioli : " + json.dumps(maggioli_debug, ensure_ascii=False))
             messages.append("Types de statistiques saison : " + json.dumps(kind_counts, ensure_ascii=False))
 
