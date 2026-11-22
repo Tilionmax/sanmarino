@@ -359,15 +359,20 @@ def analyze_save(path, tracked_json, tracked_player_history_json="{}"):
                         entry["clubs"].append(club_name)
                 
 
-            # Exclure définitivement du suivi actif les joueurs déjà saint-marinais
-            # (nationalité principale ou secondaire, ID base FM27 792).
+            # Exclure uniquement les joueurs saint-marinais qui n'étaient pas
+            # déjà suivis avant cette analyse. Un joueur déjà suivi qui obtient
+            # la nationalité reste visible pour permettre sa modification dans l'éditeur.
+            previously_tracked_uids = {
+                str(uid) for uid in tracked_player_history
+                if uid != "_excludedSammarineseUids"
+            }
             excluded_sammarinese_uids.update(
                 str(uid) for uid in tracked_player_history.get("_excludedSammarineseUids", [])
             )
             for uid_text, entry in list(rows.items()):
                 nation_ids = [entry.get("databaseNationId")]
                 nation_ids.extend(entry.get("secondDatabaseNationIds") or [])
-                if 792 in nation_ids:
+                if 792 in nation_ids and str(uid_text) not in previously_tracked_uids:
                     excluded_sammarinese_uids.add(str(uid_text))
                     rows.pop(uid_text, None)
             for uid_text in excluded_sammarinese_uids:
