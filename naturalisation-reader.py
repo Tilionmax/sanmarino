@@ -65,6 +65,22 @@ def analyze_save(path, tracked_json, tracked_player_history_json="{}"):
                 except (TypeError, ValueError):
                     return None
             players = list(save.players())
+            nation_player_counts = {}
+            for player in players:
+                for local_nation_id in [player.nation_id, *(player.second_nation_ids or ())]:
+                    if local_nation_id is not None:
+                        try:
+                            key = int(local_nation_id)
+                            nation_player_counts[key] = nation_player_counts.get(key, 0) + 1
+                        except (TypeError, ValueError):
+                            pass
+            nation_map = [{
+                "localId": int(nation.nation_id),
+                "databaseId": int(nation.database_id),
+                "players": nation_player_counts.get(int(nation.nation_id), 0)
+            } for nation in save.nations()
+              if nation.nation_id is not None and nation.database_id is not None]
+            nation_map.sort(key=lambda item: (item["databaseId"], item["localId"]))
             clubs = list(save.clubs())
             player_by_uid = {p.uid: p for p in players}
             club_by_uid = {c.uid: c for c in clubs}
@@ -342,6 +358,7 @@ def analyze_save(path, tracked_json, tracked_player_history_json="{}"):
                 "currentStatsRows": len(current_stats),
                 "currentStatsKinds": kind_counts,
                 "historyStatsRows": history_count,
+                "nationMap": nation_map,
                 "trackedClubCount": len(tracked_club_names),
                 "trackedClubNames": tracked_club_names,
                 "trackedClubsFound": tracked_clubs_found,
