@@ -7,13 +7,34 @@ def norm(value):
     value = unicodedata.normalize("NFKD", str(value or ""))
     return "".join(ch for ch in value if not unicodedata.combining(ch)).casefold().strip()
 
+CLUB_ALIASES = {
+    "ac libertas": "AC Libertas", "libertas": "AC Libertas",
+    "fc domagnano": "FC Domagnano", "domagnano": "FC Domagnano",
+    "fc fiorentino": "FC Fiorentino", "fiorentino": "FC Fiorentino",
+    "ss folgore/falciano": "SS Folgore/Falciano", "folgore/falciano": "SS Folgore/Falciano", "folgore": "SS Folgore/Falciano",
+    "ac juvenes-dogana": "AC Juvenes-Dogana", "juvenes/dogana": "AC Juvenes-Dogana", "juvenes-dogana": "AC Juvenes-Dogana", "juvenes dogana": "AC Juvenes-Dogana",
+    "la fiorita 1967": "La Fiorita 1967", "la fiorita": "La Fiorita 1967",
+    "ss pennarossa": "SS Pennarossa", "pennarossa calcio": "SS Pennarossa", "pennarossa": "SS Pennarossa",
+    "ss san giovanni": "SS San Giovanni", "san giovanni": "SS San Giovanni",
+    "san marino academy": "San Marino Academy",
+    "sc faetano": "SC Faetano", "faetano": "SC Faetano",
+    "sp cailungo": "SP Cailungo", "cailungo": "SP Cailungo",
+    "ss cosmos": "SS Cosmos", "cosmos": "SS Cosmos",
+    "ss murata": "SS Murata", "murata": "SS Murata",
+    "tre fiori fc": "Tre Fiori FC", "tre fiori": "Tre Fiori FC",
+    "sp tre penne": "SP Tre Penne", "tre penne": "SP Tre Penne",
+    "ac virtus acquaviva": "AC Virtus Acquaviva", "ss virtus": "AC Virtus Acquaviva", "virtus": "AC Virtus Acquaviva",
+    "san marino calcio": "San Marino Calcio"
+}
+
+def canonical_club(name):
+    return CLUB_ALIASES.get(norm(name))
+
 def is_tracked(name, tracked):
-    key = norm(name)
-    if not key:
-        return False
-    # Correspondance stricte : éviter qu'un club étranger dont le nom
-    # contient celui d'un club suivi soit ajouté par erreur.
-    return key in tracked
+    canonical = canonical_club(name)
+    # Correspondance par alias exact uniquement : un club étranger tel que
+    # Tromsø ne peut pas être retenu par simple ressemblance de nom.
+    return canonical is not None and norm(canonical) in tracked
 
 def appearances(row):
     return int(row.starts or 0) + int(row.substitute_appearances or 0)
@@ -35,6 +56,19 @@ def analyze_save(path, tracked_json):
             tracked_club_uids = {
                 c.uid for c in clubs if is_tracked(c.name, tracked)
             }
+            tracked_clubs_found = sorted({
+                canonical_club(c.name) for c in clubs
+                if canonical_club(c.name) is not None
+                and norm(canonical_club(c.name)) in tracked
+            }, key=lambda value: norm(value))
+            tracked_club_names = sorted(
+                {str(name).strip() for name in tracked_names if name},
+                key=norm
+            )
+            tracked_clubs_missing = [
+                name for name in tracked_club_names
+                if norm(name) not in {norm(found) for found in tracked_clubs_found}
+            ]
             current_counts = {}
             current_clubs = {}
             kind_counts = {}
@@ -200,6 +234,10 @@ def analyze_save(path, tracked_json):
                 "currentStatsRows": len(current_stats),
                 "currentStatsKinds": kind_counts,
                 "historyStatsRows": history_count,
+                "trackedClubCount": len(tracked_club_names),
+                "trackedClubNames": tracked_club_names,
+                "trackedClubsFound": tracked_clubs_found,
+                "trackedClubsMissing": tracked_clubs_missing,
                 "trackedClubUids": len(tracked_club_uids),
                 "galesiDebug": galesi_debug,
                 "players": sorted(rows.values(), key=lambda p: (p["name"] or "").casefold()),
