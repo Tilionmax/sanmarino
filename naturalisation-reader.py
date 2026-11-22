@@ -40,18 +40,23 @@ def analyze_save(path, tracked_json):
             current_counts = {}
             current_clubs = {}
             kind_counts = {}
+            maggioli_debug = {
+                "uid": 2000473159,
+                "currentRows": [],
+                "archivedRows": []
+            }
             current_stats = list(save.player_season_stats())
             for row in current_stats:
                 kind = getattr(row.kind, "name", str(row.kind)).casefold().rsplit(".", 1)[-1]
                 kind_counts[kind] = kind_counts.get(kind, 0) + 1
-                if not ("league" in kind or "cup" in kind or "continental" in kind):
-                    continue
                 if row.player_uid == 2000473159:
                     maggioli_debug["currentRows"].append({
                         "kind": kind, "clubUid": row.club_uid,
                         "clubName": row.club_name, "starts": row.starts,
                         "substituteAppearances": row.substitute_appearances
                     })
+                if not ("league" in kind or "cup" in kind or "continental" in kind):
+                    continue
                 if row.club_uid not in tracked_club_uids:
                     continue
                 key = (row.player_uid, row.club_uid)
@@ -62,11 +67,6 @@ def analyze_save(path, tracked_json):
             archived_clubs = {}
             archived_seasons = {}
             history_count = 0
-            maggioli_debug = {
-                "uid": 2000473159,
-                "currentRows": [],
-                "archivedRows": []
-            }
             try:
                 history = list(save.player_season_history())
                 history_count = len(history)
@@ -125,6 +125,9 @@ def analyze_save(path, tracked_json):
                 entry["currentSeasonAppearances"] += current_counts.get((uid, club_uid), 0)
                 entry["archivedAppearances"] += archived_counts.get((uid, club_uid), 0)
                 entry["archivedSeasons"] = sorted(set(entry["archivedSeasons"]) | archived_seasons.get((uid, club_uid), set()))
+
+            messages.append("Diagnostic Maggioli : " + json.dumps(maggioli_debug, ensure_ascii=False))
+            messages.append("Types de statistiques saison : " + json.dumps(kind_counts, ensure_ascii=False))
 
             for warning in caught:
                 if issubclass(warning.category, fmsave.ReaderCheckWarning):
