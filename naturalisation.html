@@ -377,10 +377,12 @@ function setReaderStatus(message,state="loading"){const el=$("readerProgress");e
 async function loadTrackedPlayerHistory(){
  if(!currentUser)return {};
  const snapshots=await getDocs(collection(db,"users",currentUser.uid,"data"));
+ const exclusionsSnapshot=await getDoc(doc(db,"users",currentUser.uid,"data","naturalisation-exclusions"));
+ const excludedUids=exclusionsSnapshot.exists()&&Array.isArray(exclusionsSnapshot.data().uids)?exclusionsSnapshot.data().uids.map(String):[];
  const trackedSet=new Set(trackedClubNames.map(name=>String(name).normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").toLocaleLowerCase("fr").trim()));
- const history={};
+ const history={_excludedSammarineseUids:excludedUids};
  snapshots.forEach(snapshot=>{
-  if(!snapshot.id.startsWith("naturalisation-"))return;
+  if(!snapshot.id.startsWith("naturalisation-")||snapshot.id==="naturalisation-exclusions")return;
   const saved=snapshot.data()||{};
   if(Number(saved.seasonStartYear)<2026)return;
   Object.entries(saved.players||{}).forEach(([uid,entry])=>{
@@ -404,7 +406,7 @@ async function startSaveReader(file){
  setReaderStatus("ANALYSE EN COURS — Récupération de l’historique des joueurs puis lecture de la sauvegarde FM27. Ne ferme pas cette page…");
  try{
   const trackedPlayerHistory=await loadTrackedPlayerHistory();
-  setReaderStatus("ANALYSE DE LA SAUVEGARDE EN COURS — "+Object.keys(trackedPlayerHistory).length.toLocaleString("fr-FR")+" joueurs déjà suivis chargés. Lecture des joueurs, clubs et statistiques…");
+  setReaderStatus("ANALYSE DE LA SAUVEGARDE EN COURS — "+Math.max(0,Object.keys(trackedPlayerHistory).length-1).toLocaleString("fr-FR")+" joueurs déjà suivis chargés. Lecture des joueurs, clubs et statistiques…");
   readerWorker.postMessage({type:"read",file,trackedClubs:trackedClubNames,trackedPlayerHistory});
  }catch(error){
   setReaderStatus("ÉCHEC — Impossible de récupérer l’historique des joueurs dans Firebase : "+(error.message||String(error)), "failed");
@@ -483,14 +485,20 @@ async function saveSeasonStats(result){
  const previousSeason=await getDoc(seasonRef);
  const trackedSet=new Set(trackedClubNames.map(name=>String(name).normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").toLocaleLowerCase("fr").trim()));
  const previousPlayers=previousSeason.exists()?(previousSeason.data().players||{}):{};
+ const exclusionsRef=doc(db,"users",currentUser.uid,"data","naturalisation-exclusions");
+ const previousExclusions=await getDoc(exclusionsRef);
+ const excludedUids=new Set(previousExclusions.exists()&&Array.isArray(previousExclusions.data().uids)?previousExclusions.data().uids.map(String):[]);
+ (result.excludedPlayerUids||[]).forEach(uid=>excludedUids.add(String(uid)));
  const mergedPlayers={};
  Object.entries(previousPlayers).forEach(([uid,entry])=>{
+  if(excludedUids.has(String(uid)))return;
   const priorClubs=Array.isArray(entry.clubs)?entry.clubs:[];
   if(priorClubs.some(name=>trackedSet.has(String(name).normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").toLocaleLowerCase("fr").trim()))){
    mergedPlayers[uid]=entry;
   }
  });
  Object.assign(mergedPlayers,playersByUid);
+ await setDoc(exclusionsRef,{uids:[...excludedUids],updatedAt:serverTimestamp()});
  await setDoc(seasonRef,{
   season:season.season,seasonStartYear:season.startYear,gameDate:result.gameDate,
   players:mergedPlayers,updatedAt:serverTimestamp()
@@ -525,6 +533,7 @@ async function renderSaveResults(result){
   ["Clubs trouvés dans la sauvegarde",(result.trackedClubsFound||[]).length+" / "+Number(result.trackedClubCount||17)],
   ["Clubs absents de la sauvegarde",(result.trackedClubsMissing||[]).join(", ")||"Aucun"],
   ["Joueurs suivis (actuels et anciens)",players.length.toLocaleString("fr-FR")],
+  ["Joueurs déjà saint-marinais exclus",Number(result.excludedSammarinesePlayers||0).toLocaleString("fr-FR")],
   ["Lignes de stats saison",Number(result.currentStatsRows||0).toLocaleString("fr-FR")],
   ["Lignes d’historique",Number(result.historyStatsRows||0).toLocaleString("fr-FR")]
  ].map(([label,value])=>'<div class="metric"><small>'+escapeHtml(label)+'</small><strong>'+escapeHtml(String(value))+'</strong></div>').join("");
