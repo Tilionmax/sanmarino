@@ -15,7 +15,7 @@ async function boot() {
   self.postMessage({type:"progress", message:"ÉTAPE 4/5 — Installation de fmsave 0.14.3 (cela peut prendre plusieurs minutes)…"});
   await pyodide.runPythonAsync("import micropip; await micropip.install('fmsave==0.14.3')");
   self.postMessage({type:"progress", message:"ÉTAPE 5/5 — Chargement du module d’analyse de sauvegarde…"});
-  const readerResponse = await fetch("naturalisation-reader.py?v=audit-20261122", {cache:"no-store"});
+  const readerResponse = await fetch("naturalisation-reader.py?v=retained-players-20261122", {cache:"no-store"});
   if (!readerResponse.ok) throw new Error("Impossible de charger le lecteur de sauvegarde.");
   pyodide.FS.writeFile("/home/pyodide/naturalisation_reader.py", await readerResponse.text());
   await pyodide.runPythonAsync("import sys; sys.path.insert(0, '/home/pyodide'); import naturalisation_reader");
@@ -38,9 +38,10 @@ self.onmessage = async (event) => {
     pyodide.FS.mount(pyodide.FS.filesystems.WORKERFS, {files:[data.file]}, "/save");
     try {
       const tracked = JSON.stringify(data.trackedClubs || []);
+      const history = JSON.stringify(data.trackedPlayerHistory || {});
       const code = "naturalisation_reader.analyze_save('/save/" +
         data.file.name.replace(/\\/g, "").replace(/'/g, "\\'") +
-        "', " + JSON.stringify(tracked) + ")";
+        "', " + JSON.stringify(tracked) + ", " + JSON.stringify(history) + ")";
       const result = await pyodide.runPythonAsync(code);
       self.postMessage({type:"result", data:JSON.parse(result)});
     } finally {
