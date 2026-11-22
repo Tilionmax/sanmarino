@@ -15,7 +15,7 @@ async function boot() {
   self.postMessage({type:"progress", message:"ÉTAPE 4/5 — Installation de fmsave 0.14.3 (cela peut prendre plusieurs minutes)…"});
   await pyodide.runPythonAsync("import micropip; await micropip.install('fmsave==0.14.3')");
   self.postMessage({type:"progress", message:"ÉTAPE 5/5 — Chargement du module d’analyse de sauvegarde…"});
-  const readerResponse = await fetch("naturalisation-reader.py?v=nation-map-audit-20261122", {cache:"no-store"});
+  const readerResponse = await fetch("naturalisation-reader.py?v=wasm-ssize-fix-20261122", {cache:"no-store"});
   if (!readerResponse.ok) throw new Error("Impossible de charger le lecteur de sauvegarde.");
   pyodide.FS.writeFile("/home/pyodide/naturalisation_reader.py", await readerResponse.text());
   await pyodide.runPythonAsync("import sys; sys.path.insert(0, '/home/pyodide'); import naturalisation_reader");
