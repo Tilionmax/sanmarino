@@ -29,7 +29,7 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
 .reader-note{font-size:12px;color:var(--muted);margin-top:12px}
 .pill{display:inline-block;padding:2px 7px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:11px}
 .warning-list{color:#f2d89c;font-size:12px;padding-left:20px}
-.status{padding:13px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);background:#0a1827}
+.status{padding:13px;border:1px solid var(--line);border-radius:10px;color:var(--muted);background:#0a1827;transition:background .2s,border-color .2s,color .2s}\n.status.loading{color:#ffd27a;background:#382a12;border-color:#b7791f}\n.status.failed{color:#ff9a9a;background:#3a171b;border-color:#c7444f}\n.status.good{color:#9be7b0;background:#123321;border-color:#299653}
 .file-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
 .metric{padding:12px;border:1px solid var(--line);border-radius:10px;background:#0a1827;min-width:0}
 .metric small{display:block;color:var(--muted)}
@@ -136,7 +136,7 @@ let selectedSaveFile=null,currentUser=null,trackedClubNames=[];
 let readerWorker=null,readerReady=false,pendingRead=null;
 
 function formatSize(bytes){if(bytes<1024)return bytes+" octets";if(bytes<1024*1024)return (bytes/1024).toFixed(1)+" Ko";if(bytes<1024*1024*1024)return (bytes/1024/1024).toFixed(1)+" Mo";return (bytes/1024/1024/1024).toFixed(2)+" Go";}
-function setReaderStatus(message){$("readerProgress").textContent=message;}
+function setReaderStatus(message,state="loading"){const el=$("readerProgress");el.textContent=message;el.classList.remove("loading","failed","good");if(state)el.classList.add(state);}
 function startSaveReader(file){
  if(!readerReady){pendingRead=file;setReaderStatus("Sauvegarde sélectionnée. Le moteur de lecture termine son chargement…");return;}
  $("playerResults").hidden=true;
@@ -148,15 +148,15 @@ readerWorker.onmessage=(event)=>{
  const data=event.data||{};
  if(data.type==="ready"){
   readerReady=true;
-  setReaderStatus("Lecteur prêt (fmsave "+data.fmsave+", Pyodide "+data.pyodide+"). Tu peux charger ta sauvegarde.");
+  setReaderStatus("Lecteur prêt (fmsave "+data.fmsave+", Pyodide "+data.pyodide+"). Sélectionne ta sauvegarde pour lancer l’analyse.", "");
   if(pendingRead){const file=pendingRead;pendingRead=null;startSaveReader(file);}
  }else if(data.type==="result"){
   renderSaveResults(data.data);
  }else if(data.type==="error"){
-  setReaderStatus("Échec de lecture : "+data.message);
+  setReaderStatus("ÉCHEC — "+data.message, "failed");
  }
 };
-readerWorker.onerror=(event)=>setReaderStatus("Le moteur de lecture n’a pas pu démarrer. Recharge la page et réessaie.");
+readerWorker.onerror=(event)=>setReaderStatus("ÉCHEC — Le moteur de lecture n’a pas pu démarrer. Recharge la page et réessaie.", "failed");
 readerWorker.postMessage({type:"boot"});
 
 function showSelectedFile(file){
@@ -203,7 +203,7 @@ function renderSaveResults(result){
  }).join("")||'<tr><td colspan="5">Aucun joueur correspondant aux clubs suivis n’a été identifié dans cette sauvegarde.</td></tr>';
  const warnings=Array.isArray(result.warnings)?result.warnings:[];
  $("readerWarnings").innerHTML=warnings.length?'<div class="notice"><strong>Points de contrôle du lecteur</strong><ul class="warning-list">'+warnings.map(w=>'<li>'+escapeHtml(w)+'</li>').join("")+'</ul></div>':"";
- setReaderStatus("Analyse terminée : "+players.length.toLocaleString("fr-FR")+" joueurs associés aux clubs suivis. Lecteur fmsave "+result.fmsaveVersion+".");
+ setReaderStatus("TERMINÉ — "+players.length.toLocaleString("fr-FR")+" joueurs associés aux clubs suivis. Lecteur fmsave "+result.fmsaveVersion+".", "good");
 }
 function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 
