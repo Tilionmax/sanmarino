@@ -2,12 +2,19 @@ let pyodide = null;
 let ready = null;
 
 async function boot() {
-  const pins = await (await fetch("https://rhiever.github.io/fmsave/app/pins.json", {cache:"no-cache"})).json();
+  self.postMessage({type:"progress", message:"ÉTAPE 1/5 — Récupération des versions du lecteur fmsave…"});
+  const pinsResponse = await fetch("https://rhiever.github.io/fmsave/app/pins.json", {cache:"no-cache"});
+  if (!pinsResponse.ok) throw new Error("Impossible de récupérer la configuration du lecteur (HTTP " + pinsResponse.status + ").");
+  const pins = await pinsResponse.json();
   const pyodideUrl = "https://cdn.jsdelivr.net/pyodide/v" + pins.pyodide + "/full/";
+  self.postMessage({type:"progress", message:"ÉTAPE 2/5 — Téléchargement et démarrage du moteur Python (Pyodide)…"});
   const {loadPyodide} = await import(pyodideUrl + "pyodide.mjs");
   pyodide = await loadPyodide({indexURL:pyodideUrl});
+  self.postMessage({type:"progress", message:"ÉTAPE 3/5 — Préparation du gestionnaire de paquets Python…"});
   await pyodide.loadPackage("micropip");
+  self.postMessage({type:"progress", message:"ÉTAPE 4/5 — Installation de fmsave 0.14.3 (cela peut prendre plusieurs minutes)…"});
   await pyodide.runPythonAsync("import micropip; await micropip.install('fmsave==0.14.3')");
+  self.postMessage({type:"progress", message:"ÉTAPE 5/5 — Chargement du module d’analyse de sauvegarde…"});
   const readerResponse = await fetch("naturalisation-reader.py");
   if (!readerResponse.ok) throw new Error("Impossible de charger le lecteur de sauvegarde.");
   pyodide.FS.writeFile("/home/pyodide/naturalisation_reader.py", await readerResponse.text());
