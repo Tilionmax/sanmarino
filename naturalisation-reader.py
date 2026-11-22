@@ -39,7 +39,7 @@ def club_unique_id(club):
 def appearances(row):
     return int(row.starts or 0) + int(row.substitute_appearances or 0)
 
-def analyze_save(path, tracked_json):
+def analyze_save(path, tracked_json, tracked_player_history_json="{}"):
     # Les identifiants uniques fournis par l'utilisateur sont la référence.
     # Les noms de clubs et la configuration Firebase ne servent plus à la détection.
     tracked_names = [club["name"] for club in TRACKED_CLUBS]
@@ -225,6 +225,10 @@ def analyze_save(path, tracked_json):
                 messages.append("Historique des saisons indisponible : " + type(exc).__name__)
 
             rows = {}
+            try:
+                tracked_player_history = json.loads(tracked_player_history_json or "{}")
+            except (TypeError, ValueError):
+                tracked_player_history = {}
             all_keys = set(current_counts)
             for uid, player in player_by_uid.items():
                 if player.club_uid in tracked_club_uids:
@@ -257,6 +261,39 @@ def analyze_save(path, tracked_json):
                 if club_name and club_name not in entry["clubs"]:
                     entry["clubs"].append(club_name)
                 entry["currentSeasonAppearances"] += current_counts.get((uid, club_uid), 0)
+
+            # Réintégrer les joueurs déjà suivis dans Firebase, même s'ils ont quitté
+            # les clubs saint-marinais. Leur club actuel vient de la sauvegarde si disponible.
+            for uid_text, saved_player in tracked_player_history.items():
+                try:
+                    uid = int(uid_text)
+                except (TypeError, ValueError):
+                    continue
+                key = str(uid)
+                player = player_by_uid.get(uid)
+                if key not in rows:
+                    rows[key] = {
+                        "uid": uid,
+                        "name": (player.name if player else None) or saved_player.get("name"),
+                        "currentClub": player.club_name if player else saved_player.get("currentClub"),
+                        "currentClubUid": player.club_uid if player else None,
+                        "nationId": player.nation_id if player else saved_player.get("nationId"),
+                        "secondNationIds": list(player.second_nation_ids or ()) if player else saved_player.get("secondNationIds", []),
+                        "clubs": [],
+                        "currentSeasonAppearances": 0,
+                        "archivedAppearances": 0,
+                        "archivedSeasons": []
+                    }
+                entry = rows[key]
+                if player:
+                    entry["name"] = player.name or entry["name"]
+                    entry["currentClub"] = player.club_name or entry["currentClub"]
+                    entry["currentClubUid"] = player.club_uid
+                    entry["nationId"] = player.nation_id
+                    entry["secondNationIds"] = list(player.second_nation_ids or ())
+                for club_name in saved_player.get("clubs", []):
+                    if club_name and club_name not in entry["clubs"]:
+                        entry["clubs"].append(club_name)
                 
 
             try:
