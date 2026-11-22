@@ -25,7 +25,7 @@ h2{font-size:19px;margin:0 0 12px}
 table{width:100%;border-collapse:collapse;min-width:760px;font-size:13px}
 th,td{padding:10px 9px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
 th{color:var(--teal);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
-td.num{text-align:right;font-variant-numeric:tabular-nums}
+td.num{text-align:center;font-variant-numeric:tabular-nums}.num-sort{text-align:center;cursor:pointer;user-select:none;white-space:nowrap}.num-sort:hover{color:var(--gold)}.num-sort:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 .reader-note{font-size:12px;color:var(--muted);margin-top:12px}
 .pill{display:inline-block;padding:2px 7px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:11px}
 .warning-list{color:#f2d89c;font-size:12px;padding-left:20px}
@@ -119,7 +119,7 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
   </div>
   <div class="table-wrap">
    <table>
-    <thead><tr><th>Joueur / UID</th><th>Club actuel</th><th>Nationalités</th><th>Matchs de la saison en cours</th><th>Cumul depuis 2026/2027</th></tr></thead>
+    <thead><tr><th>Joueur / UID</th><th>Club actuel</th><th>Nationalités</th><th class="num-sort" data-sort="current" tabindex="0" role="button" aria-label="Trier par matchs saison en cours">Matchs saison en cours ↕</th><th class="num-sort" data-sort="total" tabindex="0" role="button" aria-label="Trier par cumul depuis 2026/2027">Cumul depuis 2026/2027 ↕</th></tr></thead>
     <tbody id="playerRows"></tbody>
    </table>
   </div>
@@ -284,12 +284,39 @@ async function renderSaveResults(result){
  const multiClub=Array.isArray(result.multiClubPlayers)?result.multiClubPlayers:[];
  $("multiClubAudit").hidden=false;
  $("multiClubRows").innerHTML=multiClub.length?multiClub.map(player=>'<div class="audit-multi"><strong>'+escapeHtml(player.name||"Joueur inconnu")+'</strong> <span class="pill">UID '+escapeHtml(String(player.uid))+'</span><small>'+player.clubs.map(club=>escapeHtml(club.name)+': '+Number(club.appearances||0)+' match(s)').join(" · ")+' — Total : '+Number(player.totalAppearances||0)+' match(s)</small></div>').join(""):'<p class="reader-note">Aucun joueur détecté dans plusieurs clubs suivis pour cette saison.</p>';
+ let sortKey=null,sortDirection=1;
+ const sortHeaders=[...document.querySelectorAll("th[data-sort]")];
+ const updateSortHeaders=()=>{
+  sortHeaders.forEach(header=>{
+   const key=header.dataset.sort,base=key==="current"?"Matchs saison en cours":"Cumul depuis 2026/2027";
+   header.textContent=base+(sortKey===key?(sortDirection===1?" ↑":" ↓"):" ↕");
+   header.setAttribute("aria-sort",sortKey===key?(sortDirection===1?"ascending":"descending"):"none");
+  });
+ };
+ const changeSort=key=>{
+  if(sortKey===key)sortDirection*=-1;
+  else{sortKey=key;sortDirection=1;}
+  updateSortHeaders();renderPlayerRows();
+ };
+ sortHeaders.forEach(header=>{
+  header.addEventListener("click",()=>changeSort(header.dataset.sort));
+  header.addEventListener("keydown",event=>{
+   if(event.key==="Enter"||event.key===" "){event.preventDefault();changeSort(header.dataset.sort);}
+  });
+ });
  const renderPlayerRows=()=>{
   const query=($("playerSearch").value||"").trim().toLocaleLowerCase("fr");
   const filtered=players.filter(player=>{
    const searchable=[player.name,player.uid,player.currentClub,...(player.clubs||[])].join(" ").toLocaleLowerCase("fr");
    return searchable.includes(query);
   });
+  if(sortKey){
+   filtered.sort((a,b)=>{
+    const av=Number(sortKey==="current"?a.currentSeasonAppearances||0:a.totalOfficialAppearances||0);
+    const bv=Number(sortKey==="current"?b.currentSeasonAppearances||0:b.totalOfficialAppearances||0);
+    return (av-bv)*sortDirection;
+   });
+  }
   $("playerSearchCount").textContent=query?filtered.length.toLocaleString("fr-FR")+" joueur(s) trouvé(s) sur "+players.length.toLocaleString("fr-FR")+".":"Tous les "+players.length.toLocaleString("fr-FR")+" joueurs affichés.";
   $("playerRows").innerHTML=filtered.map(player=>{
    const nationality=[player.nationId===null?"—":String(player.nationId),...(player.secondNationIds||[]).map(String)].join(" / ");
@@ -299,6 +326,7 @@ async function renderSaveResults(result){
  };
  $("playerSearch").value="";
  $("playerSearch").oninput=renderPlayerRows;
+ updateSortHeaders();
  renderPlayerRows();
  const warnings=Array.isArray(result.warnings)?result.warnings:[];
  if(saveError)warnings.push("Enregistrement automatique impossible : "+(saveError.message||String(saveError))+". Les résultats sont affichés mais ne sont pas conservés dans Firebase.");
