@@ -39,6 +39,7 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
 .metric small{display:block;color:var(--muted)}
 .metric strong{display:block;margin-top:4px;overflow-wrap:anywhere}
 .club-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin-top:12px}
+.audit-table{width:100%;border-collapse:collapse;min-width:560px;font-size:13px}.audit-table th,.audit-table td{padding:9px;border-bottom:1px solid var(--line);text-align:left}.audit-table th{color:var(--teal);font-size:11px;text-transform:uppercase}.audit-block{margin-top:18px}.audit-block h3{font-size:15px;margin:0 0 8px}.audit-multi{padding:10px 12px;border:1px solid var(--line);border-radius:9px;margin:7px 0;background:#0b1928}.audit-multi small{display:block;color:var(--muted)}
 .club{padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#0b1928}
 #authGate{min-height:100vh;display:grid;place-items:center;padding:24px}
 .auth-card{width:min(100%,440px);padding:28px;background:linear-gradient(145deg,var(--panel),#0d1a2a);border:1px solid var(--line);border-radius:18px}
@@ -103,6 +104,14 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
  <section class="card" id="playerResults" hidden>
   <h2>Résultat de l’analyse de la sauvegarde</h2>
   <div id="saveSummary" class="file-meta"></div>
+  <div class="audit-block">
+   <h3>Répartition des joueurs et matchs par club</h3>
+   <div class="table-wrap"><table class="audit-table"><thead><tr><th>Club</th><th>Joueurs</th><th>Apparitions</th><th>Lignes de stats</th></tr></thead><tbody id="clubAuditRows"></tbody></table></div>
+  </div>
+  <div class="audit-block" id="multiClubAudit" hidden>
+   <h3>Joueurs ayant évolué dans plusieurs clubs suivis</h3>
+   <div id="multiClubRows"></div>
+  </div>
   <div class="table-wrap">
    <table>
     <thead><tr><th>Joueur / UID</th><th>Club actuel</th><th>Clubs saint-marinais détectés</th><th>Nationalités (IDs)</th><th>Matchs saison</th><th>Cumul depuis 2026/2027</th></tr></thead>
@@ -147,7 +156,7 @@ function startSaveReader(file){
  setReaderStatus("ANALYSE DE LA SAUVEGARDE EN COURS — Ouverture du fichier et lecture des joueurs, clubs et statistiques. Ne ferme pas cette page. Cette étape peut prendre plusieurs minutes…");
  readerWorker.postMessage({type:"read",file,trackedClubs:trackedClubNames});
 }
-readerWorker=new Worker("./naturalisation-worker.js?v=77cb34310535", {type:"module"});
+readerWorker=new Worker("./naturalisation-worker.js?v=audit-20261122", {type:"module"});
 readerWorker.onmessage=(event)=>{
  const data=event.data||{};
  if(data.type==="progress"){
@@ -265,6 +274,11 @@ async function renderSaveResults(result){
   ["Lignes de stats saison",Number(result.currentStatsRows||0).toLocaleString("fr-FR")],
   ["Lignes d’historique",Number(result.historyStatsRows||0).toLocaleString("fr-FR")]
  ].map(([label,value])=>'<div class="metric"><small>'+escapeHtml(label)+'</small><strong>'+escapeHtml(String(value))+'</strong></div>').join("");
+ const clubAudit=Array.isArray(result.clubAudit)?result.clubAudit:[];
+ $("clubAuditRows").innerHTML=clubAudit.map(club=>'<tr><td>'+escapeHtml(club.name||"Club non identifié")+'</td><td class="num">'+Number(club.players||0).toLocaleString("fr-FR")+'</td><td class="num">'+Number(club.appearances||0).toLocaleString("fr-FR")+'</td><td class="num">'+Number(club.statRows||0).toLocaleString("fr-FR")+'</td></tr>').join("")||'<tr><td colspan="4">Aucune donnée de répartition disponible.</td></tr>';
+ const multiClub=Array.isArray(result.multiClubPlayers)?result.multiClubPlayers:[];
+ $("multiClubAudit").hidden=multiClub.length===0;
+ $("multiClubRows").innerHTML=multiClub.map(player=>'<div class="audit-multi"><strong>'+escapeHtml(player.name||"Joueur inconnu")+'</strong> <span class="pill">UID '+escapeHtml(String(player.uid))+'</span><small>'+player.clubs.map(club=>escapeHtml(club.name)+': '+Number(club.appearances||0)+' match(s)').join(" · ")+' — Total : '+Number(player.totalAppearances||0)+' match(s)</small></div>').join("");
  $("playerRows").innerHTML=players.map(player=>{
   const nationality=[player.nationId===null?"—":String(player.nationId),...(player.secondNationIds||[]).map(String)].join(" / ");
   const current=Number(player.currentSeasonAppearances||0),total=Number(player.totalOfficialAppearances||0);
