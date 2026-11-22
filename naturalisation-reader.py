@@ -34,7 +34,7 @@ def analyze_save(path, tracked_json):
             current_clubs = {}
             current_stats = list(save.player_season_stats())
             for row in current_stats:
-                kind = getattr(row.kind, "value", str(row.kind))
+                kind = getattr(row.kind, "label_text", getattr(getattr(row.kind, "label", None), "name", str(row.kind))).casefold()
                 if kind not in ("league", "cup", "continental"):
                     continue
                 if not is_tracked(row.club_name, tracked):
@@ -51,7 +51,7 @@ def analyze_save(path, tracked_json):
                 history = list(save.player_season_history())
                 history_count = len(history)
                 for row in history:
-                    kind = getattr(row.kind, "value", str(row.kind))
+                    kind = getattr(row.kind, "label_text", getattr(getattr(row.kind, "label", None), "name", str(row.kind))).casefold()
                     if kind not in ("league", "cup", "continental"):
                         continue
                     if not is_tracked(row.club_name, tracked):
