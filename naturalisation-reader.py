@@ -57,16 +57,8 @@ def analyze_save(path, tracked_json):
                     "secondNationIds": list(p.second_nation_ids or ())
                 } for p in galesi_candidates],
                 "statsByCandidateUid": {},
-                "player": {
-                    "currentRowsByUid": [],
-                "currentRowsByUniqueId": [],
-                "currentRowsByName": [],
-                "archivedRowsByUid": [],
-                "archivedRowsByUniqueId": [],
-                "archivedRowsByName": [],
-                "matchRowsByUid": [],
-                "matchRowsByUniqueId": [],
-                "matchRowsByName": [],
+                "archivedRowsByCandidateUid": {},
+                "matchRowsByCandidateUid": {},
                 "statsUidDiagnostics": {}
             }
             current_stats = list(save.player_season_stats())
