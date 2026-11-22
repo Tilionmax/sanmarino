@@ -29,7 +29,7 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
 .reader-note{font-size:12px;color:var(--muted);margin-top:12px}
 .pill{display:inline-block;padding:2px 7px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:11px}
 .warning-list{color:#f2d89c;font-size:12px;padding-left:20px}
-.status{padding:13px;border:1px solid var(--line);border-radius:10px;color:var(--muted);background:#0a1827;transition:background .2s,border-color .2s,color .2s}\n.status.loading{color:#ffd27a;background:#382a12;border-color:#b7791f}\n.status.failed{color:#ff9a9a;background:#3a171b;border-color:#c7444f}\n.status.good{color:#9be7b0;background:#123321;border-color:#299653}
+.status{padding:13px;border:1px solid var(--line);border-radius:10px;color:var(--muted);background:#0a1827;transition:background .2s,border-color .2s,color .2s}\n.status.loading{color:#ffd27a;background:#382a12;border:2px solid #d18a19;font-size:16px;font-weight:800;padding:18px}\n.status.loading:before{content:"";display:inline-block;width:11px;height:11px;margin-right:10px;border:3px solid #ffd27a;border-right-color:transparent;border-radius:50%;vertical-align:-1px;animation:statusSpin .8s linear infinite}\n.status.failed{color:#ffb0b0;background:#42191e;border:2px solid #d94b57;font-size:16px;font-weight:800;padding:18px}\n.status.good{color:#a7f0b7;background:#123a24;border:2px solid #32a85b;font-size:16px;font-weight:800;padding:18px}\n@keyframes statusSpin{to{transform:rotate(360deg)}}
 .file-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
 .metric{padding:12px;border:1px solid var(--line);border-radius:10px;background:#0a1827;min-width:0}
 .metric small{display:block;color:var(--muted)}
@@ -93,7 +93,7 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
    <div class="metric"><small>Dernière modification</small><strong id="fileDate">—</strong></div>
   </div>
   <div class="notice">Le lecteur fmsave analyse la sauvegarde directement dans ton navigateur. Le fichier de carrière n’est pas envoyé à Firebase ni à GitHub. Le navigateur télécharge uniquement le moteur de lecture open source et ses dépendances.</div>
-  <div id="readerProgress" class="status loading" role="status" aria-live="polite" style="margin-top:12px">Le lecteur de sauvegarde se prépare…</div>
+  <div id="readerProgress" class="status loading" role="status" aria-live="polite" style="margin-top:12px">CHARGEMENT EN COURS — Préparation du lecteur de sauvegarde. L’analyse démarrera automatiquement après cette étape si un fichier est déjà sélectionné…</div>
  </section>
 
  <section class="card" id="playerResults" hidden>
@@ -138,9 +138,9 @@ let readerWorker=null,readerReady=false,pendingRead=null;
 function formatSize(bytes){if(bytes<1024)return bytes+" octets";if(bytes<1024*1024)return (bytes/1024).toFixed(1)+" Ko";if(bytes<1024*1024*1024)return (bytes/1024/1024).toFixed(1)+" Mo";return (bytes/1024/1024/1024).toFixed(2)+" Go";}
 function setReaderStatus(message,state="loading"){const el=$("readerProgress");el.textContent=message;el.classList.remove("loading","failed","good");if(state)el.classList.add(state);}
 function startSaveReader(file){
- if(!readerReady){pendingRead=file;setReaderStatus("Sauvegarde sélectionnée. Le moteur de lecture termine son chargement…");return;}
+ if(!readerReady){pendingRead=file;setReaderStatus("CHARGEMENT EN COURS — Le lecteur prépare ses composants. Dès qu’il est prêt, l’analyse de ta sauvegarde démarrera automatiquement. Cela peut prendre quelques minutes…");return;}
  $("playerResults").hidden=true;
- setReaderStatus("Lecture de la sauvegarde en cours : ouverture, joueurs, clubs et statistiques. Cela peut prendre plusieurs minutes selon la taille du fichier…");
+ setReaderStatus("ANALYSE DE LA SAUVEGARDE EN COURS — Ouverture du fichier et lecture des joueurs, clubs et statistiques. Ne ferme pas cette page. Cette étape peut prendre plusieurs minutes…");
  readerWorker.postMessage({type:"read",file,trackedClubs:trackedClubNames});
 }
 readerWorker=new Worker("./naturalisation-worker.js");
@@ -148,7 +148,7 @@ readerWorker.onmessage=(event)=>{
  const data=event.data||{};
  if(data.type==="ready"){
   readerReady=true;
-  setReaderStatus("Lecteur prêt (fmsave "+data.fmsave+", Pyodide "+data.pyodide+"). Sélectionne ta sauvegarde pour lancer l’analyse.", "");
+  setReaderStatus("LECTEUR PRÊT — Le moteur est chargé. Sélectionne ta sauvegarde pour lancer l’analyse.", "");
   if(pendingRead){const file=pendingRead;pendingRead=null;startSaveReader(file);}
  }else if(data.type==="result"){
   renderSaveResults(data.data);
@@ -165,7 +165,7 @@ function showSelectedFile(file){
  $("fileName").textContent=file.name;
  $("fileSize").textContent=formatSize(file.size);
  $("fileDate").textContent=file.lastModified?new Date(file.lastModified).toLocaleString("fr-FR"):"Non disponible";
- $("saveStatus").textContent="Sauvegarde sélectionnée. Analyse en cours ou en attente du lecteur.";
+ $("saveStatus").textContent="Fichier sélectionné : "+file.name+". Le suivi du chargement est affiché juste en dessous.";
  $("clearSave").disabled=false;
  startSaveReader(file);
 }
