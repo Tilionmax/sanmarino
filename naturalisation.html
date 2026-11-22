@@ -168,9 +168,10 @@ async function loadTrackedPlayerHistory(){
    const clubs=Array.isArray(entry.clubs)?entry.clubs:[];
    const wasTracked=clubs.some(name=>trackedSet.has(String(name).normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").toLocaleLowerCase("fr").trim()));
    if(!wasTracked)return;
-   if(!history[uid])history[uid]={uid:Number(uid),name:entry.name||null,clubs:[],nationId:entry.nationId??null,secondNationIds:Array.isArray(entry.secondNationIds)?entry.secondNationIds:[]};
+   if(!history[uid])history[uid]={uid:Number(uid),name:entry.name||null,currentClub:entry.currentClub||null,clubs:[],nationId:entry.nationId??null,secondNationIds:Array.isArray(entry.secondNationIds)?entry.secondNationIds:[]};
    const target=history[uid];
    if(entry.name)target.name=entry.name;
+   if(entry.currentClub)target.currentClub=entry.currentClub;
    if(entry.nationId!==undefined&&entry.nationId!==null)target.nationId=entry.nationId;
    if(Array.isArray(entry.secondNationIds)&&entry.secondNationIds.length)target.secondNationIds=entry.secondNationIds;
    clubs.forEach(name=>{if(name&&!target.clubs.includes(name))target.clubs.push(name);});
@@ -304,7 +305,7 @@ async function renderSaveResults(result){
   ["Clubs suivis",Number(result.trackedClubCount||17).toLocaleString("fr-FR")+" (16 + San Marino Calcio)"],
   ["Clubs trouvés dans la sauvegarde",(result.trackedClubsFound||[]).length+" / "+Number(result.trackedClubCount||17)],
   ["Clubs absents de la sauvegarde",(result.trackedClubsMissing||[]).join(", ")||"Aucun"],
-  ["Joueurs liés aux clubs suivis",players.length.toLocaleString("fr-FR")],
+  ["Joueurs suivis (actuels et anciens)",players.length.toLocaleString("fr-FR")],
   ["Lignes de stats saison",Number(result.currentStatsRows||0).toLocaleString("fr-FR")],
   ["Lignes d’historique",Number(result.historyStatsRows||0).toLocaleString("fr-FR")]
  ].map(([label,value])=>'<div class="metric"><small>'+escapeHtml(label)+'</small><strong>'+escapeHtml(String(value))+'</strong></div>').join("");
