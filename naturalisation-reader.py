@@ -349,6 +349,20 @@ def analyze_save(path, tracked_json, tracked_player_history_json="{}"):
                         entry["clubs"].append(club_name)
                 
 
+            # Exclure définitivement du suivi actif les joueurs déjà saint-marinais
+            # (nationalité principale ou secondaire, ID base FM27 792).
+            excluded_sammarinese_uids = set(
+                str(uid) for uid in tracked_player_history.get("_excludedSammarineseUids", [])
+            )
+            for uid_text, entry in list(rows.items()):
+                nation_ids = [entry.get("databaseNationId")]
+                nation_ids.extend(entry.get("secondDatabaseNationIds") or [])
+                if 792 in nation_ids:
+                    excluded_sammarinese_uids.add(str(uid_text))
+                    rows.pop(uid_text, None)
+            for uid_text in excluded_sammarinese_uids:
+                rows.pop(str(uid_text), None)
+
             try:
                 for row in save.player_match_stats():
                     if row.player_uid in candidate_uids or "galesi" in norm(row.player_name):
@@ -392,6 +406,12 @@ def analyze_save(path, tracked_json, tracked_player_history_json="{}"):
                 "clubAudit": club_audit_output,
                 "multiClubPlayers": multi_club_players,
                 "galesiDebug": galesi_debug,
+                "excludedSammarinesePlayers": len([
+                    uid for uid in player_by_uid
+                    if database_nation_id(player_by_uid[uid].nation_id) == 792
+                    or 792 in [value for value in (database_nation_id(n) for n in (player_by_uid[uid].second_nation_ids or ())) if value is not None]
+                ]),
+                "excludedPlayerUids": sorted(excluded_sammarinese_uids),
                 "players": sorted(rows.values(), key=lambda p: (p["name"] or "").casefold()),
                 "warnings": messages
             }, ensure_ascii=False)
