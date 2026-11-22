@@ -1,7 +1,30 @@
 import json
 import unicodedata
 import warnings
+import sys
 import fmsave
+import fmsave._container as fmsave_container
+
+# Pyodide tourne en WebAssembly 32 bits : zstandard attend un max_length
+# compatible avec Py_ssize_t. Les limites proportionnelles de fmsave peuvent
+# dépasser 2 Go même lorsque la trame réellement décompressée est plus petite.
+if sys.platform == "emscripten":
+    _original_decompress_frame = fmsave_container.decompress_frame
+
+    def _wasm_safe_decompress_frame(
+        compressed, *, expected_size, cap, what, file_name, overrun=None
+    ):
+        cap = min(cap, sys.maxsize - 1)
+        return _original_decompress_frame(
+            compressed,
+            expected_size=expected_size,
+            cap=cap,
+            what=what,
+            file_name=file_name,
+            overrun=overrun,
+        )
+
+    fmsave_container.decompress_frame = _wasm_safe_decompress_frame
 
 def norm(value):
     value = unicodedata.normalize("NFKD", str(value or ""))
