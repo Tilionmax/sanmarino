@@ -59,6 +59,15 @@ def analyze_save(path, tracked_json):
                 "statsByCandidateUid": {},
                 "archivedRowsByCandidateUid": {},
                 "matchRowsByCandidateUid": {},
+                "currentRowsByUid": [],
+                "currentRowsByUniqueId": [],
+                "currentRowsByName": [],
+                "archivedRowsByUid": [],
+                "archivedRowsByUniqueId": [],
+                "archivedRowsByName": [],
+                "matchRowsByUid": [],
+                "matchRowsByUniqueId": [],
+                "matchRowsByName": [],
                 "statsUidDiagnostics": {}
             }
             current_stats = list(save.player_season_stats())
