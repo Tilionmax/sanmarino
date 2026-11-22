@@ -277,7 +277,6 @@ async function renderSaveResults(result){
  const clubAudit=Array.isArray(result.clubAudit)?result.clubAudit:[];
  $("clubAuditRows").innerHTML=clubAudit.map(club=>'<tr><td>'+escapeHtml(club.name||"Club non identifié")+'</td><td class="num">'+Number(club.players||0).toLocaleString("fr-FR")+'</td><td class="num">'+Number(club.appearances||0).toLocaleString("fr-FR")+'</td><td class="num">'+Number(club.statRows||0).toLocaleString("fr-FR")+'</td></tr>').join("")||'<tr><td colspan="4">Aucune donnée de répartition disponible.</td></tr>';
  const multiClub=Array.isArray(result.multiClubPlayers)?result.multiClubPlayers:[];
- const multiClub=Array.isArray(result.multiClubPlayers)?result.multiClubPlayers:[];
  $("multiClubAudit").hidden=false;
  $("multiClubRows").innerHTML=multiClub.length?multiClub.map(player=>'<div class="audit-multi"><strong>'+escapeHtml(player.name||"Joueur inconnu")+'</strong> <span class="pill">UID '+escapeHtml(String(player.uid))+'</span><small>'+player.clubs.map(club=>escapeHtml(club.name)+': '+Number(club.appearances||0)+' match(s)').join(" · ")+' — Total : '+Number(player.totalAppearances||0)+' match(s)</small></div>').join(""):'<p class="reader-note">Aucun joueur détecté dans plusieurs clubs suivis pour cette saison.</p>';
  $("playerRows").innerHTML=players.map(player=>{
