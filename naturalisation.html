@@ -122,11 +122,25 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
    <input id="playerSearch" type="search" placeholder="Nom du joueur ou UID (ex. Claudio Cuzzilla)" autocomplete="off" aria-label="Rechercher un joueur par nom ou UID">
    <p id="playerSearchCount" class="reader-note">Tous les joueurs affichés.</p>
   </div>
-  <div class="table-wrap">
-   <table>
-    <thead><tr><th>Joueur / UID</th><th>Club actuel</th><th>Nationalités</th><th class="num-sort" data-sort="current" tabindex="0" role="button" aria-label="Trier par matchs saison en cours">Matchs saison en cours ↕</th><th class="num-sort" data-sort="total" tabindex="0" role="button" aria-label="Trier par cumul depuis 2026/2027">Cumul depuis 2026/2027 ↕</th></tr></thead>
-    <tbody id="playerRows"></tbody>
-   </table>
+  <div class="audit-block">
+   <h3>Joueurs en cours de naturalisation</h3>
+   <p class="reader-note">Joueurs suivis ayant moins de 100 matchs officiels cumulés depuis le début du suivi.</p>
+   <div class="table-wrap">
+    <table>
+     <thead><tr><th>Joueur / UID</th><th>Club actuel</th><th>Nationalités</th><th class="num-sort" data-sort="current" tabindex="0" role="button" aria-label="Trier par matchs saison en cours">Matchs saison en cours ↕</th><th class="num-sort" data-sort="total" tabindex="0" role="button" aria-label="Trier par cumul depuis 2026/2027">Cumul depuis 2026/2027 ↕</th></tr></thead>
+     <tbody id="playerRows"></tbody>
+    </table>
+   </div>
+  </div>
+  <div class="audit-block">
+   <h3>Joueurs à naturaliser</h3>
+   <p class="reader-note">Joueurs ayant atteint au moins 100 matchs officiels cumulés. Ils restent affichés ici pour que tu puisses les repérer et modifier leur nationalité dans l’éditeur.</p>
+   <div class="table-wrap">
+    <table>
+     <thead><tr><th>Joueur / UID</th><th>Club actuel</th><th>Nationalités</th><th class="num-sort" data-sort="current" tabindex="0" role="button" aria-label="Trier par matchs saison en cours">Matchs saison en cours ↕</th><th class="num-sort" data-sort="total" tabindex="0" role="button" aria-label="Trier par cumul depuis 2026/2027">Cumul depuis 2026/2027 ↕</th></tr></thead>
+     <tbody id="eligiblePlayerRows"></tbody>
+    </table>
+   </div>
   </div>
   <p class="reader-note">Depuis la saison 2026/2027 uniquement : titularisations et entrées en jeu en championnat, coupes et compétitions continentales. Les amicaux et toutes les saisons antérieures sont exclus. Les statistiques de la saison analysée sont enregistrées automatiquement dans Firebase ; une nouvelle analyse de la même saison remplace ses chiffres au lieu de les additionner une deuxième fois.</p>
   <div id="readerWarnings"></div>
@@ -577,12 +591,17 @@ async function renderSaveResults(result){
     return (av-bv)*sortDirection;
    });
   }
-  $("playerSearchCount").textContent=query?filtered.length.toLocaleString("fr-FR")+" joueur(s) trouvé(s) sur "+players.length.toLocaleString("fr-FR")+".":"Tous les "+players.length.toLocaleString("fr-FR")+" joueurs affichés.";
-  $("playerRows").innerHTML=filtered.map(player=>{
+  const inProgress=filtered.filter(player=>Number(player.totalOfficialAppearances||0)<100);
+  const toNaturalise=filtered.filter(player=>Number(player.totalOfficialAppearances||0)>=100);
+  $("playerSearchCount").textContent=(query?filtered.length.toLocaleString("fr-FR")+" joueur(s) trouvé(s)":"Tous les "+players.length.toLocaleString("fr-FR")+" joueurs")+
+   " — "+inProgress.length.toLocaleString("fr-FR")+" en cours, "+toNaturalise.length.toLocaleString("fr-FR")+" à naturaliser.";
+  const rowHtml=player=>{
    const nationality=[formatNationality(player.databaseNationId),...(player.secondDatabaseNationIds||[]).map(formatNationality)].join(" / ");
    const current=Number(player.currentSeasonAppearances||0),total=Number(player.totalOfficialAppearances||0);
    return '<tr><td><strong>'+escapeHtml(player.name||"Nom non lu")+'</strong><br><span class="pill">UID '+escapeHtml(String(player.uid))+'</span></td><td>'+escapeHtml(player.currentClub||"—")+'</td><td>'+escapeHtml(nationality)+'</td><td class="num">'+current.toLocaleString("fr-FR")+'</td><td class="num"><strong>'+total.toLocaleString("fr-FR")+' / 100</strong></td></tr>';
-  }).join("")||'<tr><td colspan="5">'+(query?"Aucun joueur ne correspond à cette recherche.":"Aucun joueur correspondant aux clubs suivis n’a été identifié dans cette sauvegarde.")+'</td></tr>';
+  };
+  $("playerRows").innerHTML=inProgress.map(rowHtml).join("")||'<tr><td colspan="5">'+(query?"Aucun joueur en cours ne correspond à cette recherche.":"Aucun joueur en cours de naturalisation.")+'</td></tr>';
+  $("eligiblePlayerRows").innerHTML=toNaturalise.map(rowHtml).join("")||'<tr><td colspan="5">'+(query?"Aucun joueur à naturaliser ne correspond à cette recherche.":"Aucun joueur n’a encore atteint les 100 matchs officiels.")+'</td></tr>';
  };
  $("playerSearch").value="";
  $("playerSearch").oninput=renderPlayerRows;
