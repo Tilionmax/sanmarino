@@ -155,6 +155,31 @@ import { getFirestore, doc, getDoc, getDocs, collection, setDoc, serverTimestamp
 const firebaseConfig={apiKey:"AIzaSyDTqkbaLNKvd-Tk6shLosKtVQGyX_H_A-E",authDomain:"san-marino-af270.firebaseapp.com",projectId:"san-marino-af270",storageBucket:"san-marino-af270.firebasestorage.app",messagingSenderId:"1021748198186",appId:"1:1021748198186:web:1864b27053e8f1ba29fc53"};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);
 const defaultClubs=["AC Libertas","FC Domagnano","FC Fiorentino","SS Folgore/Falciano","AC Juvenes-Dogana","La Fiorita 1967","SS Pennarossa","SS San Giovanni","San Marino Academy","SC Faetano","SP Cailungo","SS Cosmos","SS Murata","Tre Fiori","SP Tre Penne","SS Virtus"];
+
+// Correspondance vérifiée des identifiants de base FM27 vers les noms français.
+// Les identifiants non répertoriés restent affichés avec leur numéro : aucun nom n'est deviné.
+const nationNamesByDatabaseId={
+  2:"Algérie",
+  6:"Angola",
+  46:"Afrique du Sud",
+  105:"Afghanistan",
+  752:"Albanie",
+  753:"Andorre",
+  765:"Angleterre",
+  769:"France",
+  771:"Allemagne",
+  776:"Italie",
+  792:"Saint-Marin"
+};
+const ambiguousNationIds=new Set([116,139,141,364,370,371,388,389]);
+function formatNationality(databaseId){
+ if(databaseId===null||databaseId===undefined)return "—";
+ const id=Number(databaseId);
+ if(!Number.isFinite(id))return "—";
+ if(nationNamesByDatabaseId[id])return nationNamesByDatabaseId[id];
+ if(ambiguousNationIds.has(id))return "ID "+id+" (correspondance ambiguë)";
+ return "ID "+id+" (nom à vérifier)";
+}
 let selectedSaveFile=null,currentUser=null,trackedClubNames=[];
 let readerWorker=null,readerReady=false,pendingRead=null;
 
@@ -356,7 +381,7 @@ async function renderSaveResults(result){
   }
   $("playerSearchCount").textContent=query?filtered.length.toLocaleString("fr-FR")+" joueur(s) trouvé(s) sur "+players.length.toLocaleString("fr-FR")+".":"Tous les "+players.length.toLocaleString("fr-FR")+" joueurs affichés.";
   $("playerRows").innerHTML=filtered.map(player=>{
-   const nationality=[player.databaseNationId==null?"—":String(player.databaseNationId),...(player.secondDatabaseNationIds||[]).map(String)].join(" / ");
+   const nationality=[formatNationality(player.databaseNationId),...(player.secondDatabaseNationIds||[]).map(formatNationality)].join(" / ");
    const current=Number(player.currentSeasonAppearances||0),total=Number(player.totalOfficialAppearances||0);
    return '<tr><td><strong>'+escapeHtml(player.name||"Nom non lu")+'</strong><br><span class="pill">UID '+escapeHtml(String(player.uid))+'</span></td><td>'+escapeHtml(player.currentClub||"—")+'</td><td>'+escapeHtml(nationality)+'</td><td class="num">'+current.toLocaleString("fr-FR")+'</td><td class="num"><strong>'+total.toLocaleString("fr-FR")+' / 100</strong></td></tr>';
   }).join("")||'<tr><td colspan="5">'+(query?"Aucun joueur ne correspond à cette recherche.":"Aucun joueur correspondant aux clubs suivis n’a été identifié dans cette sauvegarde.")+'</td></tr>';
