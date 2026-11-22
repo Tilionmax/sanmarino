@@ -135,7 +135,7 @@ import { getFirestore, doc, getDoc, getDocs, collection, setDoc, serverTimestamp
 
 const firebaseConfig={apiKey:"AIzaSyDTqkbaLNKvd-Tk6shLosKtVQGyX_H_A-E",authDomain:"san-marino-af270.firebaseapp.com",projectId:"san-marino-af270",storageBucket:"san-marino-af270.firebasestorage.app",messagingSenderId:"1021748198186",appId:"1:1021748198186:web:1864b27053e8f1ba29fc53"};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);
-const defaultClubs=["AC Libertas","FC Domagnano","FC Fiorentino","Folgore/Falciano","Juvenes/Dogana","La Fiorita","Pennarossa Calcio","San Giovanni","San Marino Academy","SC Faetano","SP Cailungo","SS Cosmos","SS Murata","SS Virtus","Tre Fiori","Tre Penne"];
+const defaultClubs=["AC Libertas","FC Domagnano","FC Fiorentino","SS Folgore/Falciano","AC Juvenes-Dogana","La Fiorita 1967","SS Pennarossa","SS San Giovanni","San Marino Academy","SC Faetano","SP Cailungo","SS Cosmos","SS Murata","Tre Fiori FC","SP Tre Penne","AC Virtus Acquaviva"];
 let selectedSaveFile=null,currentUser=null,trackedClubNames=[];
 let readerWorker=null,readerReady=false,pendingRead=null;
 
@@ -147,7 +147,7 @@ function startSaveReader(file){
  setReaderStatus("ANALYSE DE LA SAUVEGARDE EN COURS — Ouverture du fichier et lecture des joueurs, clubs et statistiques. Ne ferme pas cette page. Cette étape peut prendre plusieurs minutes…");
  readerWorker.postMessage({type:"read",file,trackedClubs:trackedClubNames});
 }
-readerWorker=new Worker("./naturalisation-worker.js?v=aaf5002", {type:"module"});
+readerWorker=new Worker("./naturalisation-worker.js?v=9f6e2b227bca", {type:"module"});
 readerWorker.onmessage=(event)=>{
  const data=event.data||{};
  if(data.type==="progress"){
@@ -258,6 +258,9 @@ async function renderSaveResults(result){
   ["Date en jeu",result.gameDate||"Non disponible"],
   ["Saison de suivi",getTrackedSeason(result.gameDate)?.season||"Non enregistrée"],
   ["Joueurs décodés",Number(result.totalPlayersDecoded||0).toLocaleString("fr-FR")],
+  ["Clubs suivis",Number(result.trackedClubCount||17).toLocaleString("fr-FR")+" (16 + San Marino Calcio)"],
+  ["Clubs trouvés dans la sauvegarde",(result.trackedClubsFound||[]).length+" / "+Number(result.trackedClubCount||17)],
+  ["Clubs absents de la sauvegarde",(result.trackedClubsMissing||[]).join(", ")||"Aucun"],
   ["Joueurs liés aux clubs suivis",players.length.toLocaleString("fr-FR")],
   ["Lignes de stats saison",Number(result.currentStatsRows||0).toLocaleString("fr-FR")],
   ["Lignes d’historique",Number(result.historyStatsRows||0).toLocaleString("fr-FR")]
@@ -278,11 +281,18 @@ async function renderSaveResults(result){
 function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 
 function renderClubs(clubs){
- const names=[...new Set([...clubs.map(c=>String(c.name||"").trim()).filter(Boolean),"San Marino Calcio"])]
-  .sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"}));
+ const names=[...defaultClubs,"San Marino Calcio"].sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"}));
  trackedClubNames=names;
+ const configured=[...new Set((clubs||[]).map(c=>String(c.name||"").trim()).filter(Boolean))];
+ const allowed=new Set(defaultClubs.map(name=>name.normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").toLocaleLowerCase("fr").trim()));
+ const aliases=new Map([["folgore/falciano","ss folgore/falciano"],["juvenes/dogana","ac juvenes-dogana"],["pennarossa calcio","ss pennarossa"],["san giovanni","ss san giovanni"],["ss virtus","ac virtus acquaviva"],["virtus","ac virtus acquaviva"],["tre fiori","tre fiori fc"],["la fiorita","la fiorita 1967"]]);
+ const key=name=>name.normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").toLocaleLowerCase("fr").trim();
+ const configuredKeys=configured.map(name=>aliases.get(key(name))||key(name));
+ const officialKeys=new Set(defaultClubs.map(key));
+ const extras=configured.filter(name=>!officialKeys.has(aliases.get(key(name))||key(name)));
+ const missing=defaultClubs.filter(name=>!configuredKeys.includes(key(name)));
  $("clubList").innerHTML=names.map(name=>'<div class="club">'+name.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))+'</div>').join("");
- $("clubStatus").textContent=names.length+" clubs affichés, dont San Marino Calcio.";
+ $("clubStatus").textContent="17 clubs suivis : 16 clubs du Campionato + San Marino Calcio. "+(extras.length||missing.length?("Écart dans la configuration Firebase — clubs hors liste : "+(extras.join(", ")||"aucun")+" ; clubs absents de la configuration : "+(missing.join(", ")||"aucun")+"."):"La configuration correspond à la liste officielle.");
 }
 async function loadClubList(user){
  try{
