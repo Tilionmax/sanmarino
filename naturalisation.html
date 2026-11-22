@@ -29,7 +29,11 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
 .reader-note{font-size:12px;color:var(--muted);margin-top:12px}
 .pill{display:inline-block;padding:2px 7px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:11px}
 .warning-list{color:#f2d89c;font-size:12px;padding-left:20px}
-.status{padding:13px;border:1px solid var(--line);border-radius:10px;color:var(--muted);background:#0a1827;transition:background .2s,border-color .2s,color .2s}\n.status.loading{color:#ffd27a;background:#382a12;border:2px solid #d18a19;font-size:16px;font-weight:800;padding:18px}\n.status.loading:before{content:"";display:inline-block;width:11px;height:11px;margin-right:10px;border:3px solid #ffd27a;border-right-color:transparent;border-radius:50%;vertical-align:-1px;animation:statusSpin .8s linear infinite}\n.status.failed{color:#ffb0b0;background:#42191e;border:2px solid #d94b57;font-size:16px;font-weight:800;padding:18px}\n.status.good{color:#a7f0b7;background:#123a24;border:2px solid #32a85b;font-size:16px;font-weight:800;padding:18px}\n@keyframes statusSpin{to{transform:rotate(360deg)}}
+.status{padding:13px;border:1px solid var(--line);border-radius:10px;color:var(--muted);background:#0a1827;transition:background .2s,border-color .2s,color .2s}
+.status.loading{color:#ffd27a;background:#382a12;border:2px solid #d18a19;font-size:16px;font-weight:800;padding:18px}
+.status.loading:before{content:"";display:inline-block;width:11px;height:11px;margin-right:10px;border:3px solid #ffd27a;border-right-color:transparent;border-radius:50%;vertical-align:-1px;animation:statusSpin .8s linear infinite}
+.status.failed{color:#ffb0b0;background:#42191e;border:2px solid #d94b57;font-size:16px;font-weight:800;padding:18px}
+.status.good{color:#a7f0b7;background:#123a24;border:2px solid #32a85b;font-size:16px;font-weight:800;padding:18px}\n@keyframes statusSpin{to{transform:rotate(360deg)}}
 .file-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
 .metric{padding:12px;border:1px solid var(--line);border-radius:10px;background:#0a1827;min-width:0}
 .metric small{display:block;color:var(--muted)}
