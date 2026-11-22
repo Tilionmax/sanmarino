@@ -40,8 +40,23 @@ def analyze_save(path, tracked_json):
             current_counts = {}
             current_clubs = {}
             kind_counts = {}
-            maggioli_player = next((p for p in players if p.uid == 2000473159), None)
+            target_game_id = 20000473160
+            maggioli_candidates = [
+                p for p in players
+                if "maggioli" in norm(p.name)
+                or p.uid == target_game_id
+                or p.unique_id == target_game_id
+            ]
+            candidate_uids = {p.uid for p in maggioli_candidates}
             maggioli_debug = {
+                "targetGameId": target_game_id,
+                "playersNamedMaggioli": [{
+                    "uid": p.uid, "uniqueId": p.unique_id, "name": p.name,
+                    "clubUid": p.club_uid, "clubName": p.club_name,
+                    "nationId": p.nation_id,
+                    "secondNationIds": list(p.second_nation_ids or ())
+                } for p in maggioli_candidates],
+                "statsByCandidateUid": {},
                 "player": {
                     "uid": maggioli_player.uid,
                     "uniqueId": maggioli_player.unique_id,
@@ -78,6 +93,8 @@ def analyze_save(path, tracked_json):
                     "clubName": row.club_name, "starts": row.starts,
                     "substituteAppearances": row.substitute_appearances
                 }
+                if row.player_uid in candidate_uids:
+                    maggioli_debug["statsByCandidateUid"].setdefault(str(row.player_uid), []).append(row_info)
                 if row.player_uid == 2000473159:
                     maggioli_debug["currentRowsByUid"].append(row_info)
                 if row.player_uid == 2000473160:
@@ -110,6 +127,8 @@ def analyze_save(path, tracked_json):
                         "substituteAppearances": row.substitute_appearances,
                         "seasonYear": int(row.season_year)
                     }
+                    if row.player_uid in candidate_uids:
+                        maggioli_debug.setdefault("archivedRowsByCandidateUid", {}).setdefault(str(row.player_uid), []).append(row_info)
                     if row.player_uid == 2000473159:
                         maggioli_debug["archivedRowsByUid"].append(row_info)
                     if row.player_uid == 2000473160:
@@ -163,9 +182,9 @@ def analyze_save(path, tracked_json):
 
             try:
                 for row in save.player_match_stats():
-                    if row.player_uid in (2000473159, 2000473160) or norm(row.player_name) == norm("Alessandro Maggioli"):
-                        target = "matchRowsByUid" if row.player_uid == 2000473159 else ("matchRowsByUniqueId" if row.player_uid == 2000473160 else "matchRowsByName")
-                        maggioli_debug[target].append({
+                    if row.player_uid in candidate_uids or "maggioli" in norm(row.player_name):
+                        target = "matchRowsByCandidateUid" if row.player_uid in candidate_uids else "matchRowsByName"
+                        maggioli_debug.setdefault(target, []).append({
                             "playerUid": row.player_uid, "playerName": row.player_name,
                             "date": row.date.isoformat() if row.date else None,
                             "competitionId": row.competition_id,
