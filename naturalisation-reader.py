@@ -278,6 +278,7 @@ def analyze_save(path, tracked_json, tracked_player_history_json="{}"):
                 messages.append("Historique des saisons indisponible : " + type(exc).__name__)
 
             rows = {}
+            excluded_sammarinese_uids = set()
             try:
                 tracked_player_history = json.loads(tracked_player_history_json or "{}")
             except (TypeError, ValueError):
@@ -324,6 +325,15 @@ def analyze_save(path, tracked_json, tracked_player_history_json="{}"):
                     continue
                 key = str(uid)
                 player = player_by_uid.get(uid)
+                saved_nation_ids = [saved_player.get("databaseNationId")]
+                saved_nation_ids.extend(saved_player.get("secondDatabaseNationIds") or [])
+                current_nation_ids = (
+                    [database_nation_id(player.nation_id)]
+                    + [database_nation_id(n) for n in (player.second_nation_ids or ())]
+                ) if player else []
+                if 792 in saved_nation_ids or 792 in current_nation_ids:
+                    excluded_sammarinese_uids.add(key)
+                    continue
                 if key not in rows:
                     rows[key] = {
                         "uid": uid,
@@ -351,7 +361,7 @@ def analyze_save(path, tracked_json, tracked_player_history_json="{}"):
 
             # Exclure définitivement du suivi actif les joueurs déjà saint-marinais
             # (nationalité principale ou secondaire, ID base FM27 792).
-            excluded_sammarinese_uids = set(
+            excluded_sammarinese_uids.update(
                 str(uid) for uid in tracked_player_history.get("_excludedSammarineseUids", [])
             )
             for uid_text, entry in list(rows.items()):
