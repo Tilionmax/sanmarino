@@ -147,7 +147,7 @@ function startSaveReader(file){
  setReaderStatus("ANALYSE DE LA SAUVEGARDE EN COURS — Ouverture du fichier et lecture des joueurs, clubs et statistiques. Ne ferme pas cette page. Cette étape peut prendre plusieurs minutes…");
  readerWorker.postMessage({type:"read",file,trackedClubs:trackedClubNames});
 }
-readerWorker=new Worker("./naturalisation-worker.js?v=8de7715", {type:"module"});
+readerWorker=new Worker("./naturalisation-worker.js?v=200b65c", {type:"module"});
 readerWorker.onmessage=(event)=>{
  const data=event.data||{};
  if(data.type==="progress"){
