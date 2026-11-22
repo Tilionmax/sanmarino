@@ -218,10 +218,16 @@ async function saveSeasonStats(result){
  }
  const seasonRef=doc(db,"users",currentUser.uid,"data","naturalisation-"+season.key);
  const previousSeason=await getDoc(seasonRef);
- const mergedPlayers={
-  ...(previousSeason.exists()?(previousSeason.data().players||{}):{}),
-  ...playersByUid
- };
+ const trackedSet=new Set(trackedClubNames.map(name=>String(name).normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").toLocaleLowerCase("fr").trim()));
+ const previousPlayers=previousSeason.exists()?(previousSeason.data().players||{}):{};
+ const mergedPlayers={};
+ Object.entries(previousPlayers).forEach(([uid,entry])=>{
+  const priorClubs=Array.isArray(entry.clubs)?entry.clubs:[];
+  if(priorClubs.some(name=>trackedSet.has(String(name).normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").toLocaleLowerCase("fr").trim()))){
+   mergedPlayers[uid]=entry;
+  }
+ });
+ Object.assign(mergedPlayers,playersByUid);
  await setDoc(seasonRef,{
   season:season.season,seasonStartYear:season.startYear,gameDate:result.gameDate,
   players:mergedPlayers,updatedAt:serverTimestamp()
