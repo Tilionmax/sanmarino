@@ -7,42 +7,43 @@ def norm(value):
     value = unicodedata.normalize("NFKD", str(value or ""))
     return "".join(ch for ch in value if not unicodedata.combining(ch)).casefold().strip()
 
-CLUB_ALIASES = {
-    "ac libertas": "AC Libertas", "libertas": "AC Libertas",
-    "fc domagnano": "FC Domagnano", "domagnano": "FC Domagnano",
-    "fc fiorentino": "FC Fiorentino", "fiorentino": "FC Fiorentino",
-    "ss folgore/falciano": "SS Folgore/Falciano", "folgore/falciano": "SS Folgore/Falciano", "folgore": "SS Folgore/Falciano",
-    "ac juvenes-dogana": "AC Juvenes-Dogana", "juvenes/dogana": "AC Juvenes-Dogana", "juvenes-dogana": "AC Juvenes-Dogana", "juvenes dogana": "AC Juvenes-Dogana",
-    "la fiorita 1967": "La Fiorita 1967", "la fiorita": "La Fiorita 1967",
-    "ss pennarossa": "SS Pennarossa", "pennarossa calcio": "SS Pennarossa", "pennarossa": "SS Pennarossa",
-    "ss san giovanni": "SS San Giovanni", "san giovanni": "SS San Giovanni",
-    "san marino academy": "San Marino Academy",
-    "sc faetano": "SC Faetano", "faetano": "SC Faetano",
-    "sp cailungo": "SP Cailungo", "cailungo": "SP Cailungo",
-    "ss cosmos": "SS Cosmos", "cosmos": "SS Cosmos",
-    "ss murata": "SS Murata", "murata": "SS Murata",
-    "tre fiori fc": "Tre Fiori FC", "tre fiori": "Tre Fiori FC",
-    "sp tre penne": "SP Tre Penne", "tre penne": "SP Tre Penne",
-    "ac virtus acquaviva": "AC Virtus Acquaviva", "ss virtus": "AC Virtus Acquaviva", "virtus": "AC Virtus Acquaviva",
-    "san marino calcio": "San Marino Calcio"
-}
+TRACKED_CLUBS = [
+    {"name": "AC Libertas", "unique_id": 1301141},
+    {"name": "FC Domagnano", "unique_id": 1301125},
+    {"name": "FC Fiorentino", "unique_id": 8800000},
+    {"name": "SS Folgore/Falciano", "unique_id": 1301131},
+    {"name": "AC Juvenes-Dogana", "unique_id": 1301142},
+    {"name": "La Fiorita 1967", "unique_id": 1301129},
+    {"name": "SS Pennarossa", "unique_id": 8800002},
+    {"name": "SS San Giovanni", "unique_id": 1301135},
+    {"name": "San Marino Academy", "unique_id": 60021565},
+    {"name": "SC Faetano", "unique_id": 1301127},
+    {"name": "SP Cailungo", "unique_id": 1301121},
+    {"name": "SS Cosmos", "unique_id": 1301123},
+    {"name": "SS Murata", "unique_id": 1301133},
+    {"name": "Tre Fiori", "unique_id": 1301137},
+    {"name": "SP Tre Penne", "unique_id": 8800001},
+    {"name": "SS Virtus", "unique_id": 1301139},
+    {"name": "San Marino Calcio", "unique_id": 2000113410}
+]
 
-def canonical_club(name):
-    return CLUB_ALIASES.get(norm(name))
+TRACKED_BY_ID = {club["unique_id"]: club["name"] for club in TRACKED_CLUBS}
 
-def is_tracked(name, tracked):
-    canonical = canonical_club(name)
-    # Correspondance par alias exact uniquement : un club étranger tel que
-    # Tromsø ne peut pas être retenu par simple ressemblance de nom.
-    return canonical is not None and norm(canonical) in tracked
+def club_unique_id(club):
+    value = getattr(club, "unique_id", None)
+    try:
+        return int(value) if value is not None else None
+    except (TypeError, ValueError):
+        return None
 
 def appearances(row):
     return int(row.starts or 0) + int(row.substitute_appearances or 0)
 
 def analyze_save(path, tracked_json):
-    tracked_names = json.loads(tracked_json)
-    tracked = {norm(name) for name in tracked_names if name}
-    tracked.add(norm("San Marino Calcio"))
+    # Les identifiants uniques fournis par l'utilisateur sont la référence.
+    # Les noms de clubs et la configuration Firebase ne servent plus à la détection.
+    tracked_names = [club["name"] for club in TRACKED_CLUBS]
+    tracked_ids = set(TRACKED_BY_ID)
     messages = []
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always")
@@ -53,22 +54,26 @@ def analyze_save(path, tracked_json):
             clubs = list(save.clubs())
             player_by_uid = {p.uid: p for p in players}
             club_by_uid = {c.uid: c for c in clubs}
-            tracked_club_uids = {
-                c.uid for c in clubs if is_tracked(c.name, tracked)
+            clubs_by_unique_id = {
+                club_unique_id(c): c for c in clubs
+                if club_unique_id(c) in tracked_ids
             }
-            tracked_clubs_found = sorted({
-                canonical_club(c.name) for c in clubs
-                if canonical_club(c.name) is not None
-                and norm(canonical_club(c.name)) in tracked
-            }, key=lambda value: norm(value))
-            tracked_club_names = sorted(
-                {str(name).strip() for name in tracked_names if name},
-                key=norm
-            )
-            tracked_clubs_missing = [
-                name for name in tracked_club_names
-                if norm(name) not in {norm(found) for found in tracked_clubs_found}
+            tracked_club_uids = {c.uid for c in clubs if club_unique_id(c) in tracked_ids}
+            tracked_clubs_found = [
+                TRACKED_BY_ID[unique_id] for unique_id in TRACKED_BY_ID
+                if unique_id in clubs_by_unique_id
             ]
+            tracked_club_names = [club["name"] for club in TRACKED_CLUBS]
+            tracked_clubs_missing = [
+                club["name"] for club in TRACKED_CLUBS
+                if club["unique_id"] not in clubs_by_unique_id
+            ]
+            tracked_club_matches = [{
+                "name": TRACKED_BY_ID[unique_id],
+                "saveName": club.name,
+                "uniqueId": unique_id,
+                "uid": club.uid
+            } for unique_id, club in clubs_by_unique_id.items()]
             current_counts = {}
             current_clubs = {}
             kind_counts = {}
@@ -170,7 +175,7 @@ def analyze_save(path, tracked_json):
             rows = {}
             all_keys = set(current_counts)
             for uid, player in player_by_uid.items():
-                if player.club_uid is not None and is_tracked(player.club_name, tracked):
+                if player.club_uid in tracked_club_uids:
                     all_keys.add((uid, player.club_uid))
             for uid, club_uid in all_keys:
                 player = player_by_uid.get(uid)
@@ -180,7 +185,7 @@ def analyze_save(path, tracked_json):
                     or (player.club_name if player and player.club_uid == club_uid else None)
                     or (club_by_uid[club_uid].name if club_uid in club_by_uid else "Club non identifié")
                 )
-                if not is_tracked(club_name, tracked):
+                if club_uid not in tracked_club_uids:
                     continue
                 key = str(uid)
                 if key not in rows:
@@ -238,6 +243,8 @@ def analyze_save(path, tracked_json):
                 "trackedClubNames": tracked_club_names,
                 "trackedClubsFound": tracked_clubs_found,
                 "trackedClubsMissing": tracked_clubs_missing,
+                "trackedClubMatches": tracked_club_matches,
+                "trackedClubUniqueIds": sorted(tracked_ids),
                 "trackedClubUids": len(tracked_club_uids),
                 "galesiDebug": galesi_debug,
                 "players": sorted(rows.values(), key=lambda p: (p["name"] or "").casefold()),
