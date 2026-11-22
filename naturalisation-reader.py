@@ -11,7 +11,11 @@ def is_tracked(name, tracked):
     key = norm(name)
     if not key:
         return False
-    return key in tracked or "san marino calcio" in key
+    return key in tracked or any(
+        candidate in key or key in candidate
+        for candidate in tracked
+        if len(candidate) >= 6
+    ) or "san marino calcio" in key
 
 def appearances(row):
     return int(row.starts or 0) + int(row.substitute_appearances or 0)
@@ -30,6 +34,9 @@ def analyze_save(path, tracked_json):
             clubs = list(save.clubs())
             player_by_uid = {p.uid: p for p in players}
             club_by_uid = {c.uid: c for c in clubs}
+            tracked_club_uids = {
+                c.uid for c in clubs if is_tracked(c.name, tracked)
+            }
             current_counts = {}
             current_clubs = {}
             kind_counts = {}
@@ -39,7 +46,13 @@ def analyze_save(path, tracked_json):
                 kind_counts[kind] = kind_counts.get(kind, 0) + 1
                 if not ("league" in kind or "cup" in kind or "continental" in kind):
                     continue
-                if not is_tracked(row.club_name, tracked):
+                if row.player_uid == 2000473159:
+                    maggioli_debug["currentRows"].append({
+                        "kind": kind, "clubUid": row.club_uid,
+                        "clubName": row.club_name, "starts": row.starts,
+                        "substituteAppearances": row.substitute_appearances
+                    })
+                if row.club_uid not in tracked_club_uids:
                     continue
                 key = (row.player_uid, row.club_uid)
                 current_counts[key] = current_counts.get(key, 0) + appearances(row)
@@ -49,6 +62,11 @@ def analyze_save(path, tracked_json):
             archived_clubs = {}
             archived_seasons = {}
             history_count = 0
+            maggioli_debug = {
+                "uid": 2000473159,
+                "currentRows": [],
+                "archivedRows": []
+            }
             try:
                 history = list(save.player_season_history())
                 history_count = len(history)
@@ -56,7 +74,14 @@ def analyze_save(path, tracked_json):
                     kind = getattr(row.kind, "name", str(row.kind)).casefold().rsplit(".", 1)[-1]
                     if not ("league" in kind or "cup" in kind or "continental" in kind):
                         continue
-                    if not is_tracked(row.club_name, tracked):
+                    if row.player_uid == 2000473159:
+                        maggioli_debug["archivedRows"].append({
+                            "kind": kind, "clubUid": row.club_uid,
+                            "clubName": row.club_name, "starts": row.starts,
+                            "substituteAppearances": row.substitute_appearances,
+                            "seasonYear": int(row.season_year)
+                        })
+                    if row.club_uid not in tracked_club_uids:
                         continue
                     key = (row.player_uid, row.club_uid)
                     archived_counts[key] = archived_counts.get(key, 0) + appearances(row)
@@ -117,6 +142,8 @@ def analyze_save(path, tracked_json):
                 "currentStatsRows": len(current_stats),
                 "currentStatsKinds": kind_counts,
                 "historyStatsRows": history_count,
+                "trackedClubUids": len(tracked_club_uids),
+                "maggioliDebug": maggioli_debug,
                 "players": sorted(rows.values(), key=lambda p: (p["name"] or "").casefold()),
                 "warnings": messages
             }, ensure_ascii=False)
