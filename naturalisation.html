@@ -104,6 +104,11 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
  <section class="card" id="playerResults" hidden>
   <h2>Résultat de l’analyse de la sauvegarde</h2>
   <div id="saveSummary" class="file-meta"></div>
+  <div class="audit-block" id="nationAudit">
+   <h3>Correspondance des nationalités de la sauvegarde</h3>
+   <p class="reader-note">L’ID local est celui utilisé par les joueurs dans cette sauvegarde. L’ID base de données est celui à comparer à la liste des nationalités FM27.</p>
+   <div class="table-wrap"><table class="audit-table"><thead><tr><th>ID local sauvegarde</th><th>ID base FM27</th><th>Joueurs concernés</th></tr></thead><tbody id="nationAuditRows"></tbody></table></div>
+  </div>
   <div class="audit-block">
    <h3>Répartition des joueurs et matchs par club</h3>
    <div class="table-wrap"><table class="audit-table"><thead><tr><th>Club</th><th>Joueurs utilisés</th><th>Apparitions</th><th>Lignes de stats</th></tr></thead><tbody id="clubAuditRows"></tbody></table></div>
@@ -191,7 +196,7 @@ async function startSaveReader(file){
   setReaderStatus("ÉCHEC — Impossible de récupérer l’historique des joueurs dans Firebase : "+(error.message||String(error)), "failed");
  }
 }
-readerWorker=new Worker("./naturalisation-worker.js?v=nation-database-ids-20261122", {type:"module"});
+readerWorker=new Worker("./naturalisation-worker.js?v=nation-map-audit-20261122", {type:"module"});
 readerWorker.onmessage=(event)=>{
  const data=event.data||{};
  if(data.type==="progress"){
@@ -309,6 +314,8 @@ async function renderSaveResults(result){
   ["Lignes de stats saison",Number(result.currentStatsRows||0).toLocaleString("fr-FR")],
   ["Lignes d’historique",Number(result.historyStatsRows||0).toLocaleString("fr-FR")]
  ].map(([label,value])=>'<div class="metric"><small>'+escapeHtml(label)+'</small><strong>'+escapeHtml(String(value))+'</strong></div>').join("");
+ const nationMap=Array.isArray(result.nationMap)?result.nationMap:[];
+ $("nationAuditRows").innerHTML=nationMap.map(nation=>'<tr><td class="num">'+Number(nation.localId)+'</td><td class="num"><strong>'+Number(nation.databaseId)+'</strong></td><td class="num">'+Number(nation.players||0).toLocaleString("fr-FR")+'</td></tr>').join("")||'<tr><td colspan="3">Aucune correspondance de nationalité décodée.</td></tr>';
  const clubAudit=Array.isArray(result.clubAudit)?result.clubAudit:[];
  $("clubAuditRows").innerHTML=clubAudit.map(club=>'<tr><td>'+escapeHtml(club.name||"Club non identifié")+'</td><td class="num">'+Number(club.players||0).toLocaleString("fr-FR")+'</td><td class="num">'+Number(club.appearances||0).toLocaleString("fr-FR")+'</td><td class="num">'+Number(club.statRows||0).toLocaleString("fr-FR")+'</td></tr>').join("")||'<tr><td colspan="4">Aucune donnée de répartition disponible.</td></tr>';
  const multiClub=Array.isArray(result.multiClubPlayers)?result.multiClubPlayers:[];
