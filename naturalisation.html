@@ -112,6 +112,11 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
    <h3>Joueurs ayant évolué dans plusieurs clubs suivis</h3>
    <div id="multiClubRows"><p class="reader-note">Contrôle en attente des résultats de l’analyse.</p></div>
   </div>
+  <div class="audit-block" style="margin-top:20px">
+   <h3>Rechercher un joueur</h3>
+   <input id="playerSearch" type="search" placeholder="Nom du joueur ou UID (ex. Claudio Cuzzilla)" autocomplete="off" aria-label="Rechercher un joueur par nom ou UID">
+   <p id="playerSearchCount" class="reader-note">Tous les joueurs affichés.</p>
+  </div>
   <div class="table-wrap">
    <table>
     <thead><tr><th>Joueur / UID</th><th>Club actuel</th><th>Clubs saint-marinais détectés</th><th>Nationalités (IDs)</th><th>Matchs saison</th><th>Cumul depuis 2026/2027</th></tr></thead>
@@ -279,11 +284,22 @@ async function renderSaveResults(result){
  const multiClub=Array.isArray(result.multiClubPlayers)?result.multiClubPlayers:[];
  $("multiClubAudit").hidden=false;
  $("multiClubRows").innerHTML=multiClub.length?multiClub.map(player=>'<div class="audit-multi"><strong>'+escapeHtml(player.name||"Joueur inconnu")+'</strong> <span class="pill">UID '+escapeHtml(String(player.uid))+'</span><small>'+player.clubs.map(club=>escapeHtml(club.name)+': '+Number(club.appearances||0)+' match(s)').join(" · ")+' — Total : '+Number(player.totalAppearances||0)+' match(s)</small></div>').join(""):'<p class="reader-note">Aucun joueur détecté dans plusieurs clubs suivis pour cette saison.</p>';
- $("playerRows").innerHTML=players.map(player=>{
-  const nationality=[player.nationId===null?"—":String(player.nationId),...(player.secondNationIds||[]).map(String)].join(" / ");
-  const current=Number(player.currentSeasonAppearances||0),total=Number(player.totalOfficialAppearances||0);
-  return '<tr><td><strong>'+escapeHtml(player.name||"Nom non lu")+'</strong><br><span class="pill">UID '+escapeHtml(String(player.uid))+'</span></td><td>'+escapeHtml(player.currentClub||"—")+'</td><td>'+escapeHtml((player.clubs||[]).join(", ")||"—")+'</td><td>'+escapeHtml(nationality)+'</td><td class="num">'+current.toLocaleString("fr-FR")+'</td><td class="num"><strong>'+total.toLocaleString("fr-FR")+' / 100</strong></td></tr>';
- }).join("")||'<tr><td colspan="6">Aucun joueur correspondant aux clubs suivis n’a été identifié dans cette sauvegarde.</td></tr>';
+ const renderPlayerRows=()=>{
+  const query=($("playerSearch").value||"").trim().toLocaleLowerCase("fr");
+  const filtered=players.filter(player=>{
+   const searchable=[player.name,player.uid,player.currentClub,...(player.clubs||[])].join(" ").toLocaleLowerCase("fr");
+   return searchable.includes(query);
+  });
+  $("playerSearchCount").textContent=query?filtered.length.toLocaleString("fr-FR")+" joueur(s) trouvé(s) sur "+players.length.toLocaleString("fr-FR")+".":"Tous les "+players.length.toLocaleString("fr-FR")+" joueurs affichés.";
+  $("playerRows").innerHTML=filtered.map(player=>{
+   const nationality=[player.nationId===null?"—":String(player.nationId),...(player.secondNationIds||[]).map(String)].join(" / ");
+   const current=Number(player.currentSeasonAppearances||0),total=Number(player.totalOfficialAppearances||0);
+   return '<tr><td><strong>'+escapeHtml(player.name||"Nom non lu")+'</strong><br><span class="pill">UID '+escapeHtml(String(player.uid))+'</span></td><td>'+escapeHtml(player.currentClub||"—")+'</td><td>'+escapeHtml((player.clubs||[]).join(", ")||"—")+'</td><td>'+escapeHtml(nationality)+'</td><td class="num">'+current.toLocaleString("fr-FR")+'</td><td class="num"><strong>'+total.toLocaleString("fr-FR")+' / 100</strong></td></tr>';
+  }).join("")||'<tr><td colspan="6">'+(query?"Aucun joueur ne correspond à cette recherche.":"Aucun joueur correspondant aux clubs suivis n’a été identifié dans cette sauvegarde.")+'</td></tr>';
+ };
+ $("playerSearch").value="";
+ $("playerSearch").oninput=renderPlayerRows;
+ renderPlayerRows();
  const warnings=Array.isArray(result.warnings)?result.warnings:[];
  if(saveError)warnings.push("Enregistrement automatique impossible : "+(saveError.message||String(saveError))+". Les résultats sont affichés mais ne sont pas conservés dans Firebase.");
  else if(saveResult&&!saveResult.saved)warnings.push(saveResult.reason);
