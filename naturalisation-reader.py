@@ -32,10 +32,12 @@ def analyze_save(path, tracked_json):
             club_by_uid = {c.uid: c for c in clubs}
             current_counts = {}
             current_clubs = {}
+            kind_counts = {}
             current_stats = list(save.player_season_stats())
             for row in current_stats:
-                kind = getattr(row.kind, "label_text", getattr(getattr(row.kind, "label", None), "name", str(row.kind))).casefold()
-                if kind not in ("league", "cup", "continental"):
+                kind = getattr(row.kind, "name", str(row.kind)).casefold().rsplit(".", 1)[-1]
+                kind_counts[kind] = kind_counts.get(kind, 0) + 1
+                if not ("league" in kind or "cup" in kind or "continental" in kind):
                     continue
                 if not is_tracked(row.club_name, tracked):
                     continue
@@ -51,8 +53,8 @@ def analyze_save(path, tracked_json):
                 history = list(save.player_season_history())
                 history_count = len(history)
                 for row in history:
-                    kind = getattr(row.kind, "label_text", getattr(getattr(row.kind, "label", None), "name", str(row.kind))).casefold()
-                    if kind not in ("league", "cup", "continental"):
+                    kind = getattr(row.kind, "name", str(row.kind)).casefold().rsplit(".", 1)[-1]
+                    if not ("league" in kind or "cup" in kind or "continental" in kind):
                         continue
                     if not is_tracked(row.club_name, tracked):
                         continue
@@ -113,6 +115,7 @@ def analyze_save(path, tracked_json):
                 "totalPlayersDecoded": len(players),
                 "totalClubsDecoded": len(clubs),
                 "currentStatsRows": len(current_stats),
+                "currentStatsKinds": kind_counts,
                 "historyStatsRows": history_count,
                 "players": sorted(rows.values(), key=lambda p: (p["name"] or "").casefold()),
                 "warnings": messages
