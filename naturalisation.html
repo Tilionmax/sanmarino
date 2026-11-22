@@ -155,13 +155,42 @@ let readerWorker=null,readerReady=false,pendingRead=null;
 
 function formatSize(bytes){if(bytes<1024)return bytes+" octets";if(bytes<1024*1024)return (bytes/1024).toFixed(1)+" Ko";if(bytes<1024*1024*1024)return (bytes/1024/1024).toFixed(1)+" Mo";return (bytes/1024/1024/1024).toFixed(2)+" Go";}
 function setReaderStatus(message,state="loading"){const el=$("readerProgress");el.textContent=message;el.classList.remove("loading","failed","good");if(state)el.classList.add(state);}
-function startSaveReader(file){
+async function loadTrackedPlayerHistory(){
+ if(!currentUser)return {};
+ const snapshots=await getDocs(collection(db,"users",currentUser.uid,"data"));
+ const trackedSet=new Set(trackedClubNames.map(name=>String(name).normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").toLocaleLowerCase("fr").trim()));
+ const history={};
+ snapshots.forEach(snapshot=>{
+  if(!snapshot.id.startsWith("naturalisation-"))return;
+  const saved=snapshot.data()||{};
+  if(Number(saved.seasonStartYear)<2026)return;
+  Object.entries(saved.players||{}).forEach(([uid,entry])=>{
+   const clubs=Array.isArray(entry.clubs)?entry.clubs:[];
+   const wasTracked=clubs.some(name=>trackedSet.has(String(name).normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").toLocaleLowerCase("fr").trim()));
+   if(!wasTracked)return;
+   if(!history[uid])history[uid]={uid:Number(uid),name:entry.name||null,clubs:[],nationId:entry.nationId??null,secondNationIds:Array.isArray(entry.secondNationIds)?entry.secondNationIds:[]};
+   const target=history[uid];
+   if(entry.name)target.name=entry.name;
+   if(entry.nationId!==undefined&&entry.nationId!==null)target.nationId=entry.nationId;
+   if(Array.isArray(entry.secondNationIds)&&entry.secondNationIds.length)target.secondNationIds=entry.secondNationIds;
+   clubs.forEach(name=>{if(name&&!target.clubs.includes(name))target.clubs.push(name);});
+  });
+ });
+ return history;
+}
+async function startSaveReader(file){
  if(!readerReady){pendingRead=file;setReaderStatus("CHARGEMENT EN COURS — Le lecteur prépare ses composants. Dès qu’il est prêt, l’analyse de ta sauvegarde démarrera automatiquement. Cela peut prendre quelques minutes…");return;}
  $("playerResults").hidden=true;
- setReaderStatus("ANALYSE DE LA SAUVEGARDE EN COURS — Ouverture du fichier et lecture des joueurs, clubs et statistiques. Ne ferme pas cette page. Cette étape peut prendre plusieurs minutes…");
- readerWorker.postMessage({type:"read",file,trackedClubs:trackedClubNames});
+ setReaderStatus("ANALYSE EN COURS — Récupération de l’historique des joueurs puis lecture de la sauvegarde FM27. Ne ferme pas cette page…");
+ try{
+  const trackedPlayerHistory=await loadTrackedPlayerHistory();
+  setReaderStatus("ANALYSE DE LA SAUVEGARDE EN COURS — "+Object.keys(trackedPlayerHistory).length.toLocaleString("fr-FR")+" joueurs déjà suivis chargés. Lecture des joueurs, clubs et statistiques…");
+  readerWorker.postMessage({type:"read",file,trackedClubs:trackedClubNames,trackedPlayerHistory});
+ }catch(error){
+  setReaderStatus("ÉCHEC — Impossible de récupérer l’historique des joueurs dans Firebase : "+(error.message||String(error)), "failed");
+ }
 }
-readerWorker=new Worker("./naturalisation-worker.js?v=audit-20261122", {type:"module"});
+readerWorker=new Worker("./naturalisation-worker.js?v=retained-players-20261122", {type:"module"});
 readerWorker.onmessage=(event)=>{
  const data=event.data||{};
  if(data.type==="progress"){
