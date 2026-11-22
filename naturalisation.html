@@ -119,7 +119,7 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
   </div>
   <div class="table-wrap">
    <table>
-    <thead><tr><th>Joueur / UID</th><th>Club actuel</th><th>Clubs saint-marinais détectés</th><th>Nationalités (IDs)</th><th>Matchs saison</th><th>Cumul depuis 2026/2027</th></tr></thead>
+    <thead><tr><th>Joueur / UID</th><th>Club actuel</th><th>Nationalités</th><th>Matchs de la saison en cours</th><th>Cumul depuis 2026/2027</th></tr></thead>
     <tbody id="playerRows"></tbody>
    </table>
   </div>
@@ -294,8 +294,8 @@ async function renderSaveResults(result){
   $("playerRows").innerHTML=filtered.map(player=>{
    const nationality=[player.nationId===null?"—":String(player.nationId),...(player.secondNationIds||[]).map(String)].join(" / ");
    const current=Number(player.currentSeasonAppearances||0),total=Number(player.totalOfficialAppearances||0);
-   return '<tr><td><strong>'+escapeHtml(player.name||"Nom non lu")+'</strong><br><span class="pill">UID '+escapeHtml(String(player.uid))+'</span></td><td>'+escapeHtml(player.currentClub||"—")+'</td><td>'+escapeHtml((player.clubs||[]).join(", ")||"—")+'</td><td>'+escapeHtml(nationality)+'</td><td class="num">'+current.toLocaleString("fr-FR")+'</td><td class="num"><strong>'+total.toLocaleString("fr-FR")+' / 100</strong></td></tr>';
-  }).join("")||'<tr><td colspan="6">'+(query?"Aucun joueur ne correspond à cette recherche.":"Aucun joueur correspondant aux clubs suivis n’a été identifié dans cette sauvegarde.")+'</td></tr>';
+   return '<tr><td><strong>'+escapeHtml(player.name||"Nom non lu")+'</strong><br><span class="pill">UID '+escapeHtml(String(player.uid))+'</span></td><td>'+escapeHtml(player.currentClub||"—")+'</td><td>'+escapeHtml(nationality)+'</td><td class="num">'+current.toLocaleString("fr-FR")+'</td><td class="num"><strong>'+total.toLocaleString("fr-FR")+' / 100</strong></td></tr>';
+  }).join("")||'<tr><td colspan="5">'+(query?"Aucun joueur ne correspond à cette recherche.":"Aucun joueur correspondant aux clubs suivis n’a été identifié dans cette sauvegarde.")+'</td></tr>';
  };
  $("playerSearch").value="";
  $("playerSearch").oninput=renderPlayerRows;
