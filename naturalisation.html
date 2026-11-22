@@ -172,8 +172,8 @@ async function loadTrackedPlayerHistory(){
    const target=history[uid];
    if(entry.name)target.name=entry.name;
    if(entry.currentClub)target.currentClub=entry.currentClub;
-   if(entry.nationId!==undefined&&entry.nationId!==null)target.nationId=entry.nationId;
-   if(Array.isArray(entry.secondNationIds)&&entry.secondNationIds.length)target.secondNationIds=entry.secondNationIds;
+   if(entry.databaseNationId!==undefined&&entry.databaseNationId!==null)target.databaseNationId=entry.databaseNationId;
+   if(Array.isArray(entry.secondDatabaseNationIds)&&entry.secondDatabaseNationIds.length)target.secondDatabaseNationIds=entry.secondDatabaseNationIds;
    clubs.forEach(name=>{if(name&&!target.clubs.includes(name))target.clubs.push(name);});
   });
  });
@@ -256,8 +256,8 @@ async function saveSeasonStats(result){
    appearances:Number(player.currentSeasonAppearances)||0,
    clubs:Array.isArray(player.clubs)?player.clubs:[],
    currentClub:player.currentClub||null,
-   nationId:player.nationId??null,
-   secondNationIds:Array.isArray(player.secondNationIds)?player.secondNationIds:[]
+   databaseNationId:player.databaseNationId??null,
+   secondDatabaseNationIds:Array.isArray(player.secondDatabaseNationIds)?player.secondDatabaseNationIds:[]
   };
  }
  const seasonRef=doc(db,"users",currentUser.uid,"data","naturalisation-"+season.key);
