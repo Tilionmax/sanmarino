@@ -130,17 +130,13 @@ def analyze_save(path, tracked_json):
                         galesi_debug["archivedRowsByUniqueId"].append(row_info)
                     if norm(row.player_name) == norm("Vincenzo Galesi"):
                         galesi_debug["archivedRowsByName"].append(row_info)
-                    if row.club_uid not in tracked_club_uids:
-                        continue
-                    key = (row.player_uid, row.club_uid)
-                    archived_counts[key] = archived_counts.get(key, 0) + appearances(row)
-                    archived_clubs[key] = row.club_name
-                    archived_seasons.setdefault(key, set()).add(int(row.season_year))
+                    # Les saisons antérieures à 2026/2027 ne participent plus au compteur.
+                    # On conserve leur lecture uniquement pour le diagnostic fmsave.
             except Exception as exc:
                 messages.append("Historique des saisons indisponible : " + type(exc).__name__)
 
             rows = {}
-            all_keys = set(current_counts) | set(archived_counts)
+            all_keys = set(current_counts)
             for uid, player in player_by_uid.items():
                 if player.club_uid is not None and is_tracked(player.club_name, tracked):
                     all_keys.add((uid, player.club_uid))
@@ -172,8 +168,7 @@ def analyze_save(path, tracked_json):
                 if club_name and club_name not in entry["clubs"]:
                     entry["clubs"].append(club_name)
                 entry["currentSeasonAppearances"] += current_counts.get((uid, club_uid), 0)
-                entry["archivedAppearances"] += archived_counts.get((uid, club_uid), 0)
-                entry["archivedSeasons"] = sorted(set(entry["archivedSeasons"]) | archived_seasons.get((uid, club_uid), set()))
+                
 
             try:
                 for row in save.player_match_stats():
