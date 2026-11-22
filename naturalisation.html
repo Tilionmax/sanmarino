@@ -209,8 +209,8 @@ function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":
 
 function renderClubs(clubs){
  const names=[...new Set([...clubs.map(c=>String(c.name||"").trim()).filter(Boolean),"San Marino Calcio"])]
- trackedClubNames=names;
   .sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"}));
+ trackedClubNames=names;
  $("clubList").innerHTML=names.map(name=>'<div class="club">'+name.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))+'</div>').join("");
  $("clubStatus").textContent=names.length+" clubs affichés, dont San Marino Calcio.";
 }
