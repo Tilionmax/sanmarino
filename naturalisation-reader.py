@@ -141,6 +141,58 @@ def analyze_save(path, tracked_json):
                 current_counts[key] = current_counts.get(key, 0) + appearances(row)
                 current_clubs[key] = row.club_name
 
+            # Audit par club : apparitions agrégées par joueur et club.
+            club_audit = {
+                club_uid: {
+                    "name": club.name,
+                    "uid": club_uid,
+                    "uniqueId": club_unique_id(club),
+                    "players": set(),
+                    "appearances": 0,
+                    "statRows": 0
+                }
+                for club_uid, club in club_by_uid.items()
+                if club_unique_id(club) in tracked_ids
+            }
+            for row in current_stats:
+                kind = getattr(row.kind, "name", str(row.kind)).casefold().rsplit(".", 1)[-1]
+                if not ("league" in kind or "cup" in kind or "continental" in kind):
+                    continue
+                audit = club_audit.get(row.club_uid)
+                if audit is None or row.player_uid is None or row.player_uid < 0:
+                    continue
+                audit["players"].add(row.player_uid)
+                audit["appearances"] += appearances(row)
+                audit["statRows"] += 1
+            club_audit_output = [{
+                "name": item["name"],
+                "uid": item["uid"],
+                "uniqueId": item["uniqueId"],
+                "players": len(item["players"]),
+                "appearances": item["appearances"],
+                "statRows": item["statRows"]
+            } for item in sorted(club_audit.values(), key=lambda x: norm(x["name"]))]
+            player_clubs = {}
+            for (uid, club_uid), count in current_counts.items():
+                if uid is None or uid < 0 or count <= 0:
+                    continue
+                player_clubs.setdefault(uid, {})[club_uid] = count
+            multi_club_players = []
+            for uid, club_counts in player_clubs.items():
+                if len(club_counts) < 2:
+                    continue
+                player = player_by_uid.get(uid)
+                multi_club_players.append({
+                    "uid": uid,
+                    "name": player.name if player else None,
+                    "clubs": [{
+                        "name": club_by_uid[club_uid].name if club_uid in club_by_uid else "Club non identifié",
+                        "appearances": count
+                    } for club_uid, count in club_counts.items()],
+                    "totalAppearances": sum(club_counts.values())
+                })
+            multi_club_players.sort(key=lambda item: (item["name"] or "").casefold())
+
             archived_counts = {}
             archived_clubs = {}
             archived_seasons = {}
@@ -246,6 +298,8 @@ def analyze_save(path, tracked_json):
                 "trackedClubMatches": tracked_club_matches,
                 "trackedClubUniqueIds": sorted(tracked_ids),
                 "trackedClubUids": len(tracked_club_uids),
+                "clubAudit": club_audit_output,
+                "multiClubPlayers": multi_club_players,
                 "galesiDebug": galesi_debug,
                 "players": sorted(rows.values(), key=lambda p: (p["name"] or "").casefold()),
                 "warnings": messages
