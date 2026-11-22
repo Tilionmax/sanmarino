@@ -191,7 +191,7 @@ async function startSaveReader(file){
   setReaderStatus("ÉCHEC — Impossible de récupérer l’historique des joueurs dans Firebase : "+(error.message||String(error)), "failed");
  }
 }
-readerWorker=new Worker("./naturalisation-worker.js?v=retained-players-20261122", {type:"module"});
+readerWorker=new Worker("./naturalisation-worker.js?v=nation-database-ids-20261122", {type:"module"});
 readerWorker.onmessage=(event)=>{
  const data=event.data||{};
  if(data.type==="progress"){
