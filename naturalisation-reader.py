@@ -50,6 +50,20 @@ def analyze_save(path, tracked_json, tracked_player_history_json="{}"):
         save = fmsave.open(path)
         try:
             info = save.info
+            # Les joueurs stockent un nation_id local à la sauvegarde.
+            # save.nations() permet de le convertir en database_id FM stable.
+            nation_database_ids = {
+                int(nation.nation_id): int(nation.database_id)
+                for nation in save.nations()
+                if nation.nation_id is not None and nation.database_id is not None
+            }
+            def database_nation_id(local_id):
+                if local_id is None:
+                    return None
+                try:
+                    return nation_database_ids.get(int(local_id))
+                except (TypeError, ValueError):
+                    return None
             players = list(save.players())
             clubs = list(save.clubs())
             player_by_uid = {p.uid: p for p in players}
@@ -250,8 +264,8 @@ def analyze_save(path, tracked_json, tracked_player_history_json="{}"):
                         "name": player.name if player else None,
                         "currentClub": player.club_name if player else None,
                         "currentClubUid": player.club_uid if player else None,
-                        "nationId": player.nation_id if player else None,
-                        "secondNationIds": list(player.second_nation_ids or ()) if player else [],
+                        "databaseNationId": database_nation_id(player.nation_id) if player else None,
+                        "secondDatabaseNationIds": [value for value in (database_nation_id(n) for n in (player.second_nation_ids or ())) if value is not None] if player else [],
                         "clubs": [],
                         "currentSeasonAppearances": 0,
                         "archivedAppearances": 0,
@@ -277,8 +291,8 @@ def analyze_save(path, tracked_json, tracked_player_history_json="{}"):
                         "name": (player.name if player else None) or saved_player.get("name"),
                         "currentClub": player.club_name if player else saved_player.get("currentClub"),
                         "currentClubUid": player.club_uid if player else None,
-                        "nationId": player.nation_id if player else saved_player.get("nationId"),
-                        "secondNationIds": list(player.second_nation_ids or ()) if player else saved_player.get("secondNationIds", []),
+                        "databaseNationId": database_nation_id(player.nation_id) if player else saved_player.get("databaseNationId"),
+                        "secondDatabaseNationIds": [value for value in (database_nation_id(n) for n in (player.second_nation_ids or ())) if value is not None] if player else saved_player.get("secondDatabaseNationIds", []),
                         "clubs": [],
                         "currentSeasonAppearances": 0,
                         "archivedAppearances": 0,
@@ -289,8 +303,8 @@ def analyze_save(path, tracked_json, tracked_player_history_json="{}"):
                     entry["name"] = player.name or entry["name"]
                     entry["currentClub"] = player.club_name or entry["currentClub"]
                     entry["currentClubUid"] = player.club_uid
-                    entry["nationId"] = player.nation_id
-                    entry["secondNationIds"] = list(player.second_nation_ids or ())
+                    entry["databaseNationId"] = database_nation_id(player.nation_id)
+                    entry["secondDatabaseNationIds"] = [value for value in (database_nation_id(n) for n in (player.second_nation_ids or ())) if value is not None]
                 for club_name in saved_player.get("clubs", []):
                     if club_name and club_name not in entry["clubs"]:
                         entry["clubs"].append(club_name)
