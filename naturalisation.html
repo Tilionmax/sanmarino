@@ -217,9 +217,14 @@ async function saveSeasonStats(result){
   };
  }
  const seasonRef=doc(db,"users",currentUser.uid,"data","naturalisation-"+season.key);
+ const previousSeason=await getDoc(seasonRef);
+ const mergedPlayers={
+  ...(previousSeason.exists()?(previousSeason.data().players||{}):{}),
+  ...playersByUid
+ };
  await setDoc(seasonRef,{
   season:season.season,seasonStartYear:season.startYear,gameDate:result.gameDate,
-  players:playersByUid,updatedAt:serverTimestamp()
+  players:mergedPlayers,updatedAt:serverTimestamp()
  });
  const snapshots=await getDocs(collection(db,"users",currentUser.uid,"data"));
  const totals={};
@@ -234,7 +239,7 @@ async function saveSeasonStats(result){
  players.forEach(player=>{
   player.totalOfficialAppearances=totals[String(player.uid)]||0;
  });
- return {saved:true,season:season.season,playerCount:Object.keys(playersByUid).length};
+ return {saved:true,season:season.season,playerCount:Object.keys(mergedPlayers).length};
 }
 async function renderSaveResults(result){
  const players=Array.isArray(result.players)?result.players:[];
