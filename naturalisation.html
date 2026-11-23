@@ -84,7 +84,16 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
  </div>
 
  <section class="card">
-  <h2>01 · Charger la sauvegarde FM27</h2>
+  <h2>01 · Clubs concernés et conditions de naturalisation</h2>
+  <div class="status"><strong>Condition de résidence :</strong> 5 années de résidence continue à Saint-Marin.</div>
+  <div class="status" style="margin-top:9px"><strong>Condition sportive :</strong> avoir disputé au moins 100 matchs officiels cumulés au sein d’un ou plusieurs des 17 clubs saint-marinais suivis, dont San Marino Calcio. Les matchs amicaux ne sont pas comptabilisés.</div>
+  <p class="muted" style="font-size:12px;margin-bottom:12px">Ces deux conditions sont alternatives. Les matchs sont cumulés entre les clubs concernés : un transfert d’un club saint-marinais à un autre ne remet pas le compteur à zéro.</p>
+  <div id="clubStatus" class="status">Chargement de la liste des clubs…</div>
+  <div id="clubList" class="club-list"></div>
+ </section>
+
+ <section class="card">
+  <h2>02 · Charger la sauvegarde FM27</h2>
   <p class="muted">Sélectionne manuellement ta sauvegarde de carrière au format .fm. Le fichier reste sur ton ordinateur : il n'est pas envoyé à Firebase ni à GitHub.</p>
   <input id="saveFileInput" type="file" accept=".fm">
   <div class="toolbar" style="margin-top:14px;margin-bottom:0">
@@ -137,19 +146,7 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
   <p class="reader-note">Depuis la saison 2026/2027 uniquement : titularisations et entrées en jeu en championnat, coupes et compétitions continentales. Les amicaux et toutes les saisons antérieures sont exclus. Les statistiques de la saison analysée sont enregistrées automatiquement dans Firebase ; une nouvelle analyse de la même saison remplace ses chiffres au lieu de les additionner une deuxième fois.</p>
  </section>
 
- <section class="card">
-  <h2>02 · Clubs suivis</h2>
-  <p class="muted">Les 17 clubs sont identifiés par leur identifiant unique Football Manager (unique_id), indépendamment de leur nom dans la sauvegarde ou de la configuration Firebase.</p>
-  <div id="clubStatus" class="status">Chargement des clubs depuis Firebase…</div>
-  <div id="clubList" class="club-list"></div>
- </section>
 
- <section class="card">
-  <h2>03 · Conditions de naturalisation</h2>
-  <div class="status"><strong>Condition de résidence :</strong> 5 années de résidence continue à Saint-Marin.</div>
-  <div class="status" style="margin-top:9px"><strong>Condition sportive :</strong> 100 matchs officiels cumulés avec les clubs saint-marinais suivis. Les matchs amicaux sont exclus.</div>
-  <p class="muted" style="font-size:12px;margin-bottom:0">Les deux conditions sont alternatives. Les transferts entre clubs saint-marinais ne remettent pas le compteur de matchs à zéro.</p>
- </section>
 </main>
 <footer>Outil de suivi d'une carrière fictive Football Manager · Les données de sauvegarde restent locales dans cette version.</footer>
 <script type="module">
