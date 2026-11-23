@@ -285,7 +285,7 @@ function buildFsgcDrawCandidates(season,balance,clubsOverride,rescueOptions=[],e
  if(!seasonClosed&&Number.isFinite(nationalRating)&&nationalRating<200&&nationalSpent+500000<=1000000&&balance>=500000)candidates.push({kind:'nationalYouth',club:'FSGC · Formation nationale',type:'nationalYouth',label:'Achat d’un point de note nationale de formation des jeunes',amount:500000,weight:1});
  return candidates;
 }
-let pendingFsgcDraw=null;let pendingFsgcDraw=null;
+let pendingFsgcDraw=null;
 function renderPendingFsgcDraw(pending){
  const results=$('fsgcDrawResults'),status=$('fsgcDrawStatus');
  const drawn=pending.drawn,total=drawn.reduce((sum,t)=>sum+t.amount,0);
