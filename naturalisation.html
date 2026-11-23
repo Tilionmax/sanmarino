@@ -25,7 +25,7 @@ h2{font-size:19px;margin:0 0 12px}
 table{width:100%;border-collapse:collapse;min-width:760px;font-size:13px}
 th,td{padding:10px 9px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
 th{color:var(--teal);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
-td.num{text-align:center;font-variant-numeric:tabular-nums}.num-sort{text-align:center;cursor:pointer;user-select:none;white-space:nowrap}.num-sort:hover{color:var(--gold)}.num-sort:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+td.num{text-align:center;font-variant-numeric:tabular-nums}.num-sort{text-align:center;cursor:pointer;user-select:none;white-space:nowrap}.num-sort:hover,.sort-header{cursor:pointer;user-select:none}.sort-header:hover{color:var(--gold)}.sort-header:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 .reader-note{font-size:12px;color:var(--muted);margin-top:12px}
 .pill{display:inline-block;padding:2px 7px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:11px}
 .warning-list{color:#f2d89c;font-size:12px;padding-left:20px}
@@ -104,17 +104,9 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
  <section class="card" id="playerResults" hidden>
   <h2>Résultat de l’analyse de la sauvegarde</h2>
   <div id="saveSummary" class="file-meta"></div>
-  <div class="audit-block" id="nationAudit">
-   <h3>Correspondance des nationalités de la sauvegarde</h3>
-   <p class="reader-note">L’ID local est celui utilisé par les joueurs dans cette sauvegarde. L’ID base de données est celui à comparer à la liste des nationalités FM27.</p>
-   <div class="table-wrap"><table class="audit-table"><thead><tr><th>ID local sauvegarde</th><th>ID base FM27</th><th>Joueurs concernés</th></tr></thead><tbody id="nationAuditRows"></tbody></table></div>
-  </div>
-  <div class="audit-block">
-   <h3>Répartition des joueurs et matchs par club</h3>
-   <div class="table-wrap"><table class="audit-table"><thead><tr><th>Club</th><th>Joueurs utilisés</th><th>Apparitions</th><th>Lignes de stats</th></tr></thead><tbody id="clubAuditRows"></tbody></table></div>
-  </div>
+
   <div class="audit-block" id="multiClubAudit">
-   <h3>Joueurs ayant évolué dans plusieurs clubs suivis</h3>
+   <h3>Joueurs ayant évolué dans plusieurs clubs saint-marinais au cours d’une même saison</h3>
    <div id="multiClubRows"><p class="reader-note">Contrôle en attente des résultats de l’analyse.</p></div>
   </div>
   <div class="audit-block" style="margin-top:20px">
@@ -127,7 +119,7 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
    <p class="reader-note">Joueurs suivis ayant moins de 100 matchs officiels cumulés depuis le début du suivi.</p>
    <div class="table-wrap">
     <table>
-     <thead><tr><th>Joueur / UID</th><th>Club actuel</th><th>Nationalités</th><th class="num-sort" data-sort="current" tabindex="0" role="button" aria-label="Trier par matchs saison en cours">Matchs saison en cours ↕</th><th class="num-sort" data-sort="total" tabindex="0" role="button" aria-label="Trier par cumul depuis 2026/2027">Cumul depuis 2026/2027 ↕</th></tr></thead>
+     <thead><tr><th class="sort-header" data-sort="player" tabindex="0" role="button">Joueur / UID ↕</th><th class="sort-header" data-sort="club" tabindex="0" role="button">Club actuel ↕</th><th class="sort-header" data-sort="nationality" tabindex="0" role="button">Nationalités ↕</th><th class="sort-header" data-sort="current" tabindex="0" role="button">Matchs saison en cours ↕</th><th class="sort-header" data-sort="total" tabindex="0" role="button">Cumul depuis 2026/2027 ↕</th></tr></thead>
      <tbody id="playerRows"></tbody>
     </table>
    </div>
@@ -137,7 +129,7 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
    <p class="reader-note">Joueurs ayant atteint au moins 100 matchs officiels cumulés. Ils restent affichés ici pour que tu puisses les repérer et modifier leur nationalité dans l’éditeur.</p>
    <div class="table-wrap">
     <table>
-     <thead><tr><th>Joueur / UID</th><th>Club actuel</th><th>Nationalités</th><th class="num-sort" data-sort="current" tabindex="0" role="button" aria-label="Trier par matchs saison en cours">Matchs saison en cours ↕</th><th class="num-sort" data-sort="total" tabindex="0" role="button" aria-label="Trier par cumul depuis 2026/2027">Cumul depuis 2026/2027 ↕</th></tr></thead>
+     <thead><tr><th class="sort-header" data-sort="player" tabindex="0" role="button">Joueur / UID ↕</th><th class="sort-header" data-sort="club" tabindex="0" role="button">Club actuel ↕</th><th class="sort-header" data-sort="nationality" tabindex="0" role="button">Nationalités ↕</th><th class="sort-header" data-sort="current" tabindex="0" role="button">Matchs saison en cours ↕</th><th class="sort-header" data-sort="total" tabindex="0" role="button">Cumul depuis 2026/2027 ↕</th></tr></thead>
      <tbody id="eligiblePlayerRows"></tbody>
     </table>
    </div>
@@ -539,30 +531,21 @@ async function renderSaveResults(result){
 
  $("playerResults").hidden=false;
  $("saveSummary").innerHTML=[
-  ["Version du jeu",result.game+" · "+result.build],
   ["Date en jeu",result.gameDate||"Non disponible"],
   ["Saison de suivi",getTrackedSeason(result.gameDate)?.season||"Non enregistrée"],
   ["Joueurs décodés",Number(result.totalPlayersDecoded||0).toLocaleString("fr-FR")],
-  ["Clubs suivis",Number(result.trackedClubCount||17).toLocaleString("fr-FR")+" (16 + San Marino Calcio)"],
-  ["Clubs trouvés dans la sauvegarde",(result.trackedClubsFound||[]).length+" / "+Number(result.trackedClubCount||17)],
-  ["Clubs absents de la sauvegarde",(result.trackedClubsMissing||[]).join(", ")||"Aucun"],
   ["Joueurs suivis (actuels et anciens)",players.length.toLocaleString("fr-FR")],
-  ["Joueurs déjà saint-marinais exclus",Number(result.excludedSammarinesePlayers||0).toLocaleString("fr-FR")],
-  ["Lignes de stats saison",Number(result.currentStatsRows||0).toLocaleString("fr-FR")],
-  ["Lignes d’historique",Number(result.historyStatsRows||0).toLocaleString("fr-FR")]
+  ["Joueurs déjà saint-marinais exclus",Number(result.excludedSammarinesePlayers||0).toLocaleString("fr-FR")]
  ].map(([label,value])=>'<div class="metric"><small>'+escapeHtml(label)+'</small><strong>'+escapeHtml(String(value))+'</strong></div>').join("");
- const nationMap=Array.isArray(result.nationMap)?result.nationMap:[];
- $("nationAuditRows").innerHTML=nationMap.map(nation=>'<tr><td class="num">'+Number(nation.localId)+'</td><td class="num"><strong>'+Number(nation.databaseId)+'</strong></td><td class="num">'+Number(nation.players||0).toLocaleString("fr-FR")+'</td></tr>').join("")||'<tr><td colspan="3">Aucune correspondance de nationalité décodée.</td></tr>';
- const clubAudit=Array.isArray(result.clubAudit)?result.clubAudit:[];
- $("clubAuditRows").innerHTML=clubAudit.map(club=>'<tr><td>'+escapeHtml(club.name||"Club non identifié")+'</td><td class="num">'+Number(club.players||0).toLocaleString("fr-FR")+'</td><td class="num">'+Number(club.appearances||0).toLocaleString("fr-FR")+'</td><td class="num">'+Number(club.statRows||0).toLocaleString("fr-FR")+'</td></tr>').join("")||'<tr><td colspan="4">Aucune donnée de répartition disponible.</td></tr>';
  const multiClub=Array.isArray(result.multiClubPlayers)?result.multiClubPlayers:[];
  $("multiClubAudit").hidden=false;
  $("multiClubRows").innerHTML=multiClub.length?multiClub.map(player=>'<div class="audit-multi"><strong>'+escapeHtml(player.name||"Joueur inconnu")+'</strong> <span class="pill">UID '+escapeHtml(String(player.uid))+'</span><small>'+player.clubs.map(club=>escapeHtml(club.name)+': '+Number(club.appearances||0)+' match(s)').join(" · ")+' — Total : '+Number(player.totalAppearances||0)+' match(s)</small></div>').join(""):'<p class="reader-note">Aucun joueur détecté dans plusieurs clubs suivis pour cette saison.</p>';
  let sortKey=null,sortDirection=1;
  const sortHeaders=[...document.querySelectorAll("th[data-sort]")];
+ const sortLabels={player:"Joueur / UID",club:"Club actuel",nationality:"Nationalités",current:"Matchs saison en cours",total:"Cumul depuis 2026/2027"};
  const updateSortHeaders=()=>{
   sortHeaders.forEach(header=>{
-   const key=header.dataset.sort,base=key==="current"?"Matchs saison en cours":"Cumul depuis 2026/2027";
+   const key=header.dataset.sort,base=sortLabels[key]||key;
    header.textContent=base+(sortKey===key?(sortDirection===1?" ↑":" ↓"):" ↕");
    header.setAttribute("aria-sort",sortKey===key?(sortDirection===1?"ascending":"descending"):"none");
   });
@@ -586,9 +569,19 @@ async function renderSaveResults(result){
   });
   if(sortKey){
    filtered.sort((a,b)=>{
-    const av=Number(sortKey==="current"?a.currentSeasonAppearances||0:a.totalOfficialAppearances||0);
-    const bv=Number(sortKey==="current"?b.currentSeasonAppearances||0:b.totalOfficialAppearances||0);
-    return (av-bv)*sortDirection;
+    let av,bv;
+    if(sortKey==="current"||sortKey==="total"){
+     av=Number(sortKey==="current"?a.currentSeasonAppearances||0:a.totalOfficialAppearances||0);
+     bv=Number(sortKey==="current"?b.currentSeasonAppearances||0:b.totalOfficialAppearances||0);
+     return (av-bv)*sortDirection;
+    }
+    if(sortKey==="player"){av=String(a.name||"")+" "+String(a.uid||"");bv=String(b.name||"")+" "+String(b.uid||"");}
+    else if(sortKey==="club"){av=String(a.currentClub||"");bv=String(b.currentClub||"");}
+    else{
+     av=[formatNationality(a.databaseNationId),...(a.secondDatabaseNationIds||[]).map(formatNationality)].join(" / ");
+     bv=[formatNationality(b.databaseNationId),...(b.secondDatabaseNationIds||[]).map(formatNationality)].join(" / ");
+    }
+    return av.localeCompare(bv,"fr",{sensitivity:"base",numeric:true})*sortDirection;
    });
   }
   const inProgress=filtered.filter(player=>Number(player.totalOfficialAppearances||0)<100);
