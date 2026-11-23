@@ -252,12 +252,12 @@ $('resetLedgerHistory').addEventListener('click',()=>{
 
 function fsgcSeasonStartYear(season){const m=String(season||'').match(/(\d{4})\s*[/\-]\s*\d{2,4}/);return m?Number(m[1]):NaN}
 function fsgcWeightedPick(items){const total=items.reduce((sum,item)=>sum+Math.max(0,Number(item.weight)||0),0);if(!total)return null;let roll=Math.random()*total;for(const item of items){roll-=Math.max(0,Number(item.weight)||0);if(roll<0)return item;}return items[items.length-1]||null}
-function buildFsgcDrawCandidates(season,balance,clubsOverride){
+function buildFsgcDrawCandidates(season,balance,clubsOverride,rescueOptions=[],excludedLateGame=[]){
  const clubs=clubsOverride||window.getPromotionClubs?.()||[],candidates=[];
  const types=[
   {key:'formation',label:'Formation des jeunes',priority:true},
   {key:'Encadrement des jeunes',label:'Encadrement des jeunes',priority:true},
-  {key:'Recrutement de jeunes',label:'Recrutement des jeunes',priority:true},
+  {key:'Recrutement de jeunes',label:'Recrutement de jeunes',priority:true},
   {key:'training',label:'Installations d’entraînement',priority:false}
  ];
  for(const club of clubs){
@@ -265,51 +265,81 @@ function buildFsgcDrawCandidates(season,balance,clubsOverride){
   for(const item of types){
    const level=getClubUpgradeLevel(club,item.key);if(level>=20)continue;
    const amount=calculateUpgradeCost(item.key,level,1);if(amount>balance)continue;
-   // The three youth facilities remain in the draw at every level.
-   // Below 10/20, their weight reflects the distance to the target; at/above 10, weight is 1.
    const weight=item.priority&&level<10?11-level:1;
    candidates.push({kind:'upgrade',club,type:item.key,label:item.label,amount,level,after:level+1,weight});
   }
+  if(clubHasLateGameAccess(club)&&clubSeasonImprovementCount(club.name,season)<2&&!excludedLateGame.includes(club.id)){
+   const late=club.lateGameUpgrades||{};
+   [{type:'stadium',field:'stadiumPlaces',label:'Stade · +500 places',amount:250000},{type:'attendance',field:'averageAttendance',label:'Affluence moyenne · +200 spectateurs',amount:250000},{type:'ticketPrice',field:'ticketPriceIncrease',label:'Prix des billets · +1 €',amount:200000}].forEach(item=>{
+    if((Number(late[item.field])||0)<20&&item.amount<=balance)candidates.push({kind:'lateGame',club,type:item.type,label:item.label,amount:item.amount,weight:1});
+   });
+  }
  }
- // Late Game and exceptional rescue require final standings / end-of-season balances.
- // These are checked manually by the user, so they are intentionally excluded from the automatic draw.
- // National youth investment: 500,000 € per point, maximum 2 points / 1,000,000 € per season.
+ rescueOptions.forEach(option=>{
+  const club=clubs.find(c=>c.id===option.clubId);
+  if(club&&option.amount>0&&option.amount<=balance)candidates.push({kind:'rescue',club,type:'rescue',label:'Renflouement exceptionnel · retour à 0 €',amount:option.amount,weight:1});
+ });
  const nationalSpent=transactions.filter(t=>t.kind==='debit'&&t.nationalYouthEligible===true&&String(t.season)===String(season)).reduce((sum,t)=>sum+Math.max(0,Number(t.amount)||0),0);
- const nationalRating=Number(window.getNationalYouthRating?.());
- const seasonClosed=!!window.isNationalYouthSeasonClosed?.(season);
- if(!seasonClosed&&Number.isFinite(nationalRating)&&nationalRating<200&&nationalSpent+500000<=1000000&&balance>=500000){
-  candidates.push({kind:'nationalYouth',club:'FSGC · Formation nationale',type:'nationalYouth',label:'Achat d’un point de note nationale de formation des jeunes',amount:500000,weight:1});
- }
+ const nationalRating=Number(window.getNationalYouthRating?.()),seasonClosed=!!window.isNationalYouthSeasonClosed?.(season);
+ if(!seasonClosed&&Number.isFinite(nationalRating)&&nationalRating<200&&nationalSpent+500000<=1000000&&balance>=500000)candidates.push({kind:'nationalYouth',club:'FSGC · Formation nationale',type:'nationalYouth',label:'Achat d’un point de note nationale de formation des jeunes',amount:500000,weight:1});
  return candidates;
 }
-let pendingFsgcDraw=null;
+let pendingFsgcDraw=null;let pendingFsgcDraw=null;
 function renderPendingFsgcDraw(pending){
  const results=$('fsgcDrawResults'),status=$('fsgcDrawStatus');
  const drawn=pending.drawn,total=drawn.reduce((sum,t)=>sum+t.amount,0);
  const rescueCount=drawn.filter(t=>t.rescueAid).length,nationalCount=drawn.filter(t=>t.nationalYouthEligible).length;
  results.innerHTML=drawn.length?drawn.map(t=>'<article><strong>'+esc(t.club)+'</strong> · '+esc(t.type)+' · <b>'+euro(t.amount)+'</b></article>').join(''):'<article>Aucune dépense éligible et finançable n’a été trouvée. Le solde sera conservé.</article>';
- status.textContent='TIRAGE EN ATTENTE DE VALIDATION — '+drawn.length+' dépense(s) proposée(s) · '+euro(total)+' au total · solde après validation : '+euro(pending.remainingBalance)+'. Rien n’est encore enregistré.'+(nationalCount?' '+nationalCount+' point(s) national(aux).':'')+(rescueCount?' '+rescueCount+' renflouement(s).':'')+' Late Game et renflouements exceptionnels exclus du tirage automatique : vérification manuelle.';
+ status.textContent='TIRAGE EN ATTENTE DE VALIDATION — '+drawn.length+' dépense(s) proposée(s) · '+euro(total)+' au total · solde après validation : '+euro(pending.remainingBalance)+'. Rien n’est encore enregistré.'+(nationalCount?' '+nationalCount+' point(s) national(aux).':'')+(rescueCount?' '+rescueCount+' renflouement(s).':'')+' Late Game et renflouements proposés après vérification des conditions réglementaires.';
  $('runFsgcDraw').hidden=false;$('runFsgcDraw').textContent='✓ Confirmer et enregistrer ce tirage';
  $('cancelFsgcDraw').hidden=false;$('previewFsgcDraw').hidden=true;
 }
 function startFsgcDraw(){
- const button=$('previewFsgcDraw'),status=$('fsgcDrawStatus'),results=$('fsgcDrawResults');
+ const button=$('previewFsgcDraw'),status=$('fsgcDrawStatus');
  if(button.disabled)return;
  const season=$('drawFsgcSeason').value.trim();
  if(!season){status.textContent='Indique la saison du tirage.';return}
- if(!/^\d{4}\s*[/\-]\s*\d{2,4}$/.test(season)){status.textContent='Format de saison invalide. Exemple : 2026/2027.';return}
+ if(!/^\d{4}\s*[/-]\s*\d{2,4}$/.test(season)){status.textContent='Format de saison invalide. Exemple : 2026/2027.';return}
  if(!window.getPromotionClubs||!window.persistPromotionData||!window.getNationalYouthRating){status.textContent='Les données des clubs ou de la note nationale ne sont pas encore chargées. Réessaie dans quelques instants.';return}
- if(fundTotals().balance<=0){status.textContent='Le fonds ne dispose d’aucun solde positif à répartir.';return}
+ const initialBalance=fundTotals().balance;
+ if(initialBalance<=0){status.textContent='Le fonds ne dispose d’aucun solde positif à répartir.';return}
+ const originalClubs=window.getPromotionClubs(),clubsForChecks=JSON.parse(JSON.stringify(originalClubs));
+ const rescueOptions=[];
+ if(confirm('Avant le tirage : existe-t-il un ou plusieurs clubs du Campionato qui ont terminé la saison avec un solde négatif ?')){
+  const maxAid=initialBalance*0.25;
+  let totalRescue=0,keepAsking=true;
+  while(keepAsking){
+   const clubNames=clubsForChecks.map(c=>c.name).join('\n');
+   const name=prompt('Saisis le nom exact du club déficitaire (liste des clubs :\n'+clubNames+'\n\nAnnuler pour terminer la saisie).');
+   if(name===null)break;
+   const club=clubsForChecks.find(c=>String(c.name).trim().toLocaleLowerCase('fr')===name.trim().toLocaleLowerCase('fr'));
+   if(!club){alert('Club introuvable. Recommence avec le nom exact affiché dans la liste.');continue}
+   const currentYear=fsgcSeasonStartYear(season),lastYear=fsgcSeasonStartYear(club.lastRescueSeason);
+   if(club.lastRescueSeason&&Number.isFinite(currentYear)&&Number.isFinite(lastYear)&&currentYear-lastYear<3){alert('Ce club a déjà bénéficié d’un renflouement en '+club.lastRescueSeason+'. Il faut attendre 3 ans entre deux aides.');continue}
+   if(rescueOptions.some(x=>x.clubId===club.id)){alert('Ce club a déjà été ajouté à la liste des renflouements pour ce tirage.');continue}
+   const raw=prompt('Quel est le déficit exact de '+club.name+' à couvrir pour revenir à 0 € ?\nPlafond global de renflouement pour ce tirage : '+euro(maxAid)+'.');
+   if(raw===null)continue;
+   const amount=Math.round(Number(String(raw).replace(/[ €]/g,'').replace(',','.')));
+   if(!Number.isFinite(amount)||amount<=0){alert('Saisis un montant positif valide.');continue}
+   if(totalRescue+amount>maxAid){alert('Montant refusé : le total des renflouements ne peut pas dépasser 25 % du fonds disponible ('+euro(maxAid)+').');continue}
+   rescueOptions.push({clubId:club.id,amount});totalRescue+=amount;
+   keepAsking=confirm('Renflouement de '+club.name+' ajouté pour '+euro(amount)+'. Ajouter un autre club déficitaire ?');
+   if(!keepAsking)break;
+  }
+ }
  button.disabled=true;
- const originalClubs=window.getPromotionClubs();
- const originalClubsJson=JSON.stringify(originalClubs),originalTransactionsJson=JSON.stringify(transactions);
- const workingClubs=JSON.parse(originalClubsJson);
+ const originalClubsJson=JSON.stringify(originalClubs),originalTransactionsJson=JSON.stringify(transactions),workingClubs=JSON.parse(originalClubsJson);
  transactions=JSON.parse(originalTransactionsJson);
- let drawn=[];
+ let drawn=[],excludedLateGame=[];
  try{
-  let guard=500,remaining=fundTotals().balance;
+  let guard=500,remaining=initialBalance;
   while(guard-->0){
-   const candidates=buildFsgcDrawCandidates(season,remaining,workingClubs),choice=fsgcWeightedPick(candidates);if(!choice)break;
+   const candidates=buildFsgcDrawCandidates(season,remaining,workingClubs,rescueOptions,excludedLateGame),choice=fsgcWeightedPick(candidates);if(!choice)break;
+   if(choice.kind==='lateGame'){
+    const answer=confirm('🎲 '+choice.club.name+' a été tiré au sort pour un investissement Late Game ('+choice.label+').\n\nConfirme-tu que ce club a bien terminé dans les 10 premiers du Campionato ?\n\nOK = oui, autoriser cette dépense. Annuler = non, exclure ses investissements Late Game.');
+    if(!answer){excludedLateGame.push(choice.club.id);continue}
+    choice.club.leaguePosition=10;
+   }
    const stamp=Date.now()+drawn.length,clubName=choice.club.name||choice.club;
    const tx={id:'fsgc-'+stamp,kind:'debit',season,amount:choice.amount,club:clubName,type:choice.label,improvementPoints:choice.kind==='upgrade'||choice.kind==='lateGame'?1:0,autoFsgc:true,date:new Date().toLocaleDateString('fr-FR'),sortKey:String(stamp),description:'Tirage au sort automatique FSGC'};
    if(choice.kind==='upgrade'){
@@ -321,28 +351,25 @@ function startFsgcDraw(){
     choice.club.lateGameUpgrades=choice.club.lateGameUpgrades||{stadiumPlaces:0,averageAttendance:0,ticketPriceIncrease:0};
     const field=({stadium:'stadiumPlaces',attendance:'averageAttendance',ticketPrice:'ticketPriceIncrease'})[choice.type];
     choice.club.lateGameUpgrades[field]=(Number(choice.club.lateGameUpgrades[field])||0)+1;
-    tx.description='Late Game · priorité au classement '+choice.club.leaguePosition+'e · quota d’amélioration respecté';
+    tx.description='Late Game · top 10 confirmé manuellement · quota de 2 améliorations respecté';
    }else if(choice.kind==='nationalYouth'){
     tx.nationalYouthEligible=true;tx.beneficiaryMode='national';tx.improvementPoints=0;
     tx.description='Achat de 1 point dédié à la note nationale de formation des jeunes';
    }else if(choice.kind==='rescue'){
     choice.club.endSeasonBalance=0;choice.club.lastRescueSeason=season;
     tx.rescueAid=true;tx.improvementPoints=0;
-    tx.description='Aide exceptionnelle · déficit intégralement couvert · plafond de 25 % respecté · prochaine aide possible après 3 saisons';
+    tx.description='Renflouement exceptionnel · déficit couvert jusqu’à 0 € · plafond global de 25 % respecté · délai de 3 ans';
    }
    transactions.push(tx);remaining-=choice.amount;drawn.push(tx);
   }
-  const rankingReady=false;
-  pendingFsgcDraw={season,drawn,clubs:workingClubs,transactions,remainingBalance:remaining,rankingReady,originalClubsJson,originalTransactionsJson};
+  pendingFsgcDraw={season,drawn,clubs:workingClubs,transactions,remainingBalance:remaining,originalClubsJson,originalTransactionsJson};
   transactions=JSON.parse(originalTransactionsJson);
   renderPendingFsgcDraw(pendingFsgcDraw);
  }catch(error){
   transactions=JSON.parse(originalTransactionsJson);pendingFsgcDraw=null;
   console.error('FSGC draw error:',error);
   status.textContent='Erreur pendant le tirage : '+(error&&error.message?error.message:String(error))+'. Aucune modification conservée. Tu peux réessayer.';
- }finally{
-  button.disabled=false;
- }
+ }finally{button.disabled=false}
 }
 function confirmFsgcDraw(){
  const status=$('fsgcDrawStatus');
