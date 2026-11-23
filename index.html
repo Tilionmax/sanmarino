@@ -331,15 +331,15 @@ function startFsgcDraw(){
  button.disabled=true;
  const originalClubsJson=JSON.stringify(originalClubs),originalTransactionsJson=JSON.stringify(transactions),workingClubs=JSON.parse(originalClubsJson);
  transactions=JSON.parse(originalTransactionsJson);
- let drawn=[],excludedLateGame=[],usedRescueIds=[];
+ let drawn=[],excludedLateGame=[],confirmedLateGame=[],usedRescueIds=[];
  try{
   let guard=500,remaining=initialBalance;
   while(guard-->0){
    const candidates=buildFsgcDrawCandidates(season,remaining,workingClubs,rescueOptions,excludedLateGame,usedRescueIds),choice=fsgcWeightedPick(candidates);if(!choice)break;
-   if(choice.kind==='lateGame'){
+   if(choice.kind==='lateGame'&&!confirmedLateGame.includes(choice.club.id)){
     const answer=confirm('🎲 '+choice.club.name+' a été tiré au sort pour un investissement Late Game ('+choice.label+').\n\nConfirme-tu que ce club a bien terminé dans les 10 premiers du Campionato ?\n\nOK = oui, autoriser cette dépense. Annuler = non, exclure ses investissements Late Game.');
     if(!answer){excludedLateGame.push(choice.club.id);continue}
-    choice.club.lateGameTopTenConfirmedSeason=season;
+    choice.club.lateGameTopTenConfirmedSeason=season;confirmedLateGame.push(choice.club.id);
    }
    const stamp=Date.now()+drawn.length,clubName=choice.club.name||choice.club;
    const tx={id:'fsgc-'+stamp,kind:'debit',season,amount:choice.amount,club:clubName,type:choice.label,improvementPoints:choice.kind==='upgrade'||choice.kind==='lateGame'?1:0,autoFsgc:true,date:new Date().toLocaleDateString('fr-FR'),sortKey:String(stamp),description:'Tirage au sort automatique FSGC'};
