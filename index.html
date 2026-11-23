@@ -150,7 +150,17 @@ body.authenticated #authGate{display:none}
 <section class="card dashboard-card"><h2>02 · Situation sportive</h2><div class="field"><label for="division">Division du club</label><select id="division"><option value="seriea">Serie A</option><option value="serieb">Serie B</option><option value="seriec">Serie C</option><option value="seried">Serie D</option><option value="lower">Division inférieure à la Serie D</option></select></div><div class="field" style="margin-top:14px"><label for="wonSerieA">Le club a-t-il remporté le titre de Serie A ?</label><select id="wonSerieA"><option value="no">Non</option><option value="yes">Oui</option></select></div><div class="field" style="margin-top:14px"><label for="europe">Participation à une coupe d'Europe cette saison ?</label><select id="europe"><option value="no">Non</option><option value="yes">Oui</option></select></div><div class="field" id="europeWinnerField" style="margin-top:14px" hidden><label for="wonEurope">Le club a-t-il remporté la coupe d’Europe ?</label><select id="wonEurope"><option value="no">Non</option><option value="yes">Oui</option></select></div><div class="field" style="margin-top:14px"><label for="balance">Solde après contribution liée à la division et à la coupe d'Europe (€)</label><input id="balance" class="amount" inputmode="decimal" value="0" autocomplete="off" readonly><p class="muted" style="font-size:12px;margin:6px 0 0">Ce montant est calculé automatiquement à partir du solde de fin de saison et des revenus bruts saisis en 01.</p></div><div class="notice">Le solde affiché ici tient déjà compte de la contribution sur les revenus bruts selon la division et la participation européenne. Le reversement éventuel du surplus au-dessus du seuil est calculé ensuite.</div></section>
 
 <section class="card bank-panel" id="depositAccount"><h2>03 · ＋ Enregistrer le versement de la saison</h2><p class="muted" style="margin-top:-8px">Ajoute au compte la contribution annuelle calculée dans les sections précédentes.</p><div class="bank-form"><h3>＋ Enregistrer le versement de la saison</h3><p class="muted" style="font-size:12px">Ajoute au compte la contribution calculée dans les sections précédentes. Un seul versement par saison.</p><div class="field"><label for="depositSeason">Saison du versement</label><input id="depositSeason" type="text" value="2026/2027" placeholder="2026/2027"></div><div class="field"><label>Contribution calculée</label><input id="depositPreview" readonly value="0 €"></div><button class="primary" id="recordDeposit" style="width:100%">Verser la contribution au fonds</button><div id="depositMessage" class="bank-hint">Le versement est ajouté uniquement après ton clic.</div></div></section>
-<section class="card bank-panel" id="bankAccount"><h2>04 · Opérations du fonds FSGC</h2><p class="muted" style="margin-top:-8px">Enregistre les contributions annuelles versées au fonds et les aides accordées aux clubs saint-marinais.</p><div class="bank-form" id="fsgcAutoDrawPanel" style="margin:14px 0"><h3>🎲 Tirage au sort automatique des dépenses FSGC</h3><p class="muted" style="font-size:12px">Le FSGC choisit automatiquement les investissements éligibles, un par un, jusqu’à ce qu’aucune dépense autorisée ne soit finançable. Les trois infrastructures prioritaires restent dans le tirage après 10/20, mais leur poids diminue : 11 moins leur niveau sous 10/20, puis 1 à partir de 10/20. Les coûts, quotas et plafonds du règlement sont contrôlés avant chaque tirage.</p><div class="field"><label for="drawFsgcSeason">Saison concernée</label><input id="drawFsgcSeason" type="text" value="2026/2027" placeholder="2026/2027"></div><p class="muted" style="font-size:12px">Pour activer les aides Late Game et les renflouements, renseigne le classement et le solde de fin de saison de chaque club dans « Gestion des infrastructures des clubs ».</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button type="button" class="primary" id="previewFsgcDraw" style="width:100%">🎲 Tirer au sort</button><button type="button" class="primary" id="runFsgcDraw" style="width:100%" hidden>✓ Confirmer et enregistrer ce tirage</button><button type="button" id="cancelFsgcDraw" style="width:100%" hidden>✕ Annuler le tirage</button></div><div id="fsgcDrawStatus" class="bank-hint" aria-live="polite">Le tirage est prêt. Les dépenses seront inscrites automatiquement au journal du fonds.</div><div id="fsgcDrawResults" class="fsgc-draw-results"></div></div><div class="bank-forms"><div class="bank-form" hidden><h3>－ Enregistrer une dépense</h3><div class="field"><label for="expenseSeason">Saison</label><input id="expenseSeason" placeholder="2026/2027"></div><div class="field" id="expenseBeneficiaryModeField"><label for="expenseClubMode">Désignation du bénéficiaire</label><select id="expenseClubMode"><option value="manual">Choisir un club manuellement</option><option value="random">Tirage au sort d’un club</option></select></div><div class="field"><label for="expenseClub">Club bénéficiaire</label><select id="expenseClub"><option value="">Sélectionner un club…</option></select><button type="button" class="secondary" id="drawExpenseClub" style="display:none;margin-top:8px;width:100%">Tirer un club au sort</button></div><div class="field"><label for="expenseType">Type d'amélioration</label><select id="expenseType"><optgroup label="Développement de la formation"><option value="formation">Formation des jeunes</option><option value="Encadrement des jeunes">Encadrement des jeunes</option><option value="Recrutement de jeunes">Recrutement des jeunes</option><option value="training">Installations d'entraînement</option></optgroup><optgroup label="Développement de la billetterie · Late Game"><option value="stadium">Stade · +500 places</option><option value="attendance">Affluence moyenne · +200 spectateurs</option><option value="ticketPrice">Prix des billets · +1 €</option></optgroup><optgroup label="Développement national"><option value="nationalYouth">Achat de points de la note nationale de formation des jeunes</option></optgroup><optgroup label="Autres financements"><option value="Autre aide au club">Autre aide au club</option></optgroup></select></div><div class="field" id="expensePointsField"><label for="expenseDescription">Nombre de points à attribuer</label><input id="expenseDescription" type="number" min="1" step="1" value="1" placeholder="1"></div><div class="field"><label for="expenseAmount">Montant dépensé (€)</label><input id="expenseAmount" class="amount" inputmode="decimal" placeholder="400 000" autocomplete="off"></div><p id="expenseCostHint" class="muted" style="font-size:12px;margin:4px 0 0">Pour l’encadrement ou le recrutement des jeunes : 400 000 € par point.</p><button class="primary" id="recordExpense" style="width:100%">Enregistrer la dépense</button><div id="expenseMessage" class="bank-hint">Impossible de dépenser plus que le solde disponible.</div></div></div></section>
+<section class="card bank-panel" id="bankAccount"><h2>04 · Opérations du fonds FSGC</h2><p class="muted" style="margin-top:-8px">Enregistre les contributions annuelles versées au fonds et les aides accordées aux clubs saint-marinais.</p><div class="bank-form" id="fsgcAutoDrawPanel" style="margin:14px 0"><h3>🎲 Tirage au sort automatique des dépenses FSGC</h3><p class="muted" style="font-size:12px">Le FSGC choisit automatiquement les investissements éligibles, un par un, jusqu’à ce qu’aucune dépense autorisée ne soit finançable. Les trois infrastructures prioritaires restent dans le tirage après 10/20, mais leur poids diminue : 11 moins leur niveau sous 10/20, puis 1 à partir de 10/20. Les coûts, quotas et plafonds du règlement sont contrôlés avant chaque tirage.</p><div class="field"><label for="drawFsgcSeason">Saison concernée</label><input id="drawFsgcSeason" type="text" value="2026/2027" placeholder="2026/2027"></div><div class="bank-form" style="margin:12px 0;background:var(--panel2)">
+ <h4 style="margin:0 0 8px">＋ Déclarer les clubs à renflouer</h4>
+ <p class="muted" style="font-size:12px">Ajoute les clubs qui ont terminé la saison avec un solde négatif. Leur renflouement sera prioritaire ; aucune autre amélioration ne pourra leur être attribuée avant le retour à 0 €.</p>
+ <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,.7fr) auto;gap:8px;align-items:end">
+  <div class="field"><label for="rescueClubSelect">Club déficitaire</label><select id="rescueClubSelect"><option value="">Choisir un club…</option></select></div>
+  <div class="field"><label for="rescueAmountInput">Déficit à couvrir (€)</label><input id="rescueAmountInput" type="number" min="1" step="1" placeholder="Ex. 150000"></div>
+  <button type="button" class="secondary" id="addRescueDeclaration">＋ Ajouter</button>
+ </div>
+ <div id="rescueDeclarationMessage" class="bank-hint" aria-live="polite">Aucun club déclaré pour le moment.</div>
+ <div id="rescueDeclarationList" class="fsgc-draw-results"></div>
+</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button type="button" class="primary" id="previewFsgcDraw" style="width:100%">🎲 Tirer au sort</button><button type="button" class="primary" id="runFsgcDraw" style="width:100%" hidden>✓ Confirmer et enregistrer ce tirage</button><button type="button" id="cancelFsgcDraw" style="width:100%" hidden>✕ Annuler le tirage</button></div><div id="fsgcDrawStatus" class="bank-hint" aria-live="polite">Le tirage est prêt. Les dépenses seront inscrites automatiquement au journal du fonds.</div><div id="fsgcDrawResults" class="fsgc-draw-results"></div></div><div class="bank-forms"><div class="bank-form" hidden><h3>－ Enregistrer une dépense</h3><div class="field"><label for="expenseSeason">Saison</label><input id="expenseSeason" placeholder="2026/2027"></div><div class="field" id="expenseBeneficiaryModeField"><label for="expenseClubMode">Désignation du bénéficiaire</label><select id="expenseClubMode"><option value="manual">Choisir un club manuellement</option><option value="random">Tirage au sort d’un club</option></select></div><div class="field"><label for="expenseClub">Club bénéficiaire</label><select id="expenseClub"><option value="">Sélectionner un club…</option></select><button type="button" class="secondary" id="drawExpenseClub" style="display:none;margin-top:8px;width:100%">Tirer un club au sort</button></div><div class="field"><label for="expenseType">Type d'amélioration</label><select id="expenseType"><optgroup label="Développement de la formation"><option value="formation">Formation des jeunes</option><option value="Encadrement des jeunes">Encadrement des jeunes</option><option value="Recrutement de jeunes">Recrutement des jeunes</option><option value="training">Installations d'entraînement</option></optgroup><optgroup label="Développement de la billetterie · Late Game"><option value="stadium">Stade · +500 places</option><option value="attendance">Affluence moyenne · +200 spectateurs</option><option value="ticketPrice">Prix des billets · +1 €</option></optgroup><optgroup label="Développement national"><option value="nationalYouth">Achat de points de la note nationale de formation des jeunes</option></optgroup><optgroup label="Autres financements"><option value="Autre aide au club">Autre aide au club</option></optgroup></select></div><div class="field" id="expensePointsField"><label for="expenseDescription">Nombre de points à attribuer</label><input id="expenseDescription" type="number" min="1" step="1" value="1" placeholder="1"></div><div class="field"><label for="expenseAmount">Montant dépensé (€)</label><input id="expenseAmount" class="amount" inputmode="decimal" placeholder="400 000" autocomplete="off"></div><p id="expenseCostHint" class="muted" style="font-size:12px;margin:4px 0 0">Pour l’encadrement ou le recrutement des jeunes : 400 000 € par point.</p><button class="primary" id="recordExpense" style="width:100%">Enregistrer la dépense</button><div id="expenseMessage" class="bank-hint">Impossible de dépenser plus que le solde disponible.</div></div></div></section>
 </div>
 <section class="card ledger-panel" id="fundHistory"><div id="fundHistory"><div class="section-heading ledger-heading"><h2>Historique des opérations</h2><button type="button" id="resetLedgerHistory" class="danger">↺ Tout effacer / Réinitialiser</button></div><p class="muted" style="margin-top:-8px">Vue d'ensemble du compte du fonds FSGC : solde disponible, versements reçus et dépenses enregistrées.</p><p class="muted" id="ledgerResetMessage" style="font-size:12px"></p><div class="bank-head"><div class="bank-balance"><small>Solde actuel du fonds</small><strong id="fundBalance">0 €</strong></div><div class="bank-stat"><small>Total des versements reçus</small><strong id="fundCredits" class="money">0 €</strong></div><div class="bank-stat"><small>Total des dépenses</small><strong id="fundDebits" class="gold">0 €</strong></div></div><h3>Journal des mouvements</h3><div id="ledgerHistory"><div class="ledger-empty">Aucune opération enregistrée pour le moment.</div></div></section></div>
 <section class="card view-panel" id="clubsView" hidden><div class="section-heading"><div><span class="kicker">Gestion Infrastructure · Campionato</span><h2>Gestion des clubs du Campionato</h2></div><button type="button" id="resetPromotionClubs" class="danger">↺ Réinitialiser la liste et l’historique</button></div><p class="muted" style="margin-top:12px">Les notes indiquées correspondent aux niveaux des infrastructures des clubs au début de la partie. Elles peuvent être modifiées si vous utilisez une autre base de données.</p><p class="muted" style="margin-top:8px">Les niveaux de Formation, d’Encadrement, de Recrutement et des Installations d’entraînement se mettent à jour automatiquement après chaque achat enregistré dans les opérations du fonds FSGC sur la page principale. Aucun changement manuel n’est nécessaire ici après un achat.</p><p class="muted">Le tirage au sort concerne uniquement la Formation des jeunes : il est effectué à chaque montée en division du San Marino Calcio. Le club tiré au sort reçoit alors +1 point de Formation des jeunes, dans la limite de 20/20.</p><p class="muted">Les clubs sont classés par ordre alphabétique ; un club dont la Formation est à 20/20 ne peut plus être tiré au sort.</p><div id="promotionClubList" class="promotion-club-list"><div class="ledger-empty">Chargement des clubs…</div></div><div class="promotion-actions"><button type="button" class="primary" id="drawPromotionClub">🎲 Tirage au sort · Formation des jeunes (montée du San Marino Calcio)</button><button type="button" id="clearPromotionHistory">Effacer l’historique des attributions</button></div><div id="promotionDrawStatus" class="bank-hint" aria-live="polite">Chargement de la gestion du Campionato…</div><h3 style="margin-top:22px">Historique des attributions</h3><div id="promotionDrawHistory"><div class="ledger-empty">Aucune attribution enregistrée.</div></div>
@@ -200,7 +210,7 @@ function parseAmount(value){const cleaned=String(value??'').replaceAll(' ','').r
 function formatAmount(input){const n=parseAmount(input.value);input.value=new Intl.NumberFormat('fr-FR',{maximumFractionDigits:2,useGrouping:true}).format(n)}
 function formatAmountLive(input){const raw=input.value,pos=input.selectionStart??raw.length,before=raw.slice(0,pos),digitsBefore=(before.match(/\d/g)||[]).length;let clean=raw.replace(/[ \u00a0\u202f]/g,'').replace(/[^\d,.-]/g,'').replace(/[.-]/g,'');const comma=clean.indexOf(',');if(comma>=0)clean=clean.slice(0,comma+1)+clean.slice(comma+1).replace(/,/g,'');const parts=clean.split(','),integer=parts[0].replace(/\D/g,''),fraction=(parts[1]||'').replace(/\D/g,'');const grouped=integer.replace(/\B(?=(\d{3})+(?!\d))/g,' ');input.value=grouped+(comma>=0?','+fraction:'');let caret=0,count=0;while(caret<input.value.length&&count<digitsBefore){if(/\d/.test(input.value[caret]))count++;caret++}input.setSelectionRange(caret,caret)}
 function setupAmountFields(){document.querySelectorAll('.amount').forEach(input=>{input.addEventListener('input',()=>formatAmountLive(input));input.addEventListener('blur',()=>{formatAmount(input);update()});formatAmount(input)})}
-let clubs=[{name:'',share:100}],customRules=[],transactions=[];
+let clubs=[{name:'',share:100}],customRules=[],transactions=[],rescueDeclarations=[];
 window.getClubUpgradeHistory=()=>transactions.filter(t=>t.kind==='debit'&&['Formation des jeunes','Encadrement des jeunes','Recrutement de jeunes','Installations d’entraînement'].includes(String(t.type||'')));
 const defaultRulesConfig={startDivision:'seried',rateLower:0,rateStart:2,rateAbove:10,rateSerieA:10,ratesByDivision:{lower:0,seried:2,seriec:5,serieb:8,seriea:10},rateEurope:5,rateSerieATitle:3,rateEuropeWinner:3,surplusThreshold:200000000,youthCoachingCost:400000,youthRecruitmentCost:400000,youthCoachingEnabled:true,youthRecruitmentEnabled:true,hiddenRuleIds:[]};
 let personalRulesConfig={...defaultRulesConfig},customExpenseRules=[];
@@ -212,8 +222,8 @@ function revenues(){return [...document.querySelectorAll('.rev')].reduce((s,e)=>
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 let currentContribution=0;
 function update(){const total=revenues(),r=rate(),baseTax=total*r/100,endBalance=Math.max(0,parseAmount($('endSeasonBalance').value)),baseContribution=ruleEnabled('base-9')?Math.min(endBalance,baseTax):baseTax,balanceAfterBase=Math.max(0,endBalance-baseContribution);$('balance').value=new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(balanceAfterBase);const threshold=Math.max(0,Number(personalRulesConfig.surplusThreshold)||0),surplus=ruleEnabled('base-10')?Math.max(0,balanceAfterBase-threshold):0,surplusContribution=ruleEnabled('base-9')?Math.min(balanceAfterBase,surplus):surplus,tax=baseContribution+surplusContribution;currentContribution=tax;if($('depositPreview'))$('depositPreview').value=euro(tax);$('total').textContent=euro(total);$('rate').textContent=r+' %';$('tax').textContent=euro(tax);if($('baseContributionDisplay'))$('baseContributionDisplay').textContent=euro(baseContribution);if($('surplusContributionDisplay'))$('surplusContributionDisplay').textContent=euro(surplusContribution);$('remaining').textContent=euro(endBalance-tax)}
-function state(){return {season:$('season').value,division:$('division').value,europe:$('europe').value,wonSerieA:$('wonSerieA').value,wonEurope:$('wonEurope').value,endSeasonBalance:$('endSeasonBalance').value,balance:$('balance').value,revenue:Object.fromEntries([...document.querySelectorAll('.rev')].map(e=>[e.id,e.value])),customRules,transactions}}
-function apply(s){$('season').value=s.season||'2026/2027';$('division').value=s.division||'lower';$('europe').value=s.europe||'no';$('wonSerieA').value=s.wonSerieA||'no';$('wonSerieA').parentElement.hidden=$('division').value!=='seriea';$('wonEurope').value=s.wonEurope||'no';$('europeWinnerField').hidden=$('europe').value!=='yes';$('endSeasonBalance').value=s.endSeasonBalance??s.balance??0;if(s.revenue){if(s.revenue.revenueTotal!==undefined){$('revenueTotal').value=s.revenue.revenueTotal}else{$('revenueTotal').value=Object.values(s.revenue).reduce((sum,v)=>sum+Math.max(0,parseAmount(v)),0)}}customRules=Array.isArray(s.customRules)?s.customRules:[];transactions=Array.isArray(s.transactions)?s.transactions:[];renderLedger();window.dispatchEvent(new Event('club-upgrade-history-updated'));update()}
+function state(){return {season:$('season').value,division:$('division').value,europe:$('europe').value,wonSerieA:$('wonSerieA').value,wonEurope:$('wonEurope').value,endSeasonBalance:$('endSeasonBalance').value,balance:$('balance').value,revenue:Object.fromEntries([...document.querySelectorAll('.rev')].map(e=>[e.id,e.value])),customRules,transactions,rescueDeclarations}}
+function apply(s){$('season').value=s.season||'2026/2027';$('division').value=s.division||'lower';$('europe').value=s.europe||'no';$('wonSerieA').value=s.wonSerieA||'no';$('wonSerieA').parentElement.hidden=$('division').value!=='seriea';$('wonEurope').value=s.wonEurope||'no';$('europeWinnerField').hidden=$('europe').value!=='yes';$('endSeasonBalance').value=s.endSeasonBalance??s.balance??0;if(s.revenue){if(s.revenue.revenueTotal!==undefined){$('revenueTotal').value=s.revenue.revenueTotal}else{$('revenueTotal').value=Object.values(s.revenue).reduce((sum,v)=>sum+Math.max(0,parseAmount(v)),0)}}customRules=Array.isArray(s.customRules)?s.customRules:[];transactions=Array.isArray(s.transactions)?s.transactions:[];rescueDeclarations=Array.isArray(s.rescueDeclarations)?s.rescueDeclarations:[];renderRescueDeclarations();renderLedger();window.dispatchEvent(new Event('club-upgrade-history-updated'));update()}
 function fundTotals(){let credits=0,debits=0;transactions.forEach(t=>{if(t.kind==='credit')credits+=Math.max(0,Number(t.amount)||0);else if(t.kind==='debit')debits+=Math.max(0,Number(t.amount)||0)});return {credits,debits,balance:credits-debits}}
 function renderLedger(){const z=fundTotals();$('fundBalance').textContent=euro(z.balance);$('fundCredits').textContent=euro(z.credits);$('fundDebits').textContent=euro(z.debits);const rows=[...transactions].sort((a,b)=>(b.sortKey||'').localeCompare(a.sortKey||''));if(!rows.length){$('ledgerHistory').innerHTML='<div class="ledger-empty">Aucune opération enregistrée pour le moment.</div>';return}$('ledgerHistory').innerHTML='<div class="ledger-wrap"><table class="ledger"><thead><tr><th>Date</th><th>Saison</th><th>Opération</th><th>Club / motif</th><th>Montant</th><th></th></tr></thead><tbody>'+rows.map(t=>'<tr><td>'+esc(t.date||'')+'</td><td>'+esc(t.season||'')+'</td><td>'+(t.kind==='credit'?'Versement FSGC':'Dépense')+'</td><td>'+esc(t.club||t.description||'Contribution annuelle')+(t.type?' · '+esc(t.type):'')+(t.description&&t.club?' · '+esc(t.description):'')+'</td><td class="'+(t.kind==='credit'?'credit':'debit')+'">'+(t.kind==='credit'?'+':'−')+euro(t.amount)+'</td><td>'+(t.autoFsgc?'<span class="muted">FSGC auto</span>':'<button data-remove-transaction="'+esc(t.id)+'" class="danger">×</button>')+'</td></tr>').join('')+'</tbody></table></div>';$('ledgerHistory').querySelectorAll('[data-remove-transaction]').forEach(b=>b.onclick=()=>{if(confirm('Supprimer cette opération de l’historique ?')){transactions=transactions.filter(t=>t.id!==b.dataset.removeTransaction);renderLedger();save();window.dispatchEvent(new Event('club-upgrade-history-updated'))}})}
 function recordDeposit(){const season=$('depositSeason').value.trim();if(!season){$('depositMessage').textContent='Indique la saison du versement.';return}if(transactions.some(t=>t.kind==='credit'&&t.season===season)){$('depositMessage').textContent='Un versement existe déjà pour la saison '+season+'. Supprime-le dans l’historique pour le remplacer.';return}if(currentContribution<=0){$('depositMessage').textContent='Aucun versement à enregistrer : la contribution calculée est de 0 €.';return}transactions.push({id:'tx-'+Date.now(),kind:'credit',season,amount:currentContribution,date:new Date().toLocaleDateString('fr-FR'),sortKey:String(Date.now()),description:'Contribution annuelle calculée'});renderLedger();save();$('depositMessage').textContent='Versement de '+euro(currentContribution)+' ajouté au compte pour '+season+'.'}
@@ -250,9 +260,30 @@ $('resetLedgerHistory').addEventListener('click',()=>{
  $('ledgerResetMessage').textContent='Historique intégralement effacé. Solde du fonds remis à 0 € ; les niveaux des clubs et la note nationale sont conservés.';
 });
 
+function renderRescueDeclarations(){
+ const clubs=window.getPromotionClubs?.()||[],select=$('rescueClubSelect');
+ if(select){const old=select.value;select.innerHTML='<option value="">Choisir un club…</option>'+clubs.map(c=>'<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>').join('');if(clubs.some(c=>String(c.id)===old))select.value=old;}
+ const list=$('rescueDeclarationList'),message=$('rescueDeclarationMessage');if(!list||!message)return;
+ list.innerHTML=rescueDeclarations.length?rescueDeclarations.map((r,i)=>{const c=clubs.find(x=>String(x.id)===String(r.clubId));return '<article style="display:flex;justify-content:space-between;gap:10px;align-items:center"><span><strong>'+esc(c?.name||r.clubName)+'</strong> · déficit déclaré : <b>'+euro(r.amount)+'</b></span><button type="button" class="danger" data-remove-rescue="'+i+'">Retirer</button></article>'}).join(''):'';
+ message.textContent=rescueDeclarations.length?rescueDeclarations.length+' club(s) déclaré(s) · total : '+euro(rescueDeclarations.reduce((a,r)=>a+r.amount,0)):'Aucun club déclaré pour le moment.';
+ list.querySelectorAll('[data-remove-rescue]').forEach(b=>b.onclick=()=>{rescueDeclarations.splice(Number(b.dataset.removeRescue),1);renderRescueDeclarations();save()});
+}
+$('addRescueDeclaration').addEventListener('click',()=>{
+ const clubId=$('rescueClubSelect').value,club=(window.getPromotionClubs?.()||[]).find(c=>String(c.id)===String(clubId)),amount=Math.round(Number($('rescueAmountInput').value));
+ const message=$('rescueDeclarationMessage'),season=$('drawFsgcSeason').value.trim(),balance=fundTotals().balance;
+ if(!club){message.textContent='Sélectionne un club.';return}
+ if(!Number.isFinite(amount)||amount<=0){message.textContent='Saisis un montant de déficit valide.';return}
+ if(rescueDeclarations.some(r=>String(r.clubId)===String(clubId))){message.textContent='Ce club est déjà dans la liste des renflouements.';return}
+ const year=fsgcSeasonStartYear(season),last=fsgcSeasonStartYear(club.lastRescueSeason);
+ if(club.lastRescueSeason&&Number.isFinite(year)&&Number.isFinite(last)&&year-last<3){message.textContent='Ce club a déjà reçu un renflouement en '+club.lastRescueSeason+' : le délai de trois ans n’est pas écoulé.';return}
+ const total=rescueDeclarations.reduce((a,r)=>a+r.amount,0)+amount;
+ if(total>balance*.25){message.textContent='Le total des renflouements ('+euro(total)+') dépasserait le plafond de 25 % du fonds disponible ('+euro(balance*.25)+').';return}
+ rescueDeclarations.push({clubId:String(club.id),clubName:club.name,amount});
+ $('rescueAmountInput').value='';$('rescueClubSelect').value='';renderRescueDeclarations();save();
+});
 function fsgcSeasonStartYear(season){const m=String(season||'').match(/(\d{4})\s*[/\-]\s*\d{2,4}/);return m?Number(m[1]):NaN}
 function fsgcWeightedPick(items){const total=items.reduce((sum,item)=>sum+Math.max(0,Number(item.weight)||0),0);if(!total)return null;let roll=Math.random()*total;for(const item of items){roll-=Math.max(0,Number(item.weight)||0);if(roll<0)return item;}return items[items.length-1]||null}
-function buildFsgcDrawCandidates(season,balance,clubsOverride,rescueOptions=[],excludedLateGame=[],usedRescueIds=[]){
+function buildFsgcDrawCandidates(season,balance,clubsOverride,excludedLateGame=[],usedRescueIds=[]){
  const clubs=clubsOverride||window.getPromotionClubs?.()||[],candidates=[];
  const types=[
   {key:'formation',label:'Formation des jeunes',priority:true},
@@ -260,7 +291,9 @@ function buildFsgcDrawCandidates(season,balance,clubsOverride,rescueOptions=[],e
   {key:'Recrutement de jeunes',label:'Recrutement de jeunes',priority:true},
   {key:'training',label:'Installations d’entraînement',priority:false}
  ];
+ const pendingRescueIds=rescueDeclarations.map(r=>String(r.clubId)).filter(id=>!usedRescueIds.includes(id));
  for(const club of clubs){
+  if(pendingRescueIds.includes(String(club.id)))continue;
   if(clubSeasonImprovementCount(club.name,season)>=2)continue;
   for(const item of types){
    const level=getClubUpgradeLevel(club,item.key);if(level>=20)continue;
@@ -275,9 +308,9 @@ function buildFsgcDrawCandidates(season,balance,clubsOverride,rescueOptions=[],e
    });
   }
  }
- rescueOptions.forEach(option=>{
-  if(usedRescueIds.includes(option.clubId))return;
-  const club=clubs.find(c=>c.id===option.clubId);
+ rescueDeclarations.forEach(option=>{
+  if(usedRescueIds.includes(String(option.clubId)))return;
+  const club=clubs.find(c=>String(c.id)===String(option.clubId));
   if(club&&option.amount>0&&option.amount<=balance)candidates.push({kind:'rescue',club,type:'rescue',label:'Renflouement exceptionnel · retour à 0 €',amount:option.amount,weight:1});
  });
  const nationalSpent=transactions.filter(t=>t.kind==='debit'&&t.nationalYouthEligible===true&&String(t.season)===String(season)).reduce((sum,t)=>sum+Math.max(0,Number(t.amount)||0),0);
@@ -296,46 +329,28 @@ function renderPendingFsgcDraw(pending){
  $('cancelFsgcDraw').hidden=false;$('previewFsgcDraw').hidden=true;
 }
 function startFsgcDraw(){
- const button=$('previewFsgcDraw'),status=$('fsgcDrawStatus');
- if(button.disabled)return;
+ const button=$('previewFsgcDraw'),status=$('fsgcDrawStatus');if(button.disabled)return;
  const season=$('drawFsgcSeason').value.trim();
  if(!season){status.textContent='Indique la saison du tirage.';return}
  if(!/^\d{4}\s*[/-]\s*\d{2,4}$/.test(season)){status.textContent='Format de saison invalide. Exemple : 2026/2027.';return}
  if(!window.getPromotionClubs||!window.persistPromotionData||!window.getNationalYouthRating){status.textContent='Les données des clubs ou de la note nationale ne sont pas encore chargées. Réessaie dans quelques instants.';return}
- const initialBalance=fundTotals().balance;
- if(initialBalance<=0){status.textContent='Le fonds ne dispose d’aucun solde positif à répartir.';return}
- const originalClubs=window.getPromotionClubs(),clubsForChecks=JSON.parse(JSON.stringify(originalClubs));
- const rescueOptions=[];
- if(confirm('Avant le tirage : existe-t-il un ou plusieurs clubs du Campionato qui ont terminé la saison avec un solde négatif ?')){
-  const maxAid=initialBalance*0.25;
-  let totalRescue=0,keepAsking=true;
-  while(keepAsking){
-   const clubNames=clubsForChecks.map(c=>c.name).join('\n');
-   const name=prompt('Saisis le nom exact du club déficitaire (liste des clubs :\n'+clubNames+'\n\nAnnuler pour terminer la saisie).');
-   if(name===null)break;
-   const club=clubsForChecks.find(c=>String(c.name).trim().toLocaleLowerCase('fr')===name.trim().toLocaleLowerCase('fr'));
-   if(!club){alert('Club introuvable. Recommence avec le nom exact affiché dans la liste.');continue}
-   const currentYear=fsgcSeasonStartYear(season),lastYear=fsgcSeasonStartYear(club.lastRescueSeason);
-   if(club.lastRescueSeason&&Number.isFinite(currentYear)&&Number.isFinite(lastYear)&&currentYear-lastYear<3){alert('Ce club a déjà bénéficié d’un renflouement en '+club.lastRescueSeason+'. Il faut attendre 3 ans entre deux aides.');continue}
-   if(rescueOptions.some(x=>x.clubId===club.id)){alert('Ce club a déjà été ajouté à la liste des renflouements pour ce tirage.');continue}
-   const raw=prompt('Quel est le déficit exact de '+club.name+' à couvrir pour revenir à 0 € ?\nPlafond global de renflouement pour ce tirage : '+euro(maxAid)+'.');
-   if(raw===null)continue;
-   const amount=Math.round(Number(String(raw).replace(/[ €]/g,'').replace(',','.')));
-   if(!Number.isFinite(amount)||amount<=0){alert('Saisis un montant positif valide.');continue}
-   if(totalRescue+amount>maxAid){alert('Montant refusé : le total des renflouements ne peut pas dépasser 25 % du fonds disponible ('+euro(maxAid)+').');continue}
-   rescueOptions.push({clubId:club.id,amount});totalRescue+=amount;
-   keepAsking=confirm('Renflouement de '+club.name+' ajouté pour '+euro(amount)+'. Ajouter un autre club déficitaire ?');
-   if(!keepAsking)break;
-  }
+ const initialBalance=fundTotals().balance;if(initialBalance<=0){status.textContent='Le fonds ne dispose d’aucun solde positif à répartir.';return}
+ const maxRescue=initialBalance*.25,totalRescue=rescueDeclarations.reduce((sum,r)=>sum+r.amount,0);
+ if(totalRescue>maxRescue){status.textContent='Les renflouements déclarés dépassent le plafond de 25 % du fonds disponible.';return}
+ const originalClubs=window.getPromotionClubs(),originalClubsJson=JSON.stringify(originalClubs),originalTransactionsJson=JSON.stringify(transactions),workingClubs=JSON.parse(originalClubsJson);
+ for(const declaration of rescueDeclarations){
+  const club=workingClubs.find(c=>String(c.id)===String(declaration.clubId));
+  if(!club){status.textContent='Un club déclaré pour renflouement est introuvable. Mets à jour la liste avant de lancer le tirage.';return}
+  const year=fsgcSeasonStartYear(season),last=fsgcSeasonStartYear(club.lastRescueSeason);
+  if(club.lastRescueSeason&&Number.isFinite(year)&&Number.isFinite(last)&&year-last<3){status.textContent=club.name+' ne respecte pas le délai de trois ans depuis son dernier renflouement.';return}
  }
- button.disabled=true;
- const originalClubsJson=JSON.stringify(originalClubs),originalTransactionsJson=JSON.stringify(transactions),workingClubs=JSON.parse(originalClubsJson);
- transactions=JSON.parse(originalTransactionsJson);
+ button.disabled=true;transactions=JSON.parse(originalTransactionsJson);
  let drawn=[],excludedLateGame=[],confirmedLateGame=[],usedRescueIds=[];
  try{
   let guard=500,remaining=initialBalance;
   while(guard-->0){
-   const candidates=buildFsgcDrawCandidates(season,remaining,workingClubs,rescueOptions,excludedLateGame,usedRescueIds),choice=fsgcWeightedPick(candidates);if(!choice)break;
+   const candidates=buildFsgcDrawCandidates(season,remaining,workingClubs,excludedLateGame,usedRescueIds);
+   const rescueCandidate=candidates.find(c=>c.kind==='rescue'),choice=rescueCandidate||fsgcWeightedPick(candidates);if(!choice)break;
    if(choice.kind==='lateGame'&&!confirmedLateGame.includes(choice.club.id)){
     const answer=confirm('🎲 '+choice.club.name+' a été tiré au sort pour un investissement Late Game ('+choice.label+').\n\nConfirme-tu que ce club a bien terminé dans les 10 premiers du Campionato ?\n\nOK = oui, autoriser cette dépense. Annuler = non, exclure ses investissements Late Game.');
     if(!answer){excludedLateGame.push(choice.club.id);continue}
@@ -357,19 +372,15 @@ function startFsgcDraw(){
     tx.nationalYouthEligible=true;tx.beneficiaryMode='national';tx.improvementPoints=0;
     tx.description='Achat de 1 point dédié à la note nationale de formation des jeunes';
    }else if(choice.kind==='rescue'){
-    usedRescueIds.push(choice.club.id);
-    choice.club.endSeasonBalance=0;choice.club.lastRescueSeason=season;
-    tx.rescueAid=true;tx.improvementPoints=0;
-    tx.description='Renflouement exceptionnel · déficit couvert jusqu’à 0 € · plafond global de 25 % respecté · délai de 3 ans';
+    usedRescueIds.push(String(choice.club.id));choice.club.endSeasonBalance=0;choice.club.lastRescueSeason=season;
+    tx.rescueAid=true;tx.improvementPoints=0;tx.description='Renflouement exceptionnel · déficit couvert jusqu’à 0 € · plafond global de 25 % respecté · délai de 3 ans';
    }
    transactions.push(tx);remaining-=choice.amount;drawn.push(tx);
   }
   pendingFsgcDraw={season,drawn,clubs:workingClubs,transactions,remainingBalance:remaining,originalClubsJson,originalTransactionsJson};
-  transactions=JSON.parse(originalTransactionsJson);
-  renderPendingFsgcDraw(pendingFsgcDraw);
+  transactions=JSON.parse(originalTransactionsJson);renderPendingFsgcDraw(pendingFsgcDraw);
  }catch(error){
-  transactions=JSON.parse(originalTransactionsJson);pendingFsgcDraw=null;
-  console.error('FSGC draw error:',error);
+  transactions=JSON.parse(originalTransactionsJson);pendingFsgcDraw=null;console.error('FSGC draw error:',error);
   status.textContent='Erreur pendant le tirage : '+(error&&error.message?error.message:String(error))+'. Aucune modification conservée. Tu peux réessayer.';
  }finally{button.disabled=false}
 }
@@ -401,6 +412,7 @@ function cancelFsgcDraw(){
  $('cancelFsgcDraw').hidden=true;$('previewFsgcDraw').hidden=false;
 }
 $('previewFsgcDraw').addEventListener('click',startFsgcDraw);
+renderRescueDeclarations();
 $('runFsgcDraw').addEventListener('click',confirmFsgcDraw);
 $('cancelFsgcDraw').addEventListener('click',cancelFsgcDraw);
 
