@@ -94,7 +94,7 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
 
  <section class="card">
   <h2>02 · Charger la sauvegarde FM27</h2>
-  <p class="muted">Sélectionne manuellement ta sauvegarde de carrière au format .fm. Le fichier reste sur ton ordinateur : il n'est pas envoyé à Firebase ni à GitHub.</p>
+  <p class="muted">Sélectionne ta sauvegarde San Marin au format .fm.</p>
   <input id="saveFileInput" type="file" accept=".fm">
   <div class="toolbar" style="margin-top:14px;margin-bottom:0">
    <button id="chooseSave" class="primary" type="button">📂 Choisir ma sauvegarde FM27</button>
@@ -106,7 +106,6 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
    <div class="metric"><small>Taille</small><strong id="fileSize">—</strong></div>
    <div class="metric"><small>Dernière modification</small><strong id="fileDate">—</strong></div>
   </div>
-  <div class="notice">Le lecteur fmsave analyse la sauvegarde directement dans ton navigateur. Le fichier de carrière n’est pas envoyé à Firebase ni à GitHub. Le navigateur télécharge uniquement le moteur de lecture open source et ses dépendances.</div>
   <div id="readerProgress" class="status loading" role="status" aria-live="polite" style="margin-top:12px">CHARGEMENT EN COURS — Préparation du lecteur de sauvegarde. L’analyse démarrera automatiquement après cette étape si un fichier est déjà sélectionné…</div>
  </section>
 
