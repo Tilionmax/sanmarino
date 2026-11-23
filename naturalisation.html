@@ -421,7 +421,7 @@ readerWorker.onmessage=(event)=>{
   setReaderStatus("CHARGEMENT EN COURS — "+data.message, "loading");
  }else if(data.type==="ready"){
   readerReady=true;
-  setReaderStatus("LECTEUR PRÊT — Le moteur est chargé. Sélectionne ta sauvegarde pour lancer l’analyse.", "");
+  setReaderStatus("LECTEUR PRÊT — Le moteur est chargé. Sélectionne ta sauvegarde pour lancer l’analyse.", "good");
   if(pendingRead){const file=pendingRead;pendingRead=null;startSaveReader(file);}
  }else if(data.type==="result"){
   renderSaveResults(data.data);
@@ -606,7 +606,7 @@ function renderClubs(){
   const names=[...defaultClubs,"San Marino Calcio"].sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"}));
   trackedClubNames=names;
   $("clubList").innerHTML=names.map(name=>'<div class="club">'+escapeHtml(name)+'</div>').join("");
-  $("clubStatus").textContent="17 clubs suivis par identifiant unique Football Manager. La configuration des noms dans Firebase n'influence plus la détection.";
+  $("clubStatus").textContent="Voici la liste des clubs saint-marinais pris en compte pour la naturalisation.";
 }
 async function loadClubList(user){
  try{
