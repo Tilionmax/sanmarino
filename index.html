@@ -470,6 +470,7 @@ window.getPromotionClubs=()=>promotionClubs;
 window.replacePromotionClubs=(clubs)=>{promotionClubs=Array.isArray(clubs)?clubs:[];renderPromotionManager();window.renderExpenseBeneficiaryOptions?.();};
 renderPromotionManager();
 window.renderExpenseBeneficiaryOptions();
+window.renderRescueDeclarations?.();
 function persistPromotionData(){
   if(!rulesRef)return;
   if(isLoading){promotionDataNeedsSave=true;return;}
