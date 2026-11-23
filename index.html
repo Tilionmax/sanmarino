@@ -395,7 +395,7 @@ function confirmFsgcDraw(){
  $('runFsgcDraw').disabled=true;
  try{
   window.replacePromotionClubs(pending.clubs);transactions=pending.transactions;rescueDeclarations=[];
-  window.persistPromotionData();renderLedger();renderPromotionManager();renderRescueDeclarations();save();
+  window.persistPromotionData();renderLedger();renderRescueDeclarations();save();
   window.dispatchEvent(new Event('club-upgrade-history-updated'));window.dispatchEvent(new Event('national-youth-expense-updated'));
   const total=pending.drawn.reduce((sum,t)=>sum+t.amount,0),rescueCount=pending.drawn.filter(t=>t.rescueAid).length,nationalCount=pending.drawn.filter(t=>t.nationalYouthEligible).length;
   status.textContent=pending.drawn.length+' dépense(s) enregistrée(s) · '+euro(total)+' engagés · solde restant : '+euro(fundTotals().balance)+'.'+(nationalCount?' '+nationalCount+' point(s) national(aux) acheté(s).':'')+(rescueCount?' '+rescueCount+' renflouement(s) accordé(s).':'')+(!pending.rankingReady?' Late Game non disponible : renseigne le classement de tous les clubs.':'');
