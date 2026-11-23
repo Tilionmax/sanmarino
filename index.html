@@ -271,42 +271,14 @@ function buildFsgcDrawCandidates(season,balance,clubsOverride){
    candidates.push({kind:'upgrade',club,type:item.key,label:item.label,amount,level,after:level+1,weight});
   }
  }
- // Late Game is restricted to the first half of the league. Among eligible clubs,
- // the best-ranked club is considered first (champion, then runner-up, etc.).
- const positions=clubs.map(c=>Number(c.leaguePosition));
- const rankingComplete=clubs.length>0&&positions.every(p=>Number.isInteger(p)&&p>=1&&p<=clubs.length)&&new Set(positions).size===clubs.length;
- if(rankingComplete){
-  const firstHalf=Math.ceil(clubs.length/2);
-  const eligibleLate=clubs.filter(club=>Number(club.leaguePosition)<=firstHalf&&clubHasLateGameAccess(club)&&clubSeasonImprovementCount(club.name,season)<2)
-   .sort((a,b)=>Number(a.leaguePosition)-Number(b.leaguePosition));
-  if(eligibleLate.length){
-   const club=eligibleLate[0];
-   [
-    {key:'stadium',label:'Late Game · +500 places au stade',amount:250000},
-    {key:'attendance',label:'Late Game · +200 spectateurs moyens',amount:250000},
-    {key:'ticketPrice',label:'Late Game · +1 € sur le prix du billet',amount:200000}
-   ].filter(item=>item.amount<=balance).forEach(item=>candidates.push({...item,kind:'lateGame',club,weight:1}));
-  }
- }
+ // Late Game and exceptional rescue require final standings / end-of-season balances.
+ // These are checked manually by the user, so they are intentionally excluded from the automatic draw.
  // National youth investment: 500,000 € per point, maximum 2 points / 1,000,000 € per season.
  const nationalSpent=transactions.filter(t=>t.kind==='debit'&&t.nationalYouthEligible===true&&String(t.season)===String(season)).reduce((sum,t)=>sum+Math.max(0,Number(t.amount)||0),0);
  const nationalRating=Number(window.getNationalYouthRating?.());
  const seasonClosed=!!window.isNationalYouthSeasonClosed?.(season);
  if(!seasonClosed&&Number.isFinite(nationalRating)&&nationalRating<200&&nationalSpent+500000<=1000000&&balance>=500000){
   candidates.push({kind:'nationalYouth',club:'FSGC · Formation nationale',type:'nationalYouth',label:'Achat d’un point de note nationale de formation des jeunes',amount:500000,weight:1});
- }
- // Exceptional rescue: aid must bring the club back to exactly 0 €, stay within 25%,
- // and respect the three-season cooldown for that club.
- const currentYear=fsgcSeasonStartYear(season);
- if(Number.isFinite(currentYear)&&balance>0){
-  for(const club of clubs){
-   const deficit=Math.max(0,-Number(club.endSeasonBalance||0));
-   const lastYear=fsgcSeasonStartYear(club.lastRescueSeason);
-   const cooldownPassed=!Number.isFinite(lastYear)||currentYear-lastYear>=3;
-   if(deficit>0&&cooldownPassed&&deficit<=balance*0.25){
-    candidates.push({kind:'rescue',club,type:'Renflouement exceptionnel',label:'Renflouement · retour du solde à 0 €',amount:deficit,weight:1});
-   }
-  }
  }
  return candidates;
 }
@@ -316,7 +288,7 @@ function renderPendingFsgcDraw(pending){
  const drawn=pending.drawn,total=drawn.reduce((sum,t)=>sum+t.amount,0);
  const rescueCount=drawn.filter(t=>t.rescueAid).length,nationalCount=drawn.filter(t=>t.nationalYouthEligible).length;
  results.innerHTML=drawn.length?drawn.map(t=>'<article><strong>'+esc(t.club)+'</strong> · '+esc(t.type)+' · <b>'+euro(t.amount)+'</b></article>').join(''):'<article>Aucune dépense éligible et finançable n’a été trouvée. Le solde sera conservé.</article>';
- status.textContent='TIRAGE EN ATTENTE DE VALIDATION — '+drawn.length+' dépense(s) proposée(s) · '+euro(total)+' au total · solde après validation : '+euro(pending.remainingBalance)+'. Rien n’est encore enregistré.'+(nationalCount?' '+nationalCount+' point(s) national(aux).':'')+(rescueCount?' '+rescueCount+' renflouement(s).':'')+(!pending.rankingReady?' Late Game non disponible : renseigne le classement de tous les clubs.':'');
+ status.textContent='TIRAGE EN ATTENTE DE VALIDATION — '+drawn.length+' dépense(s) proposée(s) · '+euro(total)+' au total · solde après validation : '+euro(pending.remainingBalance)+'. Rien n’est encore enregistré.'+(nationalCount?' '+nationalCount+' point(s) national(aux).':'')+(rescueCount?' '+rescueCount+' renflouement(s).':'')+' Late Game et renflouements exceptionnels exclus du tirage automatique : vérification manuelle.';
  $('runFsgcDraw').hidden=false;$('runFsgcDraw').textContent='✓ Confirmer et enregistrer ce tirage';
  $('cancelFsgcDraw').hidden=false;$('previewFsgcDraw').hidden=true;
 }
@@ -360,7 +332,7 @@ function startFsgcDraw(){
    }
    transactions.push(tx);remaining-=choice.amount;drawn.push(tx);
   }
-  const rankingReady=workingClubs.length>0&&workingClubs.every(c=>Number.isInteger(Number(c.leaguePosition))&&Number(c.leaguePosition)>=1)&&new Set(workingClubs.map(c=>Number(c.leaguePosition))).size===workingClubs.length;
+  const rankingReady=false;
   pendingFsgcDraw={season,drawn,clubs:workingClubs,transactions,remainingBalance:remaining,rankingReady,originalClubsJson,originalTransactionsJson};
   transactions=JSON.parse(originalTransactionsJson);
   renderPendingFsgcDraw(pendingFsgcDraw);
@@ -469,7 +441,7 @@ window.persistPromotionData=persistPromotionData;
 window.addEventListener('club-upgrade-history-updated',()=>renderPromotionManager());
 function renderPromotionManager(){
   const list=$('promotionClubList'),eligible=promotionClubs.filter(c=>Number(c.level)<20).length,sorted=sortedPromotionClubs();
-  list.innerHTML=sorted.length?'<div class="promotion-club-header"><span></span><span>Club · position / solde</span><span>Formation</span><span>Encadrement</span><span>Recrutement</span><span>Entraînement</span><span></span></div>'+sorted.map((c,i)=>'<div class="promotion-club-row"><span class="promotion-club-number">'+(i+1)+'</span><div class="promotion-club-meta"><input type="text" maxlength="80" aria-label="Nom du club" value="'+esc(c.name)+'" data-promotion-name="'+esc(c.id)+'"><div class="promotion-club-meta-sub"><input type="number" min="1" max="16" step="1" aria-label="Classement du club" placeholder="Pos." value="'+(Number(c.leaguePosition)||'')+'" data-promotion-rank="'+esc(c.id)+'"><input type="number" step="1000" aria-label="Solde de fin de saison du club" placeholder="Solde €" value="'+(Number(c.endSeasonBalance)||0)+'" data-promotion-balance="'+esc(c.id)+'"></div></div>'+[['formationLevel','level','Formation'],['coachingLevel','coachingLevel','Encadrement'],['recruitmentLevel','recruitmentLevel','Recrutement'],['trainingLevel','trainingLevel','Installations d’entraînement']].map(([key,legacy,label])=>'<input type="number" min="0" max="20" step="1" aria-label="Niveau '+label+'" title="'+label+'" value="'+Math.max(0,Math.min(20,Number(c[key]??(key==='formationLevel'?c[legacy]:0))||0))+'" data-promotion-level="'+esc(c.id)+'" data-level-key="'+key+'">').join('')+'<button type="button" class="danger" data-delete-promotion-club="'+esc(c.id)+'" title="Supprimer le club">✕</button></div>').join(''):'<div class="ledger-empty">Aucun club dans la liste.</div>';
+  list.innerHTML=sorted.length?'<div class="promotion-club-header"><span></span><span>Club</span><span>Formation</span><span>Encadrement</span><span>Recrutement</span><span>Entraînement</span><span></span></div>'+sorted.map((c,i)=>'<div class="promotion-club-row"><span class="promotion-club-number">'+(i+1)+'</span><div class="promotion-club-meta"><input type="text" maxlength="80" aria-label="Nom du club" value="'+esc(c.name)+'" data-promotion-name="'+esc(c.id)+'"></div>'+[['formationLevel','level','Formation'],['coachingLevel','coachingLevel','Encadrement'],['recruitmentLevel','recruitmentLevel','Recrutement'],['trainingLevel','trainingLevel','Installations d’entraînement']].map(([key,legacy,label])=>'<input type="number" min="0" max="20" step="1" aria-label="Niveau '+label+'" title="'+label+'" value="'+Math.max(0,Math.min(20,Number(c[key]??(key==='formationLevel'?c[legacy]:0))||0))+'" data-promotion-level="'+esc(c.id)+'" data-level-key="'+key+'">').join('')+'<button type="button" class="danger" data-delete-promotion-club="'+esc(c.id)+'" title="Supprimer le club">✕</button></div>').join(''):'<div class="ledger-empty">Aucun club dans la liste.</div>';
   $('drawPromotionClub').disabled=eligible===0;
   $('promotionDrawStatus').textContent=eligible?eligible+' club(s) éligible(s). Les clubs à 20/20 sont exclus automatiquement.':(sorted.length?'Tous les clubs sont au niveau maximal 20/20.':'Aucun club disponible pour le tirage.');
   const draws=promotionDraws.map(d=>({kind:'draw',stamp:Number(d.sortKey)||Number(String(d.id||'').replace('draw-',''))||0,html:'<div class="promotion-history-row"><strong>🎲 '+esc(d.club)+'</strong><span><b>Bonus FSGC · Formation des jeunes</b> · '+esc(d.date)+' · '+Number(d.before)+'/20 → <b class="money">'+Number(d.after)+'/20</b> · +1 point (sans débit du fonds)</span></div>'}));
@@ -614,16 +586,7 @@ $('promotionClubList').addEventListener('change',event=>{
     const key=input.dataset.levelKey||'formationLevel',level=Number(input.value),old=Number(club[key]??(key==='formationLevel'?club.level:0));if(!Number.isInteger(level)||level<0||level>20){alert('Le niveau doit être un nombre entier entre 0 et 20.');input.value=old;return}
     club[key]=level;if(key==='formationLevel')club.level=level;renderPromotionManager();persistPromotionData();return;
   }
-  if(input.matches('[data-promotion-rank]')){
-    const club=promotionClubs.find(c=>c.id===input.dataset.promotionRank);if(!club)return;
-    const value=input.value.trim()===''?null:Number(input.value);if(value!==null&&(!Number.isInteger(value)||value<1||value>promotionClubs.length||promotionClubs.some(c=>c.id!==club.id&&Number(c.leaguePosition)===value))){alert('Le classement doit être unique et compris entre 1 et '+promotionClubs.length+'.');input.value=club.leaguePosition||'';return}
-    club.leaguePosition=value;renderPromotionManager();persistPromotionData();return;
-  }
-  if(input.matches('[data-promotion-balance]')){
-    const club=promotionClubs.find(c=>c.id===input.dataset.promotionBalance);if(!club)return;
-    const value=Number(input.value);if(!Number.isFinite(value)){alert('Saisis un solde de fin de saison valide.');input.value=Number(club.endSeasonBalance)||0;return}
-    club.endSeasonBalance=value;renderPromotionManager();persistPromotionData();return;
-  }
+
 });
 $('promotionClubList').addEventListener('click',event=>{
   const button=event.target.closest('[data-delete-promotion-club]');if(!button)return;
