@@ -135,7 +135,6 @@ footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
    </div>
   </div>
   <p class="reader-note">Depuis la saison 2026/2027 uniquement : titularisations et entrées en jeu en championnat, coupes et compétitions continentales. Les amicaux et toutes les saisons antérieures sont exclus. Les statistiques de la saison analysée sont enregistrées automatiquement dans Firebase ; une nouvelle analyse de la même saison remplace ses chiffres au lieu de les additionner une deuxième fois.</p>
-  <div id="readerWarnings"></div>
  </section>
 
  <section class="card">
@@ -600,10 +599,6 @@ async function renderSaveResults(result){
  $("playerSearch").oninput=renderPlayerRows;
  updateSortHeaders();
  renderPlayerRows();
- const warnings=Array.isArray(result.warnings)?result.warnings:[];
- if(saveError)warnings.push("Enregistrement automatique impossible : "+(saveError.message||String(saveError))+". Les résultats sont affichés mais ne sont pas conservés dans Firebase.");
- else if(saveResult&&!saveResult.saved)warnings.push(saveResult.reason);
- $("readerWarnings").innerHTML=warnings.length?'<div class="notice"><strong>Points de contrôle du lecteur</strong><ul class="warning-list">'+warnings.map(w=>'<li>'+escapeHtml(w)+'</li>').join("")+'</ul></div>':"";
  if(saveError)setReaderStatus("ANALYSE TERMINÉE — ÉCHEC DE L’ENREGISTREMENT AUTOMATIQUE DANS FIREBASE. Vérifie la connexion puis relance l’analyse.", "failed");
  else if(saveResult?.saved)setReaderStatus("TERMINÉ — "+players.length.toLocaleString("fr-FR")+" joueurs analysés. Statistiques "+saveResult.season+" enregistrées automatiquement dans Firebase. Cumul recalculé sans doublons.", "good");
  else setReaderStatus("ANALYSE TERMINÉE — Aucune saison enregistrée. "+(saveResult?.reason||""), "");
