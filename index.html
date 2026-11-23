@@ -152,7 +152,7 @@ body.authenticated #authGate{display:none}
 <section class="card bank-panel" id="depositAccount"><h2>03 · ＋ Enregistrer le versement de la saison</h2><p class="muted" style="margin-top:-8px">Ajoute au compte la contribution annuelle calculée dans les sections précédentes.</p><div class="bank-form"><h3>＋ Enregistrer le versement de la saison</h3><p class="muted" style="font-size:12px">Ajoute au compte la contribution calculée dans les sections précédentes. Un seul versement par saison.</p><div class="field"><label for="depositSeason">Saison du versement</label><input id="depositSeason" type="text" value="2026/2027" placeholder="2026/2027"></div><div class="field"><label>Contribution calculée</label><input id="depositPreview" readonly value="0 €"></div><button class="primary" id="recordDeposit" style="width:100%">Verser la contribution au fonds</button><div id="depositMessage" class="bank-hint">Le versement est ajouté uniquement après ton clic.</div></div></section>
 <section class="card bank-panel" id="bankAccount"><h2>04 · Opérations du fonds FSGC</h2><p class="muted" style="margin-top:-8px">Enregistre les contributions annuelles versées au fonds et les aides accordées aux clubs saint-marinais.</p><div class="bank-form" id="fsgcAutoDrawPanel" style="margin:14px 0"><h3>🎲 Tirage au sort automatique des dépenses FSGC</h3><p class="muted" style="font-size:12px">Le FSGC choisit automatiquement les investissements éligibles, un par un, jusqu’à ce qu’aucune dépense autorisée ne soit finançable. Les trois infrastructures prioritaires restent dans le tirage après 10/20, mais leur poids diminue : 11 moins leur niveau sous 10/20, puis 1 à partir de 10/20. Les coûts, quotas et plafonds du règlement sont contrôlés avant chaque tirage.</p><div class="field"><label for="drawFsgcSeason">Saison concernée</label><input id="drawFsgcSeason" type="text" value="2026/2027" placeholder="2026/2027"></div><div class="bank-form" style="margin:12px 0;background:var(--panel2)">
  <h4 style="margin:0 0 8px">＋ Déclarer les clubs à renflouer</h4>
- <p class="muted" style="font-size:12px">Ajoute les clubs qui ont terminé la saison avec un solde négatif. Leur renflouement sera prioritaire ; aucune autre amélioration ne pourra leur être attribuée avant le retour à 0 €.</p>
+ <p class="muted" style="font-size:12px">Déclare ici les clubs actuellement déficitaires et le montant exact à couvrir. Chaque renflouement devient un candidat du tirage au sort, sans priorité. Tant qu’il n’est pas tiré, le club ne peut recevoir aucune autre amélioration pendant ce tirage. La déclaration est supprimée après validation ou annulation du tirage.</p>
  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,.7fr) auto;gap:8px;align-items:end">
   <div class="field"><label for="rescueClubSelect">Club déficitaire</label><select id="rescueClubSelect"><option value="">Choisir un club…</option></select></div>
   <div class="field"><label for="rescueAmountInput">Déficit à couvrir (€)</label><input id="rescueAmountInput" type="number" min="1" step="1" placeholder="Ex. 150000"></div>
@@ -350,7 +350,7 @@ function startFsgcDraw(){
   let guard=500,remaining=initialBalance;
   while(guard-->0){
    const candidates=buildFsgcDrawCandidates(season,remaining,workingClubs,excludedLateGame,usedRescueIds);
-   const rescueCandidate=candidates.find(c=>c.kind==='rescue'),choice=rescueCandidate||fsgcWeightedPick(candidates);if(!choice)break;
+   const choice=fsgcWeightedPick(candidates);if(!choice)break;
    if(choice.kind==='lateGame'&&!confirmedLateGame.includes(choice.club.id)){
     const answer=confirm('🎲 '+choice.club.name+' a été tiré au sort pour un investissement Late Game ('+choice.label+').\n\nConfirme-tu que ce club a bien terminé dans les 10 premiers du Campionato ?\n\nOK = oui, autoriser cette dépense. Annuler = non, exclure ses investissements Late Game.');
     if(!answer){excludedLateGame.push(choice.club.id);continue}
@@ -393,8 +393,8 @@ function confirmFsgcDraw(){
  const pending=pendingFsgcDraw;
  $('runFsgcDraw').disabled=true;
  try{
-  window.replacePromotionClubs(pending.clubs);transactions=pending.transactions;
-  window.persistPromotionData();renderLedger();renderPromotionManager();save();
+  window.replacePromotionClubs(pending.clubs);transactions=pending.transactions;rescueDeclarations=[];
+  window.persistPromotionData();renderLedger();renderPromotionManager();renderRescueDeclarations();save();
   window.dispatchEvent(new Event('club-upgrade-history-updated'));window.dispatchEvent(new Event('national-youth-expense-updated'));
   const total=pending.drawn.reduce((sum,t)=>sum+t.amount,0),rescueCount=pending.drawn.filter(t=>t.rescueAid).length,nationalCount=pending.drawn.filter(t=>t.nationalYouthEligible).length;
   status.textContent=pending.drawn.length+' dépense(s) enregistrée(s) · '+euro(total)+' engagés · solde restant : '+euro(fundTotals().balance)+'.'+(nationalCount?' '+nationalCount+' point(s) national(aux) acheté(s).':'')+(rescueCount?' '+rescueCount+' renflouement(s) accordé(s).':'')+(!pending.rankingReady?' Late Game non disponible : renseigne le classement de tous les clubs.':'');
@@ -406,8 +406,8 @@ function confirmFsgcDraw(){
  }finally{$('runFsgcDraw').disabled=false;}
 }
 function cancelFsgcDraw(){
- pendingFsgcDraw=null;$('fsgcDrawResults').innerHTML='';
- $('fsgcDrawStatus').textContent='Tirage annulé. Aucune dépense ni amélioration n’a été enregistrée.';
+ pendingFsgcDraw=null;rescueDeclarations=[];renderRescueDeclarations();save();$('fsgcDrawResults').innerHTML='';
+ $('fsgcDrawStatus').textContent='Tirage annulé. Aucune dépense ni amélioration n’a été enregistrée. Les déclarations de renflouement ont été effacées.';
  $('runFsgcDraw').hidden=true;$('runFsgcDraw').disabled=false;$('runFsgcDraw').textContent='✓ Confirmer et enregistrer ce tirage';
  $('cancelFsgcDraw').hidden=true;$('previewFsgcDraw').hidden=false;
 }
