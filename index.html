@@ -252,7 +252,7 @@ $('resetLedgerHistory').addEventListener('click',()=>{
 
 function fsgcSeasonStartYear(season){const m=String(season||'').match(/(\d{4})\s*[/\-]\s*\d{2,4}/);return m?Number(m[1]):NaN}
 function fsgcWeightedPick(items){const total=items.reduce((sum,item)=>sum+Math.max(0,Number(item.weight)||0),0);if(!total)return null;let roll=Math.random()*total;for(const item of items){roll-=Math.max(0,Number(item.weight)||0);if(roll<0)return item;}return items[items.length-1]||null}
-function buildFsgcDrawCandidates(season,balance,clubsOverride,rescueOptions=[],excludedLateGame=[]){
+function buildFsgcDrawCandidates(season,balance,clubsOverride,rescueOptions=[],excludedLateGame=[],usedRescueIds=[]){
  const clubs=clubsOverride||window.getPromotionClubs?.()||[],candidates=[];
  const types=[
   {key:'formation',label:'Formation des jeunes',priority:true},
@@ -276,6 +276,7 @@ function buildFsgcDrawCandidates(season,balance,clubsOverride,rescueOptions=[],e
   }
  }
  rescueOptions.forEach(option=>{
+  if(usedRescueIds.includes(option.clubId))return;
   const club=clubs.find(c=>c.id===option.clubId);
   if(club&&option.amount>0&&option.amount<=balance)candidates.push({kind:'rescue',club,type:'rescue',label:'Renflouement exceptionnel · retour à 0 €',amount:option.amount,weight:1});
  });
@@ -330,15 +331,15 @@ function startFsgcDraw(){
  button.disabled=true;
  const originalClubsJson=JSON.stringify(originalClubs),originalTransactionsJson=JSON.stringify(transactions),workingClubs=JSON.parse(originalClubsJson);
  transactions=JSON.parse(originalTransactionsJson);
- let drawn=[],excludedLateGame=[];
+ let drawn=[],excludedLateGame=[],usedRescueIds=[];
  try{
   let guard=500,remaining=initialBalance;
   while(guard-->0){
-   const candidates=buildFsgcDrawCandidates(season,remaining,workingClubs,rescueOptions,excludedLateGame),choice=fsgcWeightedPick(candidates);if(!choice)break;
+   const candidates=buildFsgcDrawCandidates(season,remaining,workingClubs,rescueOptions,excludedLateGame,usedRescueIds),choice=fsgcWeightedPick(candidates);if(!choice)break;
    if(choice.kind==='lateGame'){
     const answer=confirm('🎲 '+choice.club.name+' a été tiré au sort pour un investissement Late Game ('+choice.label+').\n\nConfirme-tu que ce club a bien terminé dans les 10 premiers du Campionato ?\n\nOK = oui, autoriser cette dépense. Annuler = non, exclure ses investissements Late Game.');
     if(!answer){excludedLateGame.push(choice.club.id);continue}
-    choice.club.leaguePosition=10;
+    choice.club.lateGameTopTenConfirmedSeason=season;
    }
    const stamp=Date.now()+drawn.length,clubName=choice.club.name||choice.club;
    const tx={id:'fsgc-'+stamp,kind:'debit',season,amount:choice.amount,club:clubName,type:choice.label,improvementPoints:choice.kind==='upgrade'||choice.kind==='lateGame'?1:0,autoFsgc:true,date:new Date().toLocaleDateString('fr-FR'),sortKey:String(stamp),description:'Tirage au sort automatique FSGC'};
@@ -356,6 +357,7 @@ function startFsgcDraw(){
     tx.nationalYouthEligible=true;tx.beneficiaryMode='national';tx.improvementPoints=0;
     tx.description='Achat de 1 point dédié à la note nationale de formation des jeunes';
    }else if(choice.kind==='rescue'){
+    usedRescueIds.push(choice.club.id);
     choice.club.endSeasonBalance=0;choice.club.lastRescueSeason=season;
     tx.rescueAid=true;tx.improvementPoints=0;
     tx.description='Renflouement exceptionnel · déficit couvert jusqu’à 0 € · plafond global de 25 % respecté · délai de 3 ans';
