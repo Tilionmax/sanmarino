@@ -155,7 +155,7 @@ body.authenticated #authGate{display:none}
  <p class="muted" style="font-size:12px">Déclare ici les clubs actuellement déficitaires et le montant exact à couvrir. Chaque renflouement devient un candidat du tirage au sort, sans priorité. Tant qu’il n’est pas tiré, le club ne peut recevoir aucune autre amélioration pendant ce tirage. La déclaration est supprimée après validation ou annulation du tirage.</p>
  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,.7fr) auto;gap:8px;align-items:end">
   <div class="field"><label for="rescueClubSelect">Club déficitaire</label><select id="rescueClubSelect"><option value="">Choisir un club…</option></select></div>
-  <div class="field"><label for="rescueAmountInput">Déficit à couvrir (€)</label><input id="rescueAmountInput" type="number" min="1" step="1" placeholder="Ex. 150000"></div>
+  <div class="field"><label for="rescueAmountInput">Déficit à couvrir (€)</label><input id="rescueAmountInput" class="amount" type="text" inputmode="numeric" placeholder="Ex. 150 000" autocomplete="off"></div>
   <button type="button" class="secondary" id="addRescueDeclaration">＋ Ajouter</button>
  </div>
  <div id="rescueDeclarationMessage" class="bank-hint" aria-live="polite">Aucun club déclaré pour le moment.</div>
@@ -208,7 +208,7 @@ body.authenticated #authGate{display:none}
 const $=id=>document.getElementById(id), euro=n=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n||0);
 function parseAmount(value){const cleaned=String(value??'').replaceAll(' ','').replaceAll(String.fromCharCode(160),'').replaceAll(String.fromCharCode(8239),'').replace(',','.').replace(/[^0-9.-]/g,'');const n=Number(cleaned);return Number.isFinite(n)?n:0}
 function formatAmount(input){const n=parseAmount(input.value);input.value=new Intl.NumberFormat('fr-FR',{maximumFractionDigits:2,useGrouping:true}).format(n)}
-function formatAmountLive(input){const raw=input.value,pos=input.selectionStart??raw.length,before=raw.slice(0,pos),digitsBefore=(before.match(/\d/g)||[]).length,negative=raw.trim().startsWith('-');let clean=raw.replace(/[ \u00a0\u202f]/g,'').replace(/[^\d,.-]/g,'').replace(/[.-]/g,'');const comma=clean.indexOf(',');if(comma>=0)clean=clean.slice(0,comma+1)+clean.slice(comma+1).replace(/,/g,'');const parts=clean.split(','),integer=parts[0].replace(/\D/g,''),fraction=(parts[1]||'').replace(/\D/g,'');const grouped=integer.replace(/\B(?=(\d{3})+(?!\d))/g,' ');input.value=(negative?'-':'')+grouped+(comma>=0?','+fraction:'');let caret=0,count=0;while(caret<input.value.length&&count<digitsBefore){if(/\d/.test(input.value[caret]))count++;caret++}input.setSelectionRange(caret,input.value.length===0?0:Math.max(negative?1:0,caret))}
+function formatAmountLive(input){const raw=input.value,pos=input.selectionStart??raw.length,digitsBefore=(raw.slice(0,pos).match(/\d/g)||[]).length,negative=raw.trim().startsWith('-');let clean=raw.replace(/[ \u00a0\u202f]/g,'').replace(/[^\d,]/g,'');const comma=clean.indexOf(',');if(comma>=0)clean=clean.slice(0,comma+1)+clean.slice(comma+1).replace(/,/g,'');const parts=clean.split(','),integer=parts[0].replace(/\D/g,''),fraction=(parts[1]||'').replace(/\D/g,''),grouped=integer.replace(/\B(?=(\d{3})+(?!\d))/g,' ');input.value=(negative?'-':'')+grouped+(comma>=0?','+fraction:'');let caret=0,count=0;while(caret<input.value.length&&count<digitsBefore){if(/\d/.test(input.value[caret]))count++;caret++}input.setSelectionRange(caret,caret)}
 function setupAmountFields(){document.querySelectorAll('.amount').forEach(input=>{input.addEventListener('input',()=>formatAmountLive(input));input.addEventListener('blur',()=>{formatAmount(input);update()});formatAmount(input)})}
 let clubs=[{name:'',share:100}],customRules=[],transactions=[],rescueDeclarations=[];
 window.getClubUpgradeHistory=()=>transactions.filter(t=>t.kind==='debit'&&['Formation des jeunes','Encadrement des jeunes','Recrutement de jeunes','Installations d’entraînement'].includes(String(t.type||'')));
@@ -272,7 +272,7 @@ function renderRescueDeclarations(){
  list.querySelectorAll('[data-remove-rescue]').forEach(b=>b.onclick=()=>{rescueDeclarations.splice(Number(b.dataset.removeRescue),1);renderRescueDeclarations();save()});
 }
 $('addRescueDeclaration').addEventListener('click',()=>{
- const clubId=$('rescueClubSelect').value,club=(window.getPromotionClubs?.()||[]).find(c=>String(c.id)===String(clubId)),amount=Math.round(Number($('rescueAmountInput').value));
+ const clubId=$('rescueClubSelect').value,club=(window.getPromotionClubs?.()||[]).find(c=>String(c.id)===String(clubId)),amount=Math.round(parseAmount($('rescueAmountInput').value));
  const message=$('rescueDeclarationMessage'),season=$('drawFsgcSeason').value.trim(),balance=fundTotals().balance;
  if(!club){message.textContent='Sélectionne un club.';return}
  if(!Number.isFinite(amount)||amount<=0){message.textContent='Saisis un montant de déficit valide.';return}
