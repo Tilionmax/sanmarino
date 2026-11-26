@@ -34,7 +34,34 @@ header{padding:30px max(20px,calc((100% - 1100px)/2));border-bottom:1px solid va
 <div class="notice">Simulation mathématique basée sur les points saisis et le coefficient choisi. Le classement FIFA officiel peut appliquer des règles particulières, notamment lors de certaines phases finales. Vérifie le coefficient correspondant exactement à la compétition et à la phase.</div>
 </section>
 <section class="card"><h2>Comment le calcul fonctionne</h2><p class="formula">P après = P avant + I × (W − We)</p><p class="muted">W vaut 1 pour une victoire, 0,5 pour un nul et 0 pour une défaite. We est le résultat attendu, calculé à partir de l’écart de points entre les deux équipes : plus l’adversaire est fort, plus une victoire rapporte de points. Le résultat de l’équipe B est automatiquement l’inverse de celui de A.</p></section>
-</main><footer>Simulateur non officiel — les points saisis doivent correspondre aux points avant le match.</footer>
+</main>
+<section class="card">
+<h2>3 · Suivi Saint-Marin dans FM27</h2>
+<p class="muted">Renseigne le total de points de départ, puis ajoute les matchs dans l’ordre. Le calcul se cumule automatiquement. Le total affiché dans FM27 est facultatif : il permet de comparer le résultat du jeu avec le calcul FIFA.</p>
+<div class="teams">
+ <div class="field"><label for="smStart">Points FIFA de départ de Saint-Marin</label><input id="smStart" type="text" inputmode="decimal" value="900"></div>
+ <div class="field"><label for="smStartRank">Classement FIFA de départ (facultatif)</label><input id="smStartRank" type="number" min="1" max="211" placeholder="Ex. 210"></div>
+</div>
+<div class="result" style="margin-top:14px">
+ <div class="stat"><small>Points calculés actuels</small><strong id="smCurrent">900,00</strong></div>
+ <div class="stat"><small>Variation cumulée</small><strong id="smChange">+0,00</strong></div>
+ <div class="stat"><small>Écart avec FM27</small><strong id="smGap">Non renseigné</strong></div>
+</div>
+<h3>Ajouter un match</h3>
+<div class="teams">
+ <div class="field"><label for="smDate">Date / saison</label><input id="smDate" type="text" placeholder="Ex. 2026-09-05"></div>
+ <div class="field"><label for="smOpponent">Adversaire</label><input id="smOpponent" type="text" placeholder="Nom de l’équipe"></div>
+ <div class="field"><label for="smOppPoints">Points de l’adversaire avant match</label><input id="smOppPoints" type="text" inputmode="decimal" placeholder="Ex. 1 245,50"></div>
+ <div class="field"><label for="smImportance">Importance du match (I)</label><select id="smImportance"><option value="5">Amical hors fenêtre — 5</option><option value="10">Amical en fenêtre — 10</option><option value="15">Ligue des nations, groupes — 15</option><option value="25">Qualifications / barrages — 25</option><option value="35">Compétition continentale, groupes — 35</option><option value="40">Compétition continentale, élimination directe — 40</option><option value="50">Coupe du monde, groupes — 50</option><option value="60">Coupe du monde, élimination directe — 60</option></select></div>
+ <div class="field"><label for="smResult">Résultat de Saint-Marin</label><select id="smResult"><option value="1">Victoire</option><option value=".5">Match nul</option><option value="0">Défaite</option></select></div>
+ <div class="field"><label for="smFMPoints">Total de points FM27 après match (facultatif)</label><input id="smFMPoints" type="text" inputmode="decimal" placeholder="Points affichés dans FM27"></div>
+</div>
+<div class="actions"><button class="primary" id="smAdd">Ajouter le match</button><button id="smExport">Exporter CSV</button><button id="smReset" class="danger">Effacer le suivi</button></div>
+<p class="muted" id="smMessage" role="status"></p>
+<div id="smHistory" class="table-wrap"><p class="muted">Aucun match enregistré.</p></div>
+<div class="notice">Le suivi est conservé dans le stockage local de ce navigateur. Il ne se synchronise pas entre appareils. Le rang FIFA n’est pas déduit du total seul : il faut les points des autres sélections à la même date.</div>
+</section>
+\n<footer>Simulateur non officiel — les points saisis doivent correspondre aux points avant le match.</footer>
 <script>
 const $=id=>document.getElementById(id);
 const fmt=n=>new Intl.NumberFormat('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
