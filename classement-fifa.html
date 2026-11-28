@@ -1,102 +1,102 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Simulateur de points FIFA</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Classement mondial FIFA — Suivi de Saint-Marin</title>
 <style>
-:root{--bg:#07111f;--panel:#101e30;--panel2:#15263a;--line:#263b52;--text:#edf4fb;--muted:#9db0c4;--teal:#39c6bd;--gold:#e5b85c;--red:#ff7777}
+:root{--bg:#07111f;--panel:#101e30;--panel2:#15263a;--line:#263b52;--text:#edf4fb;--muted:#9db0c4;--teal:#39c6bd;--gold:#e5b85c;--red:#ff8585;--green:#8ce2cb}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#153149 0,transparent 35%),var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,Segoe UI,sans-serif}
-header{padding:30px max(20px,calc((100% - 1100px)/2));border-bottom:1px solid var(--line);background:#081523cc}main{max-width:1100px;margin:26px auto;padding:0 18px 60px}.kicker{color:var(--teal);font-weight:800;letter-spacing:.16em;font-size:11px;text-transform:uppercase}h1{font-size:clamp(27px,4vw,42px);line-height:1.1;margin:8px 0}header p{color:var(--muted);margin:8px 0 0}.card{background:linear-gradient(145deg,var(--panel),#0d1a2a);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}.teams{display:grid;grid-template-columns:1fr 1fr;gap:15px}.field label{display:block;color:var(--muted);font-size:13px;margin:0 0 6px}.field input,.field select{width:100%;background:#091625;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:11px;font:inherit}.field{min-width:0;margin-bottom:13px}.team-title{font-weight:800;color:var(--teal);margin:0 0 12px}.result{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.stat{padding:16px;border-radius:13px;background:#0a1827;border:1px solid var(--line)}.stat small{color:var(--muted);display:block}.stat strong{font-size:clamp(21px,3vw,30px);display:block;margin-top:5px;font-variant-numeric:tabular-nums}.positive{color:#8ce2cb}.negative{color:#ff9999}.muted{color:var(--muted)}.formula{padding:12px;background:#0a1827;border-radius:10px;color:var(--muted);font-size:13px;overflow-wrap:anywhere}button{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--panel2);color:var(--text);font-weight:700;cursor:pointer}button.primary{background:var(--teal);color:#06201f;border-color:var(--teal)}.actions{display:flex;gap:8px;flex-wrap:wrap}.notice{padding:12px;border-radius:10px;background:#332b18;color:#f2d89c;border:1px solid #69542a;font-size:13px;margin-top:12px}footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}@media(max-width:650px){.teams,.result{grid-template-columns:1fr}}
+header{padding:30px max(20px,calc((100% - 1120px)/2));border-bottom:1px solid var(--line);background:#081523cc}main{max-width:1120px;margin:26px auto;padding:0 18px 60px}.kicker{color:var(--teal);font-weight:800;letter-spacing:.16em;font-size:11px;text-transform:uppercase}h1{font-size:clamp(27px,4vw,42px);line-height:1.1;margin:8px 0}header p{color:var(--muted);margin:8px 0 0}.card{background:linear-gradient(145deg,var(--panel),#0d1a2a);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{min-width:0;margin-bottom:12px}.field label{display:block;color:var(--muted);font-size:13px;margin:0 0 6px}.field input{width:100%;background:#091625;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:11px;font:inherit}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.stat{padding:15px;border-radius:13px;background:#0a1827;border:1px solid var(--line);min-width:0}.stat small{color:var(--muted);display:block}.stat strong{font-size:clamp(20px,3vw,29px);display:block;margin-top:5px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.positive{color:var(--green)}.negative{color:var(--red)}.muted{color:var(--muted)}button{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--panel2);color:var(--text);font-weight:700;cursor:pointer}button.primary{background:var(--teal);color:#06201f;border-color:var(--teal)}button.danger{border-color:#75404a;color:#ffaaaa}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.notice{padding:12px;border-radius:10px;background:#332b18;color:#f2d89c;border:1px solid #69542a;font-size:13px;margin-top:12px}.chart-wrap{height:270px;position:relative;width:100%;margin-top:8px}.chart-wrap canvas{width:100%;height:100%;display:block}.table-wrap{overflow-x:auto;margin-top:14px}table{width:100%;border-collapse:collapse;min-width:730px;font-size:13px}th,td{text-align:left;padding:10px 9px;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--muted);font-weight:700}td strong{font-variant-numeric:tabular-nums}.empty{padding:18px;text-align:center;color:var(--muted);background:#0a1827;border-radius:10px}.form-title{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
+@media(max-width:760px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.grid{grid-template-columns:1fr}.card{padding:15px}.chart-wrap{height:230px}}
 </style>
 </head>
 <body>
-<header><div class="kicker">Outil de simulation</div><h1>Classement mondial FIFA</h1><p>Estime l’évolution des points après un match avec la méthode SUM.</p></header>
+<header><div class="kicker">Suivi manuel · Football Manager 27</div><h1>Classement mondial FIFA</h1><p>Suivi de Saint-Marin : points après chaque match, évolution du classement et graphiques.</p></header>
 <main>
 <section class="card">
-<h2>1 · Match</h2>
-<div class="teams">
-<div><p class="team-title">Équipe A</p><div class="field"><label for="teamA">Nom de l’équipe</label><input id="teamA" value="Saint-Marin"></div><div class="field"><label for="pointsA">Points FIFA avant le match</label><input id="pointsA" type="number" min="0" step="0.01" value="900"></div></div>
-<div><p class="team-title">Équipe B</p><div class="field"><label for="teamB">Nom de l’équipe</label><input id="teamB" value="Adversaire"></div><div class="field"><label for="pointsB">Points FIFA avant le match</label><input id="pointsB" type="number" min="0" step="0.01" value="1200"></div></div>
+<h2>1 · Point de départ</h2>
+<p class="muted">Renseigne la situation de Saint-Marin au début de ton suivi. Elle servira de référence pour calculer les évolutions.</p>
+<div class="grid">
+<div class="field"><label for="startPoints">Total de points FIFA au départ</label><input id="startPoints" type="number" min="0" step="0.01" placeholder="Ex. 489"></div>
+<div class="field"><label for="startRank">Place au classement au départ</label><input id="startRank" type="number" min="1" step="1" placeholder="Ex. 210"></div>
 </div>
-<div class="teams">
-<div class="field"><label for="resultA">Résultat pour l’équipe A</label><select id="resultA"><option value="1">Victoire de A</option><option value=".5">Match nul</option><option value="0">Défaite de A</option></select></div>
-<div class="field"><label for="importance">Importance du match (I)</label><select id="importance"><option value="5">Amical hors fenêtre internationale — 5</option><option value="10">Amical en fenêtre internationale — 10</option><option value="15">Ligue des nations, phase de groupes — 15</option><option value="25">Qualifications compétition continentale / Coupe du monde — 25</option><option value="35">Phase de groupes d’une compétition finale continentale — 35</option><option value="40">Phase à élimination directe continentale — 40</option><option value="50">Phase de groupes de la Coupe du monde — 50</option><option value="60">Phase à élimination directe de la Coupe du monde — 60</option></select></div>
+<div class="actions"><button class="primary" id="saveStart">Enregistrer le départ</button></div>
+<p class="muted" id="startMessage" role="status"></p>
+</section>
+
+<section class="card">
+<h2>2 · Vue d'ensemble</h2>
+<div class="stats">
+<div class="stat"><small>Points actuels</small><strong id="currentPoints">—</strong></div>
+<div class="stat"><small>Évolution des points</small><strong id="pointsChange">—</strong></div>
+<div class="stat"><small>Classement actuel</small><strong id="currentRank">—</strong></div>
+<div class="stat"><small>Évolution du classement</small><strong id="rankChange">—</strong></div>
 </div>
-<div class="actions"><button class="primary" id="reset">Réinitialiser</button></div>
+<p class="muted" id="matchCount" style="margin-bottom:0">Aucun match enregistré.</p>
+</section>
+
+<section class="card">
+<h2>3 · Graphique des points FIFA</h2>
+<p class="muted">Le graphique reprend le total de points saisi après chaque match.</p>
+<div class="chart-wrap"><canvas id="pointsChart" aria-label="Graphique de l'évolution des points FIFA"></canvas></div>
 </section>
 <section class="card">
-<h2>2 · Résultat estimé</h2>
-<div class="result">
-<div class="stat"><small id="nameA">Saint-Marin</small><strong id="deltaA">—</strong><small>Variation de points</small><p class="muted" id="afterA">Points après match : —</p></div>
-<div class="stat"><small id="nameB">Adversaire</small><strong id="deltaB">—</strong><small>Variation de points</small><p class="muted" id="afterB">Points après match : —</p></div>
-</div>
-<p class="formula" id="details">Le calcul apparaîtra ici.</p>
-<div class="notice">Simulation mathématique basée sur les points saisis et le coefficient choisi. Le classement FIFA officiel peut appliquer des règles particulières, notamment lors de certaines phases finales. Vérifie le coefficient correspondant exactement à la compétition et à la phase.</div>
+<h2>4 · Graphique du classement FIFA</h2>
+<p class="muted">Une courbe qui monte représente une progression vers une meilleure place (ex. passer de 210e à 205e).</p>
+<div class="chart-wrap"><canvas id="rankChart" aria-label="Graphique de l'évolution de la place au classement"></canvas></div>
 </section>
-<section class="card"><h2>Comment le calcul fonctionne</h2><p class="formula">P après = P avant + I × (W − We)</p><p class="muted">W vaut 1 pour une victoire, 0,5 pour un nul et 0 pour une défaite. We est le résultat attendu, calculé à partir de l’écart de points entre les deux équipes : plus l’adversaire est fort, plus une victoire rapporte de points. Le résultat de l’équipe B est automatiquement l’inverse de celui de A.</p></section>
+
+<section class="card" id="entryCard">
+<div class="form-title"><h2 id="formTitle">5 · Ajouter un match</h2><button id="cancelEdit" hidden>Annuler la modification</button></div>
+<div class="grid">
+<div class="field"><label for="matchDate">Date du match</label><input id="matchDate" type="date"></div>
+<div class="field"><label for="opponent">Adversaire</label><input id="opponent" type="text" placeholder="Ex. Andorre"></div>
+<div class="field"><label for="afterPoints">Total de points FIFA après le match</label><input id="afterPoints" type="number" min="0" step="0.01" placeholder="Ex. 489"></div>
+<div class="field"><label for="afterRank">Place au classement après le match</label><input id="afterRank" type="number" min="1" step="1" placeholder="Ex. 208"></div>
+</div>
+<div class="actions"><button class="primary" id="saveMatch">Ajouter le match</button></div>
+<p class="muted" id="formMessage" role="status"></p>
+<div class="notice">Tu saisis le total de points après le match, pas la variation. La page compare automatiquement ce total avec celui de l'entrée précédente et affiche +X, −X ou 0 pt.</div>
+</section>
+
+<section class="card">
+<div class="form-title"><h2>6 · Historique des matchs</h2><div class="actions" style="margin-top:0"><button id="exportCsv">Exporter CSV</button><button class="danger" id="resetAll">Tout effacer</button></div></div>
+<div id="history" class="table-wrap"><div class="empty">Configure le point de départ pour commencer.</div></div>
+</section>
+<footer>Outil de suivi manuel non officiel — les données sont enregistrées dans le navigateur.</footer>
 </main>
-<section class="card">
-<h2>3 · Suivi Saint-Marin dans FM27</h2>
-<p class="muted">Renseigne le total de points de départ, puis ajoute les matchs dans l’ordre. Le calcul se cumule automatiquement. Le total affiché dans FM27 est facultatif : il permet de comparer le résultat du jeu avec le calcul FIFA.</p>
-<div class="teams">
- <div class="field"><label for="smStart">Points FIFA de départ de Saint-Marin</label><input id="smStart" type="text" inputmode="decimal" value="900"></div>
- <div class="field"><label for="smStartRank">Classement FIFA de départ (facultatif)</label><input id="smStartRank" type="number" min="1" max="211" placeholder="Ex. 210"></div>
-</div>
-<div class="result" style="margin-top:14px">
- <div class="stat"><small>Points calculés actuels</small><strong id="smCurrent">900,00</strong></div>
- <div class="stat"><small>Variation cumulée</small><strong id="smChange">+0,00</strong></div>
- <div class="stat"><small>Écart avec FM27</small><strong id="smGap">Non renseigné</strong></div>
-</div>
-<h3>Ajouter un match</h3>
-<div class="teams">
- <div class="field"><label for="smDate">Date / saison</label><input id="smDate" type="text" placeholder="Ex. 2026-09-05"></div>
- <div class="field"><label for="smOpponent">Adversaire</label><input id="smOpponent" type="text" placeholder="Nom de l’équipe"></div>
- <div class="field"><label for="smOppPoints">Points de l’adversaire avant match</label><input id="smOppPoints" type="text" inputmode="decimal" placeholder="Ex. 1 245,50"></div>
- <div class="field"><label for="smImportance">Importance du match (I)</label><select id="smImportance"><option value="5">Amical hors fenêtre — 5</option><option value="10">Amical en fenêtre — 10</option><option value="15">Ligue des nations, groupes — 15</option><option value="25">Qualifications / barrages — 25</option><option value="35">Compétition continentale, groupes — 35</option><option value="40">Compétition continentale, élimination directe — 40</option><option value="50">Coupe du monde, groupes — 50</option><option value="60">Coupe du monde, élimination directe — 60</option></select></div>
- <div class="field"><label for="smResult">Résultat de Saint-Marin</label><select id="smResult"><option value="1">Victoire</option><option value=".5">Match nul</option><option value="0">Défaite</option></select></div>
- <div class="field"><label for="smFMPoints">Total de points FM27 après match (facultatif)</label><input id="smFMPoints" type="text" inputmode="decimal" placeholder="Points affichés dans FM27"></div>
-</div>
-<div class="actions"><button class="primary" id="smAdd">Ajouter le match</button><button id="smExport">Exporter CSV</button><button id="smReset" class="danger">Effacer le suivi</button></div>
-<p class="muted" id="smMessage" role="status"></p>
-<div id="smHistory" class="table-wrap"><p class="muted">Aucun match enregistré.</p></div>
-<div class="notice">Le suivi est conservé dans le stockage local de ce navigateur. Il ne se synchronise pas entre appareils. Le rang FIFA n’est pas déduit du total seul : il faut les points des autres sélections à la même date.</div>
-</section>
-\n<footer>Simulateur non officiel — les points saisis doivent correspondre aux points avant le match.</footer>
 <script>
 const $=id=>document.getElementById(id);
-const fmt=n=>new Intl.NumberFormat('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
-function calculate(){
- const pa=Number($('pointsA').value),pb=Number($('pointsB').value),valid=$('pointsA').value!==''&&$('pointsB').value!==''&&pa>=0&&pb>=0;
- const nameA=$('teamA').value.trim()||'Équipe A',nameB=$('teamB').value.trim()||'Équipe B';
- $('nameA').textContent=nameA;$('nameB').textContent=nameB;
- if(!valid){$('deltaA').textContent=$('deltaB').textContent='—';$('afterA').textContent=$('afterB').textContent='Saisis deux valeurs de points valides.';$('details').textContent='Les points doivent être des nombres positifs ou nuls.';return;}
- const wA=Number($('resultA').value),wB=1-wA,I=Number($('importance').value);
- const expectedA=1/(1+Math.pow(10,(pb-pa)/600)),expectedB=1-expectedA;
- const dA=I*(wA-expectedA),dB=I*(wB-expectedB);
- const setDelta=(id,n)=>{const el=$(id);el.textContent=(n>0?'+':'')+fmt(n);el.className=n>=0?'positive':'negative';};
- setDelta('deltaA',dA);setDelta('deltaB',dB);
- $('afterA').textContent='Points après match : '+fmt(pa+dA);
- $('afterB').textContent='Points après match : '+fmt(pb+dB);
- $('details').textContent='Résultat attendu : '+nameA+' '+fmt(expectedA)+' · '+nameB+' '+fmt(expectedB)+'. Coefficient I = '+I+'. Total des points gagnés/perdus : '+fmt(dA+dB)+' (les variations s’équilibrent).';
+const STORE='sanmarino-fifa-manual-tracker-v2';
+const fmt=n=>new Intl.NumberFormat('fr-FR',{maximumFractionDigits:2}).format(n);
+const signed=n=>(n>0?'+':'')+fmt(n);
+let data={startPoints:null,startRank:null,matches:[]};
+let editIndex=null;
+try{const saved=JSON.parse(localStorage.getItem(STORE)||'null');if(saved&&Array.isArray(saved.matches))data={...data,...saved}}catch(e){}
+function save(){localStorage.setItem(STORE,JSON.stringify(data))}
+function validStart(){return Number.isFinite(Number(data.startPoints))&&data.startPoints!==null&&data.startPoints!==''&&Number(data.startPoints)>=0}
+function series(){const out=[];if(validStart())out.push({label:'Départ',points:Number(data.startPoints),rank:data.startRank?Number(data.startRank):null});let prev=Number(data.startPoints);data.matches.forEach((m,i)=>{out.push({label:m.date||('Match '+(i+1)),points:Number(m.points),rank:m.rank?Number(m.rank):null,opponent:m.opponent});prev=Number(m.points)});return out}
+function drawChart(canvas,values,kind){const ctx=canvas.getContext('2d'),rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1,w=Math.max(300,rect.width),h=Math.max(180,rect.height);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);ctx.font='11px system-ui';ctx.fillStyle='#9db0c4';ctx.strokeStyle='#263b52';ctx.lineWidth=1;
+const vals=values.map(v=>kind==='points'?v.points:v.rank).filter(v=>v!==null&&Number.isFinite(v));if(!vals.length){ctx.textAlign='center';ctx.fillText('Ajoute des données pour afficher le graphique',w/2,h/2);return}
+let min=Math.min(...vals),max=Math.max(...vals);if(min===max){const pad=Math.max(1,Math.abs(min)*.02);min-=pad;max+=pad}else{const pad=(max-min)*.12;min-=pad;max+=pad}
+const left=55,right=18,top=18,bottom=36,pw=w-left-right,ph=h-top-bottom;for(let i=0;i<5;i++){const y=top+ph*i/4;ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(w-right,y);ctx.stroke();const v=kind==='rank'?max-(max-min)*i/4:min+(max-min)*(4-i)/4;ctx.textAlign='right';ctx.fillText(fmt(v),left-8,y+4)}
+const points=values.map((v,i)=>({x:values.length===1?left+pw/2:left+pw*i/(values.length-1),y:kind==='rank'?top+ph*(v.rank-min)/(max-min):top+ph*(1-(v.points-min)/(max-min)),v})).filter(p=>kind==='points'?Number.isFinite(p.v.points):p.v.rank!==null&&Number.isFinite(p.v.rank));
+if(points.length){ctx.strokeStyle='#39c6bd';ctx.lineWidth=2.5;ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();points.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fillStyle='#39c6bd';ctx.fill();ctx.strokeStyle='#07111f';ctx.lineWidth=2;ctx.stroke()})}
+ctx.fillStyle='#9db0c4';ctx.textAlign='center';const count=values.length;values.forEach((v,i)=>{if(count<=8||i===0||i===count-1||i%Math.ceil(count/6)===0){const x=count===1?left+pw/2:left+pw*i/(count-1);let label=v.label||'';if(label.length>12)label=label.slice(0,11)+'…';ctx.fillText(label,x,h-12)}})}
+function render(){const ready=validStart();const all=series();const last=all[all.length-1];const first=all[0];$('currentPoints').textContent=ready?fmt(last.points)+' pts':'—';$('pointsChange').textContent=ready?signed(last.points-first.points)+' pts':'—';$('pointsChange').className='';if(ready)$('pointsChange').classList.add(last.points-first.points>=0?'positive':'negative');$('currentRank').textContent=last&&last.rank?last.rank+'e':'—';const rd=last&&first&&last.rank&&first.rank?first.rank-last.rank:null;$('rankChange').textContent=rd===null?'—':(rd>0?'+'+rd:rd<0?String(rd):'0')+' place(s)';$('rankChange').className=rd===null?'':rd>=0?'positive':'negative';$('matchCount').textContent=data.matches.length+' match(s) enregistré(s).';
+drawChart($('pointsChart'),all,'points');drawChart($('rankChart'),all,'rank');
+let previous=ready?Number(data.startPoints):null;const rows=data.matches.map((m,i)=>{const delta=previous===null?null:Number(m.points)-previous;previous=Number(m.points);return '<tr><td>'+(i+1)+'</td><td>'+esc(m.date||'—')+'</td><td>'+esc(m.opponent||'—')+'</td><td><strong>'+fmt(m.points)+' pts</strong></td><td class="'+(delta===null?'':delta>=0?'positive':'negative')+'"><strong>'+(delta===null?'—':signed(delta)+' pts')+'</strong></td><td>'+(m.rank?m.rank+'e':'—')+'</td><td><button data-edit="'+i+'">Modifier</button> <button class="danger" data-delete="'+i+'">×</button></td></tr>'}).join('');
+$('history').innerHTML=ready?'<table><thead><tr><th>#</th><th>Date</th><th>Adversaire</th><th>Total après match</th><th>Évolution</th><th>Classement</th><th>Actions</th></tr></thead><tbody><tr><td>Départ</td><td>—</td><td>—</td><td><strong>'+fmt(first.points)+' pts</strong></td><td>—</td><td>'+(first.rank?first.rank+'e':'—')+'</td><td>—</td></tr>'+rows+'</tbody></table>':'<div class="empty">Renseigne et enregistre ton total de points de départ.</div>';
 }
-['teamA','teamB','pointsA','pointsB','resultA','importance'].forEach(id=>$(id).addEventListener('input',calculate));
-$('reset').addEventListener('click',()=>{$('teamA').value='Saint-Marin';$('teamB').value='Adversaire';$('pointsA').value='900';$('pointsB').value='1200';$('resultA').value='1';$('importance').value='5';calculate();});
-calculate();
-
-const smStore='sanmarino-fifa-tracker-v1';let smData={start:900,rank:'',matches:[]};
-const smParse=v=>{const s=String(v??'').trim().replace(/[\s\u00a0]/g,'').replace(',','.');return s===''?NaN:Number(s)};
-const smExpected=(a,b)=>1/(1+Math.pow(10,(b-a)/600));const smCalc=(a,b,I,W)=>I*(W-smExpected(a,b));
-function smTotal(){return smData.matches.reduce((s,m)=>s+m.delta,Number(smData.start)||0)}
-function smSave(){localStorage.setItem(smStore,JSON.stringify(smData))}
-function smRender(){ $('smStart').value=String(smData.start).replace('.',',');$('smStartRank').value=smData.rank||'';let total=Number(smData.start)||0;const rows=[];smData.matches.forEach((m,i)=>{total+=m.delta;const gap=m.fm==null?null:m.fm-total;rows.push('<tr><td>'+(i+1)+'</td><td>'+(m.date||'—')+'</td><td>'+m.opponent+'</td><td>'+fmt(m.opp)+'</td><td>'+m.I+'</td><td>'+m.resultLabel+'</td><td class="'+(m.delta>=0?'positive':'negative')+'">'+(m.delta>0?'+':'')+fmt(m.delta)+'</td><td>'+fmt(total)+'</td><td>'+(m.fm==null?'—':fmt(m.fm))+'</td><td>'+(gap==null?'—':(gap>0?'+':'')+fmt(gap))+'</td><td><button data-sm-delete="'+i+'" class="danger">×</button></td></tr>')});const change=total-(Number(smData.start)||0);$('smCurrent').textContent=fmt(total);$('smChange').textContent=(change>0?'+':'')+fmt(change);$('smChange').className=change>=0?'positive':'negative';const last=[...smData.matches].reverse().find(m=>m.fm!=null);$('smGap').textContent=last?((last.fm-total)>0?'+':'')+fmt(last.fm-total):'Non renseigné';$('smHistory').innerHTML=rows.length?'<table><thead><tr><th>#</th><th>Date</th><th>Adversaire</th><th>Pts adv.</th><th>I</th><th>Résultat</th><th>Δ calculée</th><th>Total calculé</th><th>Total FM27</th><th>Écart</th><th></th></tr></thead><tbody>'+rows.join('')+'</tbody></table>':'<p class="muted">Aucun match enregistré.</p>'}
-try{const saved=JSON.parse(localStorage.getItem(smStore)||'null');if(saved&&Array.isArray(saved.matches))smData={...smData,...saved}}catch(e){}
-$('smStart').addEventListener('change',()=>{const v=smParse($('smStart').value);if(!Number.isFinite(v)||v<0){alert('Total de départ invalide.');smRender();return}smData.start=v;smSave();smRender()});
-$('smStartRank').addEventListener('change',()=>{const v=$('smStartRank').value.trim();if(v&&(!Number.isInteger(Number(v))||Number(v)<1||Number(v)>211)){alert('Le rang doit être entre 1 et 211.');$('smStartRank').value=smData.rank||'';return}smData.rank=v;smSave()});
-$('smAdd').addEventListener('click',()=>{const opponent=$('smOpponent').value.trim(),opp=smParse($('smOppPoints').value),I=Number($('smImportance').value),W=Number($('smResult').value),raw=$('smFMPoints').value.trim(),fm=raw===''?null:smParse(raw);if(!opponent||!Number.isFinite(opp)||opp<0||(raw!==''&&(!Number.isFinite(fm)||fm<0))){alert('Vérifie le nom, les points adverses et le total FM27.');return}const delta=smCalc(smTotal(),opp,I,W);smData.matches.push({date:$('smDate').value.trim(),opponent,opp,I,W,resultLabel:W===1?'Victoire':W===.5?'Nul':'Défaite',delta,fm});smSave();smRender();$('smMessage').textContent='Match ajouté : '+(delta>0?'+':'')+fmt(delta)+' points. Total calculé : '+fmt(smTotal())+'.';['smDate','smOpponent','smOppPoints','smFMPoints'].forEach(id=>$(id).value='')});
-$('smHistory').addEventListener('click',e=>{const b=e.target.closest('[data-sm-delete]');if(!b)return;if(!confirm('Supprimer ce match ?'))return;smData.matches.splice(Number(b.dataset.smDelete),1);smSave();smRender()});
-$('smReset').addEventListener('click',()=>{if(!confirm('Effacer le total de départ et tout l’historique ?'))return;smData={start:0,rank:'',matches:[]};smSave();smRender()});
-$('smExport').addEventListener('click',()=>{let p=Number(smData.start)||0;const lines=[['Date','Adversaire','Points adversaire','Importance','Résultat','Variation calculée','Total calculé','Total FM27','Écart'].join(';')];smData.matches.forEach(m=>{p+=m.delta;lines.push([m.date,m.opponent,m.opp,m.I,m.resultLabel,m.delta,p,m.fm??'',m.fm==null?'':m.fm-p].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';'))});const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='suivi-fifa-saint-marin.csv';a.click();URL.revokeObjectURL(url)});
-smRender();
-
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('saveStart').addEventListener('click',()=>{const p=$('startPoints').value,r=$('startRank').value;if(p===''||!Number.isFinite(Number(p))||Number(p)<0||(r!==''&&(!Number.isInteger(Number(r))||Number(r)<1))){$('startMessage').textContent='Saisis un total valide et une place entière positive (ou laisse la place vide).';return}data.startPoints=Number(p);data.startRank=r===''?null:Number(r);save();render();$('startMessage').textContent='Point de départ enregistré.'});
+function clearForm(){editIndex=null;$('matchDate').value='';$('opponent').value='';$('afterPoints').value='';$('afterRank').value='';$('formTitle').textContent='5 · Ajouter un match';$('saveMatch').textContent='Ajouter le match';$('cancelEdit').hidden=true;$('formMessage').textContent=''}
+$('cancelEdit').addEventListener('click',clearForm);
+$('saveMatch').addEventListener('click',()=>{if(!validStart()){ $('formMessage').textContent='Enregistre d’abord le total de points de départ.';return}const p=$('afterPoints').value,r=$('afterRank').value;if(p===''||!Number.isFinite(Number(p))||Number(p)<0||(r!==''&&(!Number.isInteger(Number(r))||Number(r)<1))){$('formMessage').textContent='Saisis un total après match valide et une place entière positive (ou laisse la place vide).';return}const entry={date:$('matchDate').value,opponent:$('opponent').value.trim(),points:Number(p),rank:r===''?null:Number(r)};if(editIndex===null)data.matches.push(entry);else data.matches[editIndex]=entry;save();clearForm();render();$('formMessage').textContent='Match enregistré. L’évolution des points a été recalculée.'});
+$('history').addEventListener('click',e=>{const edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-delete]');if(edit){editIndex=Number(edit.dataset.edit);const m=data.matches[editIndex];$('matchDate').value=m.date||'';$('opponent').value=m.opponent||'';$('afterPoints').value=m.points;$('afterRank').value=m.rank??'';$('formTitle').textContent='Modifier un match';$('saveMatch').textContent='Enregistrer les modifications';$('cancelEdit').hidden=false;$('entryCard').scrollIntoView({behavior:'smooth'});return}if(del){const i=Number(del.dataset.delete);if(!confirm('Supprimer ce match de l’historique ?'))return;data.matches.splice(i,1);save();if(editIndex===i)clearForm();render()}});
+$('exportCsv').addEventListener('click',()=>{if(!validStart()){alert('Aucun point de départ à exporter.');return}let prev=Number(data.startPoints);const lines=[['Type','Date','Adversaire','Total points après match','Variation depuis entrée précédente','Place FIFA'].join(';'),['Départ','','',data.startPoints,'',data.startRank??''].join(';')];data.matches.forEach(m=>{const delta=Number(m.points)-prev;prev=Number(m.points);lines.push([ 'Match',m.date||'',m.opponent||'',m.points,delta,m.rank??''].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';'))});const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='suivi-classement-fifa-saint-marin.csv';a.click();URL.revokeObjectURL(url)});
+$('resetAll').addEventListener('click',()=>{if(!confirm('Effacer le point de départ et tous les matchs enregistrés sur ce navigateur ? Cette action est irréversible.'))return;data={startPoints:null,startRank:null,matches:[]};save();clearForm();$('startPoints').value='';$('startRank').value='';render();$('startMessage').textContent='Suivi effacé.'});
+$('startPoints').value=data.startPoints??'';$('startRank').value=data.startRank??'';render();window.addEventListener('resize',()=>render());
 </script>
 </body></html>
