@@ -176,7 +176,7 @@ body.authenticated #authGate{display:none}
  </div>
  <div class="national-youth-controls">
   <div class="field"><label for="nationalYouthSeason">Saison à clôturer</label><input id="nationalYouthSeason" value="2026/2027"></div>
-  <div class="field"><label for="nationalYouthFifaRank">Classement FIFA de fin de saison</label><input id="nationalYouthFifaRank" type="number" min="1" max="211" step="1" value="211"></div>
+  <div class="field"><label>Meilleur classement FIFA cette saison</label><strong id="nationalYouthFifaRank" class="money">Aucun classement trouvé</strong><p id="nationalYouthFifaRankHint" class="muted" style="font-size:12px;margin:6px 0 0">Récupéré automatiquement depuis l’historique de la page Classement FIFA.</p></div>
  </div>
  <div class="national-youth-grid">
   <div class="national-youth-box"><h3>Résultats de l'équipe nationale</h3>
@@ -538,6 +538,24 @@ function nationalYouthSportPoints(){
  return {raw,applied:Math.min(5,raw)};
 }
 function nationalYouthFifaPoints(rank){return fifaYouthThresholds.filter(threshold=>rank<=threshold&&!nationalYouthData.milestones.includes(threshold))}
+function getBestFifaRankForSeason(season){
+ try{
+  const tracker=JSON.parse(localStorage.getItem('sanmarino-fifa-manual-tracker-v2')||'null');
+  if(!tracker||!Array.isArray(tracker.matches))return null;
+  const match=String(season||'').trim().match(/^(\d{4})\s*[/-]\s*(\d{2,4})$/);
+  if(!match)return null;
+  const start=Number(match[1]),endRaw=match[2],end=Number(endRaw.length===2?String(start+1).slice(0,2)+endRaw:endRaw);
+  if(end!==start+1)return null;
+  const ranks=tracker.matches.filter(item=>{
+   if(!item||!item.date||!Number.isInteger(Number(item.rank))||Number(item.rank)<1)return false;
+   const date=String(item.date).match(/^(\d{4})-(\d{2})-\d{2}$/);if(!date)return false;
+   const year=Number(date[1]),month=Number(date[2]);
+   const matchSeasonStart=month>=7?year:year-1;
+   return matchSeasonStart===start;
+  }).map(item=>Number(item.rank));
+  return ranks.length?Math.min(...ranks):null;
+ }catch(error){return null}
+}
 function nationalYouthEligibleSpend(season){return (transactions||[]).filter(t=>t.kind==='debit'&&t.nationalYouthEligible===true&&String(t.season)===String(season)).reduce((sum,t)=>sum+Math.max(0,Number(t.amount)||0),0)}
 function renderNationalYouth(){
  $('nationalYouthRating').textContent=nationalYouthData.rating+'/200';
@@ -548,19 +566,21 @@ function renderNationalYouth(){
 }
 function updateNationalYouthPreview(){
  if(!$('nationalYouthPreview'))return;
- const sport=nationalYouthSportPoints(),spend=Math.min(1000000,nationalYouthEligibleSpend($('nationalYouthSeason').value.trim())),investment=Math.min(2,Math.floor(spend/500000)),rank=Math.max(1,Math.min(211,Math.floor(Number($('nationalYouthFifaRank').value)||211))),fifa=nationalYouthFifaPoints(rank);
+ const season=$('nationalYouthSeason').value.trim(),sport=nationalYouthSportPoints(),spend=Math.min(1000000,nationalYouthEligibleSpend(season)),investment=Math.min(2,Math.floor(spend/500000)),rank=getBestFifaRankForSeason(season),fifa=rank===null?[]:nationalYouthFifaPoints(rank);
+ $('nationalYouthFifaRank').textContent=rank===null?'Aucun classement trouvé':rank+'e';
+ $('nationalYouthFifaRankHint').textContent=rank===null?'Ajoute au moins un match daté avec une place FIFA dans cette saison (du 1er juillet au 30 juin).':'Meilleure place détectée automatiquement dans les matchs de la saison '+season+'.';
  $('nationalYouthSportPreview').textContent=sport.applied+'/5';
  $('nyEligibleSpendDisplay').textContent=euro(spend)+' · '+investment+'/2 points';
- $('nationalYouthPreview').textContent='Bonus sportifs : +'+sport.applied+' (calcul brut : '+sport.raw+', plafonné à 5) · Investissement national : +'+investment+' · Nouveaux paliers FIFA : +'+fifa.length+' ('+(fifa.length?fifa.map(n=>'Top '+n).join(', '):'aucun')+') · Gain total prévu : +'+(sport.applied+investment+fifa.length)+' points. Note après clôture : '+Math.min(200,nationalYouthData.rating+sport.applied+investment+fifa.length)+'/200.';
+ $('nationalYouthPreview').textContent='Bonus sportifs : +'+sport.applied+' (calcul brut : '+sport.raw+', plafonné à 5) · Investissement national : +'+investment+' · Meilleur classement FIFA : '+(rank===null?'non renseigné':rank+'e')+' · Nouveaux paliers FIFA : +'+fifa.length+' ('+(fifa.length?fifa.map(n=>'Top '+n).join(', '):'aucun')+') · Gain total prévu : +'+(sport.applied+investment+fifa.length)+' points. Note après clôture : '+Math.min(200,nationalYouthData.rating+sport.applied+investment+fifa.length)+'/200.';
 }
-['nyNationsLeague','nyQualification','nyGroupExit','nyEuropeanClub','nySanMarinoPromotion','nationalYouthFifaRank'].forEach(id=>$(id).addEventListener('input',updateNationalYouthPreview));
+['nyNationsLeague','nyQualification','nyGroupExit','nyEuropeanClub','nySanMarinoPromotion'].forEach(id=>$(id).addEventListener('input',updateNationalYouthPreview));
+$('nationalYouthSeason').addEventListener('input',updateNationalYouthPreview);
 $('nationalYouthHistory').addEventListener('click',event=>{
  const button=event.target.closest('[data-edit-national-youth]');if(!button)return;
  const index=Number(button.dataset.editNationalYouth),record=nationalYouthData.seasons[index];if(!record)return;
  const sportInput=prompt('Bonus sportifs bruts pour '+record.season+' (0 à 9 points avant le plafond saisonnier de 5) :',String(record.sportRaw));if(sportInput===null)return;
  const sportRaw=Number(sportInput);if(!Number.isInteger(sportRaw)||sportRaw<0||sportRaw>9){alert('Le bonus sportif brut doit être un entier compris entre 0 et 9.');return}
- const rankInput=prompt('Classement FIFA de fin de saison (1 à 211) :',String(record.rank));if(rankInput===null)return;
- const rank=Number(rankInput);if(!Number.isInteger(rank)||rank<1||rank>211){alert('Le classement FIFA doit être un entier compris entre 1 et 211.');return}
+ const rank=getBestFifaRankForSeason(record.season);if(rank===null){alert('Aucun classement FIFA daté trouvé pour la saison '+record.season+'. Ajoute ou corrige les matchs dans la page Classement FIFA.');return}
  if(!confirm('Enregistrer les corrections de '+record.season+' et recalculer automatiquement cette saison ainsi que toutes les suivantes ?'))return;
  record.sportRaw=sportRaw;record.sportPoints=Math.min(5,sportRaw);record.rank=rank;
  let rating=29,milestones=[];
@@ -581,16 +601,16 @@ $('resetNationalYouth').addEventListener('click',()=>{
  persistNationalYouthData();
  renderNationalYouth();
  $('nationalYouthSeason').value='2026/2027';
- $('nationalYouthFifaRank').value='211';
+ updateNationalYouthPreview();
  ['nyNationsLeague','nyQualification','nyGroupExit','nyEuropeanClub','nySanMarinoPromotion'].forEach(id=>$(id).checked=false);
  $('nationalYouthMessage').textContent='Suivi réinitialisé : note 29/200, classement FIFA 211e, aucun palier ni saison enregistré.';
  updateNationalYouthPreview();
 });
 $('closeNationalYouthSeason').addEventListener('click',()=>{
- const season=$('nationalYouthSeason').value.trim(),rankValue=Number($('nationalYouthFifaRank').value);
+ const season=$('nationalYouthSeason').value.trim(),rankValue=getBestFifaRankForSeason(season);
  if(!season){$('nationalYouthMessage').textContent='Indique la saison à clôturer.';return}
  if(nationalYouthData.seasons.some(item=>item.season===season)){$('nationalYouthMessage').textContent='Cette saison a déjà été clôturée. Elle ne peut pas être comptabilisée une deuxième fois.';return}
- if(!Number.isInteger(rankValue)||rankValue<1||rankValue>211){$('nationalYouthMessage').textContent='Le classement FIFA doit être un entier compris entre 1 et 211.';return}
+ if(!Number.isInteger(rankValue)||rankValue<1||rankValue>211){$('nationalYouthMessage').textContent='Aucun classement FIFA valide trouvé pour cette saison. Vérifie les dates et les places des matchs sur la page Classement FIFA.';return}
  const sport=nationalYouthSportPoints(),spend=Math.min(1000000,nationalYouthEligibleSpend(season)),investment=Math.min(2,Math.floor(spend/500000)),newMilestones=nationalYouthFifaPoints(rankValue),before=nationalYouthData.rating,totalPoints=sport.applied+investment+newMilestones.length,after=Math.min(200,before+totalPoints);
  const record={season,rank:rankValue,sportRaw:sport.raw,sportPoints:sport.applied,eligibleSpend:spend,investmentPoints:investment,fifaPoints:newMilestones.length,newMilestones,before,after,totalPoints,date:new Date().toLocaleDateString('fr-FR')};
  nationalYouthData.rating=after;nationalYouthData.currentRank=rankValue;nationalYouthData.milestones=[...new Set([...nationalYouthData.milestones,...newMilestones])].sort((a,b)=>b-a);nationalYouthData.seasons.push(record);
