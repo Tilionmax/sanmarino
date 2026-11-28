@@ -548,9 +548,9 @@ function getBestFifaRankForSeason(season){
   if(end!==start+1)return null;
   const ranks=tracker.matches.filter(item=>{
    if(!item||!item.date||!Number.isInteger(Number(item.rank))||Number(item.rank)<1)return false;
-   const date=String(item.date).match(/^(\d{4})-(\d{2})-\d{2}$/);if(!date)return false;
-   const year=Number(date[1]),month=Number(date[2]);
-   const matchSeasonStart=month>=7?year:year-1;
+   const date=String(item.date).match(/^(\d{4})-(\d{2})-(\d{2})$/);if(!date)return false;
+   const year=Number(date[1]),month=Number(date[2]),day=Number(date[3]);
+   const matchSeasonStart=(month>6||(month===6&&day>=2))?year:year-1;
    return matchSeasonStart===start;
   }).map(item=>Number(item.rank));
   return ranks.length?Math.min(...ranks):null;
